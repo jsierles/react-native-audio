@@ -13,5 +13,11 @@ An audio recording library for react-native.
 
 * Documentation
 * Add example project
+* Convert JS api to a react component
 * Allow setting audio properties
+* Error handling over the js bridge
 * Recommend react-native-video (media) for playback
+
+Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and the React Native community for help.
+
+Progress tracking code borrowed from https://github.com/brentvatne/react-native-video.
