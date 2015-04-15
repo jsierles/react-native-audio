@@ -1,6 +1,6 @@
 //
 //  AudioRecorderManager.h
-//  AudioRecorderManger
+//  AudioRecorderManager
 //
 //  Created by Joshua Sierles on 15/04/15.
 //  Copyright (c) 2015 Joshua Sierles. All rights reserved.

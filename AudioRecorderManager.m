@@ -1,10 +1,18 @@
+//
+//  AudioRecorderManager.m
+//  AudioRecorderManager
+//
+//  Created by Joshua Sierles on 15/04/15.
+//  Copyright (c) 2015 Joshua Sierles. All rights reserved.
+//
+
 #import "AudioRecorderManager.h"
 #import "RCTConvert.h"
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import <AVFoundation/AVFoundation.h>
 
-NSString *const AudioRecorderEventProgress = @"videoProgress";
+NSString *const AudioRecorderEventProgress = @"audioProgress";
 
 @implementation AudioRecorderManager {
   
