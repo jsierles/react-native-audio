@@ -12,13 +12,15 @@
 #import "RCTEventDispatcher.h"
 #import <AVFoundation/AVFoundation.h>
 
-NSString *const AudioRecorderEventProgress = @"audioProgress";
+NSString *const AudioRecorderEventProgress = @"recordingProgress";
+NSString *const AudioRecorderEventFinished = @"recordingFinished";
 
 @implementation AudioRecorderManager {
   
   AVAudioRecorder *_audioRecorder;
   AVAudioPlayer *_audioPlayer;
 
+  NSTimeInterval _currentTime;
   id _progressUpdateTimer;
   int _progressUpdateInterval;
   NSDate *_prevProgressUpdateTime;
@@ -31,14 +33,20 @@ NSString *const AudioRecorderEventProgress = @"audioProgress";
 RCT_EXPORT_MODULE();
 
 - (void)sendProgressUpdate {
-   if (_audioRecorder == nil || !_audioRecorder.recording) {
-     return;
-   }
+  if (_audioRecorder && _audioRecorder.recording) {
+    _currentTime = _audioRecorder.currentTime;
+  } else if (_audioPlayer && _audioPlayer.playing) {
+    _currentTime = _audioPlayer.currentTime;
+  } else {
+    return;
+  }
+  NSString *time = [NSString stringWithFormat:@"%f", _currentTime];
+  NSLog(@"sending progress update %@", time);
 
   if (_prevProgressUpdateTime == nil ||
-     (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
-    [_bridge.eventDispatcher sendDeviceEventWithName:AudioRecorderEventProgress body:@{
-      @"currentTime": [NSNumber numberWithFloat:_audioRecorder.currentTime]
+   (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
+      [_bridge.eventDispatcher sendDeviceEventWithName:AudioRecorderEventProgress body:@{
+      @"currentTime": [NSNumber numberWithFloat:_currentTime]
     }];
 
     _prevProgressUpdateTime = [NSDate date];
@@ -59,8 +67,18 @@ RCT_EXPORT_MODULE();
   [_progressUpdateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
+- (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
+  NSLog(flag ? @"FINISHED OK" : @"FINISH ERROR");
+  [_bridge.eventDispatcher sendDeviceEventWithName:AudioRecorderEventFinished body:@{
+      @"finished": @"test"
+    }];
+}
+
 RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
 {
+
+  _prevProgressUpdateTime = nil;
+  [self stopProgressTimer];
 
   NSArray *dirPaths;
   NSString *docsDir;
@@ -72,13 +90,11 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
 
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
-  NSDictionary *recordSettings = [NSDictionary
-          dictionaryWithObjectsAndKeys: [NSNumber numberWithInt:AVAudioQualityHigh],
-          AVEncoderAudioQualityKey, [NSNumber numberWithInt:16],
-          AVEncoderBitRateKey, [NSNumber numberWithInt: 2],
-          AVNumberOfChannelsKey,
-          [NSNumber numberWithFloat:44100.0],
-          AVSampleRateKey,
+  NSDictionary *recordSettings = [NSDictionary dictionaryWithObjectsAndKeys:
+          [NSNumber numberWithInt:AVAudioQualityHigh], AVEncoderAudioQualityKey,
+          [NSNumber numberWithInt:16], AVEncoderBitRateKey,
+          [NSNumber numberWithInt: 2], AVNumberOfChannelsKey,
+          [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
           nil];
 
   NSError *error = nil;
@@ -111,15 +127,16 @@ RCT_EXPORT_METHOD(record)
   }
 }
 
-RCT_EXPORT_METHOD(stop)
+RCT_EXPORT_METHOD(stopRecording)
 {
   if (_audioRecorder.recording) {
     [_audioRecorder stop];
     [_recordSession setActive:NO error:nil];
+    _prevProgressUpdateTime = nil;
   }
 }
 
-RCT_EXPORT_METHOD(pause)
+RCT_EXPORT_METHOD(pauseRecording)
 {
   if (_audioRecorder.recording) {
     [self stopProgressTimer];
@@ -127,21 +144,44 @@ RCT_EXPORT_METHOD(pause)
   }
 }
 
-RCT_EXPORT_METHOD(play)
+RCT_EXPORT_METHOD(playRecording)
 {
-  if (!_audioRecorder.recording) {
+  if (_audioRecorder.recording) {
+    NSLog(@"stop the recording before playing");
+    return;
+
+  } else {
+
     NSError *error;
 
-    _audioPlayer = [[AVAudioPlayer alloc]
-      initWithContentsOfURL:_audioRecorder.url
-      error:&error];
+    if (!_audioPlayer.playing) {
+      _audioPlayer = [[AVAudioPlayer alloc]
+        initWithContentsOfURL:_audioRecorder.url
+        error:&error];
 
-    if (error) {
-      NSLog(@"audio playback loading error: %@", [error localizedDescription]);
-      // TODO: dispatch error over the bridge
-    } else {
-      [_audioPlayer play];
+      if (error) {
+        [self stopProgressTimer];
+        NSLog(@"audio playback loading error: %@", [error localizedDescription]);
+        // TODO: dispatch error over the bridge
+      } else {
+        [self startProgressTimer];
+        [_audioPlayer play];
+      }
     }
+  }
+}
+
+RCT_EXPORT_METHOD(pausePlaying)
+{
+  if (_audioPlayer.playing) {
+    [_audioPlayer pause];
+  }
+}
+
+RCT_EXPORT_METHOD(stopPlaying)
+{
+  if (_audioPlayer.playing) {
+    [_audioPlayer stop];
   }
 }
 

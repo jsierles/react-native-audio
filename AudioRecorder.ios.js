@@ -1,15 +1,31 @@
 'use strict';
 
+/**
+ * @providesModule AudioRecorder
+ *
+ *
+ * This module is a thin layer over the native module. It's aim is to obscure
+ * implementation details for registering callbacks, changing recording settings, etc.
+*/
+
 var AudioRecorderManager = require('NativeModules').AudioRecorderManager;
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path) {
     AudioRecorderManager.prepareRecordingAtPath(path);
-    this.subscription = RCTDeviceEventEmitter.addListener('audioProgress',
+    this.subscription = RCTDeviceEventEmitter.addListener('recordingProgress',
       (data) => { 
         if (this.onProgress) {
           this.onProgress(data);
+        }
+      }
+    );
+
+    this.subscription = RCTDeviceEventEmitter.addListener('recordingFinished',
+      (data) => { 
+        if (this.onFinished) {
+          this.onFinished(data);
         }
       }
     );
@@ -17,17 +33,17 @@ var AudioRecorder = {
   record: function() {
     AudioRecorderManager.record();    
   },
-  pause: function() {
-    AudioRecorderManager.record();    
+  pauseRecording: function() {
+    AudioRecorderManager.pauseRecording();    
   },
-  stop: function() {
-    AudioRecorderManager.stop();
+  stopRecording: function() {
+    AudioRecorderManager.stopRecording();
     if (this.subscription) {
       this.subscription.remove();
     }
   },
-  play: function() {
-    AudioRecorderManager.play();
+  playRecording: function() {
+    AudioRecorderManager.playRecording();
   }
 };
 
