@@ -10,6 +10,6 @@
 #import "RCTLog.h"
 #import <AVFoundation/AVFoundation.h>
 
-@interface AudioRecorderManager : NSObject <RCTBridgeModule>
+@interface AudioRecorderManager : NSObject <RCTBridgeModule, AVAudioRecorderDelegate>
 
 @end

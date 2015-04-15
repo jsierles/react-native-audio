@@ -4,7 +4,19 @@
 #import "RCTEventDispatcher.h"
 #import <AVFoundation/AVFoundation.h>
 
-@implementation AudioRecorderManager
+NSString *const AudioRecorderEventProgress = @"videoProgress";
+
+@implementation AudioRecorderManager {
+  
+  AVAudioRecorder *_audioRecorder;
+  AVAudioPlayer *_audioPlayer;
+
+  id _progressUpdateTimer;
+  int _progressUpdateInterval;
+  NSDate *_prevProgressUpdateTime;
+  NSURL *_audioFileURL;
+  AVAudioSession *_recordSession;
+}
 
 @synthesize bridge = _bridge;
 
@@ -17,9 +29,8 @@ RCT_EXPORT_MODULE();
 
   if (_prevProgressUpdateTime == nil ||
      (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
-    [_eventDispatcher sendInputEventWithName:AudioRecorderEventProgress body:@{
-      @"currentTime": [NSNumber numberWithFloat:CMTimeGetSeconds(_audioRecorder.currentTime)],
-      @"target": self.reactTag
+    [_bridge.eventDispatcher sendDeviceEventWithName:AudioRecorderEventProgress body:@{
+      @"currentTime": [NSNumber numberWithFloat:_audioRecorder.currentTime]
     }];
 
     _prevProgressUpdateTime = [NSDate date];
@@ -68,7 +79,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
   [_recordSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
 
   _audioRecorder = [[AVAudioRecorder alloc]
-                initWithURL:soundFileURL
+                initWithURL:_audioFileURL
                 settings:recordSettings
                 error:&error];
   
@@ -82,7 +93,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
   }
 }
 
-RCT_EXPORT_METHOD(record:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(record)
 {
   if (!_audioRecorder.recording) {
     [self startProgressTimer];
@@ -92,7 +103,7 @@ RCT_EXPORT_METHOD(record:(RCTResponseSenderBlock)callback)
   }
 }
 
-RCT_EXPORT_METHOD(stop:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(stop)
 {
   if (_audioRecorder.recording) {
     [_audioRecorder stop];
@@ -100,7 +111,7 @@ RCT_EXPORT_METHOD(stop:(RCTResponseSenderBlock)callback)
   }
 }
 
-RCT_EXPORT_METHOD(pause:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(pause)
 {
   if (_audioRecorder.recording) {
     [self stopProgressTimer];
@@ -108,17 +119,22 @@ RCT_EXPORT_METHOD(pause:(RCTResponseSenderBlock)callback)
   }
 }
 
-RCT_EXPORT_METHOD(play:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(play)
 {
-  if (!_audioRecorder.recording && !_audioPlayer) {
+  if (!_audioRecorder.recording) {
     NSError *error;
 
     _audioPlayer = [[AVAudioPlayer alloc]
       initWithContentsOfURL:_audioRecorder.url
       error:&error];
-  }
 
-  [_audioPlayer play];
+    if (error) {
+      NSLog(@"audio playback loading error: %@", [error localizedDescription]);
+      // TODO: dispatch error over the bridge
+    } else {
+      [_audioPlayer play];
+    }
+  }
 }
 
 @end
