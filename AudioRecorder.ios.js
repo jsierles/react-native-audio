@@ -8,6 +8,8 @@
  * implementation details for registering callbacks, changing recording settings, etc.
 */
 
+var React = require('react-native');
+
 var AudioRecorderManager = require('NativeModules').AudioRecorderManager;
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
