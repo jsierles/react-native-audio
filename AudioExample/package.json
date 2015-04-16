@@ -4,6 +4,11 @@
   "scripts": {
     "start": "node_modules/react-native/packager/packager.sh"
   },
+  "keywords": [
+    "react-component",
+    "react-native",
+    "ios"
+  ],
   "dependencies": {
     "react-native": "^0.3.11",
     "react-native-audiorecorder": "^0.1.0"
