@@ -30,8 +30,8 @@ var AudioRecorder = {
       }
     );
   },
-  record: function() {
-    AudioRecorderManager.record();    
+  startRecording: function() {
+    AudioRecorderManager.startRecording();    
   },
   pauseRecording: function() {
     AudioRecorderManager.pauseRecording();    
@@ -44,6 +44,9 @@ var AudioRecorder = {
   },
   playRecording: function() {
     AudioRecorderManager.playRecording();
+  },
+  stopPlaying: function() {
+    AudioRecorderManager.stopPlaying();
   }
 };
 

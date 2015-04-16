@@ -117,7 +117,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
   }
 }
 
-RCT_EXPORT_METHOD(record)
+RCT_EXPORT_METHOD(startRecording)
 {
   if (!_audioRecorder.recording) {
     [self startProgressTimer];
