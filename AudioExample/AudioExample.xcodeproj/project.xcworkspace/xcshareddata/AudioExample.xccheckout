@@ -6,15 +6,19 @@
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>6DAD8627-4BFA-4123-A4AC-344F8B534F53</string>
+	<key>IDESourceControlProjectName</key>
+	<string>AudioExample</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>1A3DCF30303781A17E4AEACAB2AC3702A0D9BD8C</key>
 		<string>github.com:jsierles/react-native-audiorecorder.git</string>
 	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>AudioExample/AudioExample.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1A3DCF30303781A17E4AEACAB2AC3702A0D9BD8C</key>
-		<string>react-native-audiorecorder/</string>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:jsierles/react-native-audiorecorder.git</string>
