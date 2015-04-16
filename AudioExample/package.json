@@ -11,6 +11,6 @@
   ],
   "dependencies": {
     "react-native": "^0.3.11",
-    "react-native-audiorecorder": "^0.1.0"
+    "react-native-audiorecorder": "^0.1.1"
   }
 }
