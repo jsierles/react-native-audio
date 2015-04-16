@@ -2,22 +2,36 @@
 
 An audio recording library for react-native.
 
+This is an experimental release. It handles basic recording and playback of the recording only. No settings besides the location of the audio file.
+
 ### Installation
 
 1. `npm install react-native-audiorecorder`
 2. In the XCode's "Project navigator", right click on project's name ➜ `Add Files to <...>`
 3. Go to `node_modules` ➜ `react-native-audiorecorder`
-4  Select the `AudioRecorder` folder
+4  Select the `AudioRecorderManager.*` files
+
+### Sample App
+
+In the AudioExample directory:
+
+1. `npm install`
+2. open AudioExample.xcodeproj
+3. Run
+
+### Notes
+
+Playback is limited to the most recent recording.
 
 ### TODO
 
 * Documentation
-* Add example project
-* Convert JS api to a react component
 * Allow setting audio properties
+* Convert JS api to a react component
+* Store audio to media library
 * Error handling over the js bridge
 * Recommend react-native-video (media) for playback
 
-Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and the React Native community for help.
+Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and the React Native community for assistance.
 
 Progress tracking code borrowed from https://github.com/brentvatne/react-native-video.
