@@ -1,17 +1,31 @@
 'use strict';
 
 /**
- * @providesModule AudioRecorder
- *
- *
  * This module is a thin layer over the native module. It's aim is to obscure
- * implementation details for registering callbacks, changing recording settings, etc.
+ * implementation details for registering callbacks, changing settings, etc.
 */
 
 var React = require('react-native');
 
+var AudioPlayerManager = require('NativeModules').AudioPlayerManager;
 var AudioRecorderManager = require('NativeModules').AudioRecorderManager;
+
 var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+
+var AudioPlayer = {
+  play: function(path) {
+    AudioPlayerManager.play(path);
+  },
+  pause: function() {
+    AudioPlayerManager.pause();    
+  },
+  stop: function() {
+    AudioPlayerManager.stop();
+    if (this.subscription) {
+      this.subscription.remove();
+    }
+  }
+};
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path) {
@@ -52,4 +66,4 @@ var AudioRecorder = {
   }
 };
 
-module.exports = AudioRecorder;
+module.exports = AudioPlayer;

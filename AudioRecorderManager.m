@@ -41,7 +41,6 @@ RCT_EXPORT_MODULE();
     return;
   }
   NSString *time = [NSString stringWithFormat:@"%f", _currentTime];
-  NSLog(@"sending progress update %@", time);
 
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
@@ -80,13 +79,8 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
 
-  NSArray *dirPaths;
-  NSString *docsDir;
-
-  dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  docsDir = dirPaths[0];
-
-  NSString *audioFilePath = [docsDir stringByAppendingPathComponent:path];
+  NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+  NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
 
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 

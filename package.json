@@ -1,14 +1,22 @@
 {
-  "name": "react-native-audiorecorder",
-  "version": "0.1.1",
-  "description": "React Native library for simple audio recording. Wraps AVAudioRecorder.",
-  "main": "AudioRecorder.ios.js",
+  "name": "react-native-audio",
+  "version": "0.1.2",
+  "description": "React Native library for simple audio recording. Wraps AVAudioRecorder/Player.",
+  "main": "Audio.ios.js",
   "author": "Joshua Sierles <joshua@diluvia.net> (https://github.com/jsierles)",
-  "dependencies": {
-    "react-native": "^0.3.11"
+  "peerDependencies": {
+    "react-native": "^0.4.0"
   },
+  "files": [
+    "AudioRecorderManager.m",
+    "AudioRecorderManager.h",
+    "AudioPlayerManager.m",
+    "AudioPlayerManager.h",
+    "README.md",
+    "Audio.ios.js"
+  ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:jsierles/react-native-audiorecorder.git"
+    "url": "git@github.com:jsierles/react-native-audio.git"
   }
 }
