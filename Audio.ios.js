@@ -66,4 +66,4 @@ var AudioRecorder = {
   }
 };
 
-module.exports = AudioPlayer;
+module.exports = {AudioPlayer, AudioRecorder};
