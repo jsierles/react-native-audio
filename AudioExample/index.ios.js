@@ -13,7 +13,7 @@ var {
   TouchableHighlight
 } = React;
 
-var AudioRecorder = require('react-native-audiorecorder');
+var {AudioRecorder, AudioPlayer} = require('react-native-audio');
 
 var AudioExample = React.createClass({
 
