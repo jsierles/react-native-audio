@@ -16,7 +16,7 @@ NSString *const AudioRecorderEventProgress = @"recordingProgress";
 NSString *const AudioRecorderEventFinished = @"recordingFinished";
 
 @implementation AudioRecorderManager {
-  
+
   AVAudioRecorder *_audioRecorder;
   AVAudioPlayer *_audioPlayer;
 
@@ -40,6 +40,7 @@ RCT_EXPORT_MODULE();
   } else {
     return;
   }
+  
   NSString *time = [NSString stringWithFormat:@"%f", _currentTime];
 
   if (_prevProgressUpdateTime == nil ||
@@ -100,7 +101,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
                 initWithURL:_audioFileURL
                 settings:recordSettings
                 error:&error];
-  
+
   _audioRecorder.delegate = self;
 
   if (error) {

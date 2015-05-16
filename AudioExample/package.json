@@ -10,7 +10,7 @@
     "ios"
   ],
   "dependencies": {
-    "react-native": "^0.4.0",
+    "react-native": "^0.4.4",
     "react-native-audio": "file:../"
   }
 }
