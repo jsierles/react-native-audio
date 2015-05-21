@@ -92,6 +92,22 @@ RCT_EXPORT_METHOD(play:(NSString *)path)
   }
 }
 
+RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url)
+{
+  NSError *error;
+  NSData* data = [NSData dataWithContentsOfURL: url];
+  
+  _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
+  if (error) {
+    [self stopProgressTimer];
+    NSLog(@"audio playback loading error: %@", [error localizedDescription]);
+    // TODO: dispatch error over the bridge
+  } else {
+    [self startProgressTimer];
+    [_audioPlayer play];
+  }
+}
+
 RCT_EXPORT_METHOD(pause)
 {
   if (_audioPlayer.playing) {
