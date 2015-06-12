@@ -2,7 +2,9 @@
 
 An audio recording and playback library for react-native.
 
-This is an experimental release. It handles basic recording and playback of the recording only. No settings besides the location of the audio file.
+This release recording and playback of the recording only. PRs are welcome for configuring the audio settings.
+
+NOTE: The target filename must have an extension of '.caf' to record properly.
 
 ### Installation
 
