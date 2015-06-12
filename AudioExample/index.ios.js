@@ -28,13 +28,11 @@ var AudioExample = React.createClass({
     }
   },
   componentDidMount() {
-    AudioRecorder.prepareRecordingAtPath('test')
-    AudioRecorder.onProgress = (data) => { 
-      console.log(data);
+    AudioRecorder.prepareRecordingAtPath('/test.caf')
+    AudioRecorder.onProgress = (data) => {
       this.setState({currentTime: Math.floor(data.currentTime)});
     };
-    AudioRecorder.onFinished = (data) => { 
-      console.log("finished"+data.finished);
+    AudioRecorder.onFinished = (data) => {
       this.setState({finished: data.finished});
     };
   },
@@ -82,7 +80,7 @@ var AudioExample = React.createClass({
   },
 
   render: function() {
-  
+
     return (
       <View style={styles.container}>
         <View style={styles.controls}>
