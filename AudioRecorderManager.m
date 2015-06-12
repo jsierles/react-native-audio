@@ -40,7 +40,7 @@ RCT_EXPORT_MODULE();
   } else {
     return;
   }
-  
+
   NSString *time = [NSString stringWithFormat:@"%f", _currentTime];
 
   if (_prevProgressUpdateTime == nil ||
@@ -74,14 +74,20 @@ RCT_EXPORT_MODULE();
     }];
 }
 
+- (NSString *) applicationDocumentsDirectory
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+  return basePath;
+}
+
 RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
 {
 
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
 
-  NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-  NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
+  NSString *audioFilePath = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:path];
 
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
