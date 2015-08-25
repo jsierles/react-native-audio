@@ -5,12 +5,10 @@
  * implementation details for registering callbacks, changing settings, etc.
 */
 
-var React = require('react-native');
+var React, {NativeModules, NativeAppEventEmitter} = require('react-native');
 
-var AudioPlayerManager = require('NativeModules').AudioPlayerManager;
-var AudioRecorderManager = require('NativeModules').AudioRecorderManager;
-
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+var AudioPlayerManager = NativeModules.AudioPlayerManager;
+var AudioRecorderManager = NativeModules.AudioRecorderManager;
 
 var AudioPlayer = {
   play: function(path) {
@@ -20,7 +18,7 @@ var AudioPlayer = {
     AudioPlayerManager.playWithUrl(url);
   },
   pause: function() {
-    AudioPlayerManager.pause();    
+    AudioPlayerManager.pause();
   },
   stop: function() {
     AudioPlayerManager.stop();
@@ -33,16 +31,17 @@ var AudioPlayer = {
 var AudioRecorder = {
   prepareRecordingAtPath: function(path) {
     AudioRecorderManager.prepareRecordingAtPath(path);
-    this.subscription = RCTDeviceEventEmitter.addListener('recordingProgress',
-      (data) => { 
+    this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
+      (data) => {
+        console.log(data);
         if (this.onProgress) {
           this.onProgress(data);
         }
       }
     );
 
-    this.subscription = RCTDeviceEventEmitter.addListener('recordingFinished',
-      (data) => { 
+    this.FinishedSubscription = NativeAppEventEmitter.addListener('recordingFinished',
+      (data) => {
         if (this.onFinished) {
           this.onFinished(data);
         }
@@ -50,10 +49,10 @@ var AudioRecorder = {
     );
   },
   startRecording: function() {
-    AudioRecorderManager.startRecording();    
+    AudioRecorderManager.startRecording();
   },
   pauseRecording: function() {
-    AudioRecorderManager.pauseRecording();    
+    AudioRecorderManager.pauseRecording();
   },
   stopRecording: function() {
     AudioRecorderManager.stopRecording();
