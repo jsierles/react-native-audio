@@ -24,7 +24,7 @@ var AudioExample = React.createClass({
       stoppedRecording: false,
       stoppedPlaying: false,
       playing: false,
-      finishedRecording: ""
+      finished: false
     }
   },
   componentDidMount() {
@@ -34,6 +34,7 @@ var AudioExample = React.createClass({
     };
     AudioRecorder.onFinished = (data) => {
       this.setState({finished: data.finished});
+      console.log(`Finished recording: ${data.finished}`)
     };
   },
 
