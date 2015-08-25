@@ -21,8 +21,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		421C09801B06E2A000870893 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 421C097F1B06E26E00870893 /* libRCTWebSocket.a */; };
-		427516981AEFA2A200297EF7 /* AudioPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 427516951AEFA2A200297EF7 /* AudioPlayerManager.m */; };
-		427516991AEFA2A200297EF7 /* AudioRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 427516971AEFA2A200297EF7 /* AudioRecorderManager.m */; };
+		424661431B8CF7C2001F4FE3 /* AudioRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4246613F1B8CF7C2001F4FE3 /* AudioRecorderManager.m */; };
+		424661441B8CF7C2001F4FE3 /* AudioPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 424661401B8CF7C2001F4FE3 /* AudioPlayerManager.m */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 /* End PBXBuildFile section */
 
@@ -116,10 +116,10 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = iOS/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		421C097A1B06E26E00870893 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
-		427516941AEFA2A200297EF7 /* AudioPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPlayerManager.h; path = ../AudioPlayerManager.h; sourceTree = "<group>"; };
-		427516951AEFA2A200297EF7 /* AudioPlayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioPlayerManager.m; path = ../AudioPlayerManager.m; sourceTree = "<group>"; };
-		427516961AEFA2A200297EF7 /* AudioRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioRecorderManager.h; path = ../AudioRecorderManager.h; sourceTree = "<group>"; };
-		427516971AEFA2A200297EF7 /* AudioRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioRecorderManager.m; path = ../AudioRecorderManager.m; sourceTree = "<group>"; };
+		4246613F1B8CF7C2001F4FE3 /* AudioRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioRecorderManager.m; path = "node_modules/react-native-audio/ios/AudioRecorderManager.m"; sourceTree = "<group>"; };
+		424661401B8CF7C2001F4FE3 /* AudioPlayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioPlayerManager.m; path = "node_modules/react-native-audio/ios/AudioPlayerManager.m"; sourceTree = "<group>"; };
+		424661411B8CF7C2001F4FE3 /* AudioPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPlayerManager.h; path = "node_modules/react-native-audio/ios/AudioPlayerManager.h"; sourceTree = "<group>"; };
+		424661421B8CF7C2001F4FE3 /* AudioRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioRecorderManager.h; path = "node_modules/react-native-audio/ios/AudioRecorderManager.h"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -196,6 +196,10 @@
 		13B07FAE1A68108700A75B9A /* AudioExample */ = {
 			isa = PBXGroup;
 			children = (
+				4246613F1B8CF7C2001F4FE3 /* AudioRecorderManager.m */,
+				424661401B8CF7C2001F4FE3 /* AudioPlayerManager.m */,
+				424661411B8CF7C2001F4FE3 /* AudioPlayerManager.h */,
+				424661421B8CF7C2001F4FE3 /* AudioRecorderManager.h */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -259,10 +263,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				427516941AEFA2A200297EF7 /* AudioPlayerManager.h */,
-				427516951AEFA2A200297EF7 /* AudioPlayerManager.m */,
-				427516961AEFA2A200297EF7 /* AudioRecorderManager.h */,
-				427516971AEFA2A200297EF7 /* AudioRecorderManager.m */,
 				13B07FAE1A68108700A75B9A /* AudioExample */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -459,10 +459,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				427516991AEFA2A200297EF7 /* AudioRecorderManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				424661441B8CF7C2001F4FE3 /* AudioPlayerManager.m in Sources */,
+				424661431B8CF7C2001F4FE3 /* AudioRecorderManager.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				427516981AEFA2A200297EF7 /* AudioPlayerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

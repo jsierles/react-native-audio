@@ -16,7 +16,7 @@ NSString *const AudioPlayerEventProgress = @"playerProgress";
 NSString *const AudioPlayerEventFinished = @"playerFinished";
 
 @implementation AudioPlayerManager {
-  
+
   AVAudioPlayer *_audioPlayer;
 
   NSTimeInterval _currentTime;
@@ -62,9 +62,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)AudioPlayerDidFinishPlaying:(AVAudioPlayer *)recorder successfully:(BOOL)flag {
-  NSLog(flag ? @"FINISHED OK" : @"FINISH ERROR");
   [_bridge.eventDispatcher sendDeviceEventWithName:AudioPlayerEventFinished body:@{
-      @"finished": @TRUE
+      @"finished": flag ? @"true" : @"false"
     }];
 }
 
@@ -96,7 +95,7 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url)
 {
   NSError *error;
   NSData* data = [NSData dataWithContentsOfURL: url];
-  
+
   _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
   if (error) {
     [self stopProgressTimer];

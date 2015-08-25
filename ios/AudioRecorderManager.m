@@ -45,7 +45,7 @@ RCT_EXPORT_MODULE();
 
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
-      [_bridge.eventDispatcher sendDeviceEventWithName:AudioRecorderEventProgress body:@{
+      [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:@{
       @"currentTime": [NSNumber numberWithFloat:_currentTime]
     }];
 
@@ -68,9 +68,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
-  NSLog(flag ? @"FINISHED OK" : @"FINISH ERROR");
-  [_bridge.eventDispatcher sendDeviceEventWithName:AudioRecorderEventFinished body:@{
-      @"finished": @"test"
+  [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
+      @"status": flag ? @"OK" : @"ERROR"
     }];
 }
 

@@ -11,7 +11,7 @@ NOTE: The target filename must have an extension of '.caf' to record properly.
 1. `npm install react-native-audio`
 2. In the XCode's "Project navigator", right click on project's name ➜ `Add Files to <...>`
 3. Go to `node_modules` ➜ `react-native-audio`
-4  Select the `Audio*Manager.*` files
+4  Select the `ios/Audio*Manager.*` files
 
 ### Sample App
 
