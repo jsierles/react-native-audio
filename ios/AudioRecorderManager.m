@@ -41,8 +41,6 @@ RCT_EXPORT_MODULE();
     return;
   }
 
-  NSString *time = [NSString stringWithFormat:@"%f", _currentTime];
-
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
       [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:@{

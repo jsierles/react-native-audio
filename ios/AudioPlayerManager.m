@@ -35,8 +35,6 @@ RCT_EXPORT_MODULE();
     _currentTime = _audioPlayer.currentTime;
   }
 
-  NSString *time = [NSString stringWithFormat:@"%f", _currentTime];
-
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
       [_bridge.eventDispatcher sendDeviceEventWithName:AudioPlayerEventProgress body:@{
