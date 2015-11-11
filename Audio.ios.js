@@ -5,7 +5,7 @@
  * implementation details for registering callbacks, changing settings, etc.
 */
 
-var React, {NativeModules, NativeAppEventEmitter} = require('react-native');
+var React, {NativeModules, NativeAppEventEmitter, DeviceEventEmitter} = require('react-native');
 
 var AudioPlayerManager = NativeModules.AudioPlayerManager;
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
@@ -20,12 +20,32 @@ var AudioPlayer = {
   pause: function() {
     AudioPlayerManager.pause();
   },
+  unpause: function() {
+    AudioPlayerManager.unpause();
+  },
   stop: function() {
     AudioPlayerManager.stop();
     if (this.subscription) {
       this.subscription.remove();
     }
-  }
+  },
+  setCurrentTime: function(time) {
+    AudioPlayerManager.setCurrentTime(time);
+  },
+  setProgressSubscription: function() {
+    this.progressSubscription = DeviceEventEmitter.addListener('playerProgress',
+      (data) => {
+        if (this.onProgress) {
+          this.onProgress(data);
+        }
+      }
+    );
+  },
+  getDuration: function(callback) {
+    AudioPlayerManager.getDuration((error, duration) => {
+      callback(duration);
+    })
+  },
 };
 
 var AudioRecorder = {

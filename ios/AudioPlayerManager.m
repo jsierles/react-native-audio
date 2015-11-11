@@ -74,8 +74,6 @@ RCT_EXPORT_METHOD(play:(NSString *)path)
 
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
-  NSLog([_audioFileURL absoluteString]);
-
   _audioPlayer = [[AVAudioPlayer alloc]
     initWithContentsOfURL:_audioFileURL
     error:&error];
@@ -112,11 +110,31 @@ RCT_EXPORT_METHOD(pause)
   }
 }
 
+RCT_EXPORT_METHOD(unpause)
+{
+  if (!_audioPlayer.playing) {
+    [_audioPlayer play];
+  }
+}
+
 RCT_EXPORT_METHOD(stop)
 {
   if (_audioPlayer.playing) {
     [_audioPlayer stop];
   }
+}
+
+RCT_EXPORT_METHOD(setCurrentTime:(NSTimeInterval) time)
+{
+  if (_audioPlayer.playing) {
+    [_audioPlayer setCurrentTime: time];
+  }
+}
+
+RCT_EXPORT_METHOD(getDuration:(RCTResponseSenderBlock)callback)
+{
+  NSTimeInterval duration = _audioPlayer.duration;
+  callback(@[[NSNull null], [NSNumber numberWithDouble:duration]]);
 }
 
 @end
