@@ -41,6 +41,15 @@ var AudioPlayer = {
       }
     );
   },
+  setFinishedSubscription: function() {
+    this.finishedSubscription = DeviceEventEmitter.addListener('playerFinished',
+      (data) => {
+        if (this.onFinished) {
+          this.onFinished(data);
+        }
+      }
+    );
+  },
   getDuration: function(callback) {
     AudioPlayerManager.getDuration((error, duration) => {
       callback(duration);

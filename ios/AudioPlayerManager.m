@@ -59,7 +59,7 @@ RCT_EXPORT_MODULE();
   [_progressUpdateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
-- (void)AudioPlayerDidFinishPlaying:(AVAudioPlayer *)recorder successfully:(BOOL)flag {
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)recorder successfully:(BOOL)flag {
   [_bridge.eventDispatcher sendDeviceEventWithName:AudioPlayerEventFinished body:@{
       @"finished": flag ? @"true" : @"false"
     }];
@@ -77,6 +77,8 @@ RCT_EXPORT_METHOD(play:(NSString *)path)
   _audioPlayer = [[AVAudioPlayer alloc]
     initWithContentsOfURL:_audioFileURL
     error:&error];
+  _audioPlayer.delegate = self;
+  
   if (error) {
     [self stopProgressTimer];
     NSLog(@"audio playback loading error: %@", [error localizedDescription]);
@@ -93,6 +95,7 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url)
   NSData* data = [NSData dataWithContentsOfURL: url];
 
   _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
+  _audioPlayer.delegate = self;
   if (error) {
     [self stopProgressTimer];
     NSLog(@"audio playback loading error: %@", [error localizedDescription]);
