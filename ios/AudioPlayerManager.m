@@ -60,7 +60,6 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)recorder successfully:(BOOL)flag {
-  NSLog(@"Hello, World! \n");
   [_bridge.eventDispatcher sendDeviceEventWithName:AudioPlayerEventFinished body:@{
       @"finished": flag ? @"true" : @"false"
     }];
