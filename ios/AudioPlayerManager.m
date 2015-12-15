@@ -34,13 +34,17 @@ RCT_EXPORT_MODULE();
   if (_audioPlayer && _audioPlayer.playing) {
     _currentTime = _audioPlayer.currentTime;
   }
+  
+  // If audioplayer stopped, reset current time to 0
+  if (_audioPlayer && !_audioPlayer.playing) {
+    _currentTime = 0;
+  }
 
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
       [_bridge.eventDispatcher sendDeviceEventWithName:AudioPlayerEventProgress body:@{
       @"currentTime": [NSNumber numberWithFloat:_currentTime]
     }];
-
     _prevProgressUpdateTime = [NSDate date];
   }
 }
@@ -59,7 +63,15 @@ RCT_EXPORT_MODULE();
   [_progressUpdateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
-- (void)AudioPlayerDidFinishPlaying:(AVAudioPlayer *)recorder successfully:(BOOL)flag {
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)recorder successfully:(BOOL)flag {
+  
+  //Stop progress when finished...
+  if (_audioPlayer.playing) {
+    [_audioPlayer stop];
+  }
+  [self stopProgressTimer];
+  [self sendProgressUpdate];
+  
   [_bridge.eventDispatcher sendDeviceEventWithName:AudioPlayerEventFinished body:@{
       @"finished": flag ? @"true" : @"false"
     }];
@@ -77,6 +89,8 @@ RCT_EXPORT_METHOD(play:(NSString *)path)
   _audioPlayer = [[AVAudioPlayer alloc]
     initWithContentsOfURL:_audioFileURL
     error:&error];
+  _audioPlayer.delegate = self;
+  
   if (error) {
     [self stopProgressTimer];
     NSLog(@"audio playback loading error: %@", [error localizedDescription]);
@@ -93,6 +107,7 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url)
   NSData* data = [NSData dataWithContentsOfURL: url];
 
   _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
+  _audioPlayer.delegate = self;
   if (error) {
     [self stopProgressTimer];
     NSLog(@"audio playback loading error: %@", [error localizedDescription]);
@@ -121,6 +136,8 @@ RCT_EXPORT_METHOD(stop)
 {
   if (_audioPlayer.playing) {
     [_audioPlayer stop];
+    [self stopProgressTimer];
+    [self sendProgressUpdate];
   }
 }
 
