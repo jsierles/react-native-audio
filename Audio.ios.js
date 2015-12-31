@@ -32,6 +32,9 @@ var AudioPlayer = {
   setCurrentTime: function(time) {
     AudioPlayerManager.setCurrentTime(time);
   },
+  skipToSeconds: function(position) {
+    AudioPlayerManager.skipToSeconds(position);
+  },
   setProgressSubscription: function() {
     this.progressSubscription = DeviceEventEmitter.addListener('playerProgress',
       (data) => {
@@ -53,6 +56,11 @@ var AudioPlayer = {
   getDuration: function(callback) {
     AudioPlayerManager.getDuration((error, duration) => {
       callback(duration);
+    })
+  },
+  getCurrentTime: function(callback) {
+    AudioPlayerManager.getCurrentTime((error, currentTime) => {
+      callback(currentTime);
     })
   },
 };
