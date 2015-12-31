@@ -1,6 +1,6 @@
 {
   "name": "react-native-audio",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "React Native library for simple audio recording. Wraps AVAudioRecorder/Player.",
   "main": "Audio.ios.js",
   "author": "Joshua Sierles <joshua@diluvia.net> (https://github.com/jsierles)",
