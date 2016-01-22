@@ -91,6 +91,30 @@ RCT_EXPORT_METHOD(play:(NSString *)path)
 {
   NSError *error;
 
+  NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+  NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
+
+  _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
+
+  _audioPlayer = [[AVAudioPlayer alloc]
+    initWithContentsOfURL:_audioFileURL
+    error:&error];
+  _audioPlayer.delegate = self;
+
+  if (error) {
+    [self stopProgressTimer];
+    NSLog(@"audio playback loading error: %@", [error localizedDescription]);
+    // TODO: dispatch error over the bridge
+  } else {
+    [self startProgressTimer];
+    [_audioPlayer play];
+  }
+}
+
+RCT_EXPORT_METHOD(playWithPath:(NSString *)path)
+{
+  NSError *error;
+
   NSString *audioFilePath = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:path];
 
 
