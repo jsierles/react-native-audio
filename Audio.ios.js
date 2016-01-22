@@ -47,7 +47,7 @@ var AudioPlayer = {
   setFinishedSubscription: function() {
     this.progressSubscription = DeviceEventEmitter.addListener('playerFinished',
       (data) => {
-        if (this.onProgress) {
+        if (this.onFinished) {
           this.onFinished(data);
         }
       }
