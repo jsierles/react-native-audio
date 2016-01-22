@@ -66,11 +66,29 @@ var AudioPlayer = {
 };
 
 var AudioRecorder = {
-  prepareRecordingAtPath: function(path) {
-    AudioRecorderManager.prepareRecordingAtPath(path);
+  prepareRecordingAtPath: function(path, options) {
+
+    var recordingOptions = null;
+
+    if (!options) {
+      recordingOptions = {
+        SampleRate: 44100.0,
+        Channels: 2,
+        AudioQuality: 'High'
+      };
+    } else {
+      recordingOptions = options;
+    }
+
+    AudioRecorderManager.prepareRecordingAtPath(
+      path,
+      recordingOptions.SampleRate,
+      recordingOptions.Channels,
+      recordingOptions.AudioQuality
+    );
+
     this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
       (data) => {
-        console.log(data);
         if (this.onProgress) {
           this.onProgress(data);
         }
