@@ -14,6 +14,9 @@ var AudioPlayer = {
   play: function(path) {
     AudioPlayerManager.play(path);
   },
+  playWithPath: function(path) {
+    AudioPlayerManager.playWithPath(path);
+  },
   playWithUrl: function(url) {
     AudioPlayerManager.playWithUrl(url);
   },
@@ -68,23 +71,20 @@ var AudioPlayer = {
 var AudioRecorder = {
   prepareRecordingAtPath: function(path, options) {
 
-    var recordingOptions = null;
-
-    if (!options) {
-      recordingOptions = {
+    var defaultOptions = {
         SampleRate: 44100.0,
         Channels: 2,
-        AudioQuality: 'High'
-      };
-    } else {
-      recordingOptions = options;
-    }
+        AudioQuality: 'High',
+        AudioEncoding: 'caf'
+    };
+    var recordingOptions = {...defaultOptions, ...options};
 
     AudioRecorderManager.prepareRecordingAtPath(
       path,
       recordingOptions.SampleRate,
       recordingOptions.Channels,
-      recordingOptions.AudioQuality
+      recordingOptions.AudioQuality,
+      recordingOptions.AudioEncoding
     );
 
     this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
