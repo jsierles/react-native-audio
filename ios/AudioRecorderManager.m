@@ -26,6 +26,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   NSDate *_prevProgressUpdateTime;
   NSURL *_audioFileURL;
   NSNumber *_audioQuality;
+  NSNumber *_audioEncoding;
   NSNumber *_audioChannels;
   NSNumber *_audioSampleRate;
   AVAudioSession *_recordSession;
@@ -81,7 +82,7 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding)
 {
 
   _prevProgressUpdateTime = nil;
@@ -95,6 +96,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   // Default options
 
   _audioQuality = [NSNumber numberWithInt:AVAudioQualityHigh];
+  _audioEncoding = [NSNumber numberWithInt:kAudioFormatMPEGLayer2];
   _audioChannels = [NSNumber numberWithInt:2];
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
 
@@ -114,6 +116,17 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
       _audioChannels = channels;
     }
 
+    // Set audio encoding from options
+    if (encoding != nil) {
+      if ([encoding  isEqual: @"mp3"]) {
+        _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEGLayer3];
+      } else if ([encoding  isEqual: @"aac"]) {
+        _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEG4AAC];
+      } else if ([encoding  isEqual: @"caf"]) {
+        _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEGLayer2];
+      }
+    }
+
     // Set sample rate from options
     _audioSampleRate = [NSNumber numberWithFloat:sampleRate];
 
@@ -121,11 +134,10 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
 
   NSDictionary *recordSettings = [NSDictionary dictionaryWithObjectsAndKeys:
           _audioQuality, AVEncoderAudioQualityKey,
-          [NSNumber numberWithInt:16], AVEncoderBitRateKey,
+          _audioEncoding, AVFormatIDKey,
           _audioChannels, AVNumberOfChannelsKey,
           _audioSampleRate, AVSampleRateKey,
           nil];
-
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
