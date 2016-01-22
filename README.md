@@ -6,7 +6,7 @@ This release recording and playback of the recording only. PRs are welcome for c
 
 NOTE: The target filename must have an extension of '.m4a' to record properly.
 
-NOTE: All files are saved to the app's 'Documents' directory.  When passing a path to play audio, it assumes the file is already in the 'Documents' directory.  This is an example path '/audioFileName.m4a'.
+NOTE: All files are saved to the app's 'Documents' directory.  When passing a path to the ```playWithPath()``` method, it assumes the file is already in the app's 'Documents' directory.
 
 ### Installation
 
