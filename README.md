@@ -4,7 +4,9 @@ An audio recording and playback library for react-native.
 
 This release recording and playback of the recording only. PRs are welcome for configuring the audio settings.
 
-NOTE: The target filename must have an extension of '.caf' to record properly.
+NOTE: The target filename must have an extension of '.m4a' to record properly.
+
+NOTE: All files are saved to the app's 'Documents' directory.  When passing a path to play audio, it assumes the file is already in the 'Documents' directory.  This is an example path '/audioFileName.m4a'.
 
 ### Installation
 
