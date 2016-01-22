@@ -87,6 +87,8 @@ RCT_EXPORT_METHOD(play:(NSString *)path)
   NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
   NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
 
+  [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
   _audioPlayer = [[AVAudioPlayer alloc]
