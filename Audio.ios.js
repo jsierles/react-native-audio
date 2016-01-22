@@ -14,6 +14,9 @@ var AudioPlayer = {
   play: function(path) {
     AudioPlayerManager.play(path);
   },
+  playWithPath: function(path) {
+    AudioPlayerManager.playWithPath(path);
+  },
   playWithUrl: function(url) {
     AudioPlayerManager.playWithUrl(url);
   },
