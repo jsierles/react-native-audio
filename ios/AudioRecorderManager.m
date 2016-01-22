@@ -89,12 +89,11 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path)
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
   NSDictionary *recordSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-          [NSNumber numberWithInt:AVAudioQualityHigh], AVEncoderAudioQualityKey,
-          [NSNumber numberWithInt:16], AVEncoderBitRateKey,
-          [NSNumber numberWithInt: 2], AVNumberOfChannelsKey,
-          [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
+          [NSNumber numberWithInt:AVAudioQualityLow], AVEncoderAudioQualityKey,
+          [NSNumber numberWithInt: kAudioFormatMPEG4AAC], AVFormatIDKey,
+          [NSNumber numberWithInt: 1], AVNumberOfChannelsKey,
+          [NSNumber numberWithFloat:16000.0], AVSampleRateKey,
           nil];
-
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];

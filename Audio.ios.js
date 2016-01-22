@@ -14,6 +14,9 @@ var AudioPlayer = {
   play: function(path) {
     AudioPlayerManager.play(path);
   },
+  playWithPath: function(path) {
+    AudioPlayerManager.playWithPath(path);
+  },
   playWithUrl: function(url) {
     AudioPlayerManager.playWithUrl(url);
   },
@@ -47,7 +50,7 @@ var AudioPlayer = {
   setFinishedSubscription: function() {
     this.progressSubscription = DeviceEventEmitter.addListener('playerFinished',
       (data) => {
-        if (this.onProgress) {
+        if (this.onFinished) {
           this.onFinished(data);
         }
       }
