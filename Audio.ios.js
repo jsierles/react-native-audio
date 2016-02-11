@@ -25,9 +25,6 @@ var AudioPlayer = {
   },
   stop: function() {
     AudioPlayerManager.stop();
-    if (this.subscription) {
-      this.subscription.remove();
-    }
   },
   setCurrentTime: function(time) {
     AudioPlayerManager.setCurrentTime(time);
@@ -36,6 +33,7 @@ var AudioPlayer = {
     AudioPlayerManager.skipToSeconds(position);
   },
   setProgressSubscription: function() {
+    if (this.progressSubscription) this.progressSubscription.remove();
     this.progressSubscription = DeviceEventEmitter.addListener('playerProgress',
       (data) => {
         if (this.onProgress) {
@@ -45,7 +43,8 @@ var AudioPlayer = {
     );
   },
   setFinishedSubscription: function() {
-    this.progressSubscription = DeviceEventEmitter.addListener('playerFinished',
+    if (this.finishedSubscription) this.finishedSubscription.remove();
+    this.finishedSubscription = DeviceEventEmitter.addListener('playerFinished',
       (data) => {
         if (this.onFinished) {
           this.onFinished(data);
@@ -87,6 +86,7 @@ var AudioRecorder = {
       recordingOptions.AudioQuality
     );
 
+    if (this.progressSubscription) this.progressSubscription.remove();
     this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
       (data) => {
         if (this.onProgress) {
@@ -95,7 +95,8 @@ var AudioRecorder = {
       }
     );
 
-    this.FinishedSubscription = NativeAppEventEmitter.addListener('recordingFinished',
+    if (this.finishedSubscription) this.finishedSubscription.remove();
+    this.finishedSubscription = NativeAppEventEmitter.addListener('recordingFinished',
       (data) => {
         if (this.onFinished) {
           this.onFinished(data);
@@ -111,9 +112,6 @@ var AudioRecorder = {
   },
   stopRecording: function() {
     AudioRecorderManager.stopRecording();
-    if (this.subscription) {
-      this.subscription.remove();
-    }
   },
   playRecording: function() {
     AudioRecorderManager.playRecording();
