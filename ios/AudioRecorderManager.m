@@ -70,7 +70,8 @@ RCT_EXPORT_MODULE();
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
   [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
-      @"status": flag ? @"OK" : @"ERROR"
+      @"status": flag ? @"OK" : @"ERROR",
+      @"audioFileURL": [_audioFileURL absoluteString]
     }];
 }
 
