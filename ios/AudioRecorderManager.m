@@ -9,6 +9,7 @@
 #import "AudioRecorderManager.h"
 #import "RCTConvert.h"
 #import "RCTBridge.h"
+#import "RCTUtils.h"
 #import "RCTEventDispatcher.h"
 #import <AVFoundation/AVFoundation.h>
 
@@ -212,6 +213,31 @@ RCT_EXPORT_METHOD(stopPlaying)
 {
   if (_audioPlayer.playing) {
     [_audioPlayer stop];
+  }
+}
+
+RCT_EXPORT_METHOD(checkDeviceAuthorizationStatus:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject) {
+  AVAudioSessionRecordPermission permissionStatus = [[AVAudioSession sharedInstance] recordPermission];
+  switch (permissionStatus) {
+    case AVAudioSessionRecordPermissionUndetermined:{
+      [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+        if(granted) {
+          resolve(@YES);
+        } else {
+          resolve(@NO);
+        }
+      }];
+    }
+    break;
+    case AVAudioSessionRecordPermissionDenied:
+      resolve(@NO);
+      break;
+    case AVAudioSessionRecordPermissionGranted:
+      resolve(@YES);
+      break;
+    default:
+      reject(RCTErrorUnspecified, nil, RCTErrorWithMessage(@("Error checking device authorization status.")));
+      break;
   }
 }
 

@@ -118,7 +118,8 @@ var AudioRecorder = {
   },
   stopPlaying: function() {
     AudioRecorderManager.stopPlaying();
-  }
+  },
+  checkDeviceAuthorizationStatus: AudioRecorderManager.checkDeviceAuthorizationStatus
 };
 
 module.exports = {AudioPlayer, AudioRecorder};
