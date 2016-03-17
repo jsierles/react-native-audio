@@ -86,24 +86,8 @@ RCT_EXPORT_METHOD(play:(NSString *)path options:(NSDictionary *)options)
 
   NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
   NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
-
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
-
-  if ([sessionCategory isEqualToString:@"Ambient"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
-  } else if ([sessionCategory isEqualToString:@"SoloAmbient"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategorySoloAmbient error:nil];
-  } else if ([sessionCategory isEqualToString:@"Playback"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-  } else if ([sessionCategory isEqualToString:@"Record"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:nil];
-  } else if ([sessionCategory isEqualToString:@"PlayAndRecord"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-  } else if ([sessionCategory isEqualToString:@"AudioProcessing"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
-  } else if ([sessionCategory isEqualToString:@"MultiRoute"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute error:nil];
-  }
+  [self setSessionCategory:sessionCategory];
 
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
@@ -127,7 +111,21 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
   NSError *error;
   NSData* data = [NSData dataWithContentsOfURL: url];
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
+  [self setSessionCategory:sessionCategory];
 
+  _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
+  _audioPlayer.delegate = self;
+  if (error) {
+    [self stopProgressTimer];
+    NSLog(@"audio playback loading error: %@", [error localizedDescription]);
+    // TODO: dispatch error over the bridge
+  } else {
+    [self startProgressTimer];
+    [_audioPlayer play];
+  }
+}
+
+- (void)setSessionCategory:(NSString *)sessionCategory {
   if ([sessionCategory isEqualToString:@"Ambient"]) {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
   } else if ([sessionCategory isEqualToString:@"SoloAmbient"]) {
@@ -142,17 +140,6 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
   } else if ([sessionCategory isEqualToString:@"MultiRoute"]) {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute error:nil];
-  }
-
-  _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
-  _audioPlayer.delegate = self;
-  if (error) {
-    [self stopProgressTimer];
-    NSLog(@"audio playback loading error: %@", [error localizedDescription]);
-    // TODO: dispatch error over the bridge
-  } else {
-    [self startProgressTimer];
-    [_audioPlayer play];
   }
 }
 

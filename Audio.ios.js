@@ -11,28 +11,14 @@ var AudioPlayerManager = NativeModules.AudioPlayerManager;
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
 
 var AudioPlayer = {
-  play: function(path, options) {
-    var playbackOptions = null;
 
-    if (!options) {
-      playbackOptions = {
-        sessionCategory: 'SoloAmbient'
-      };
-    } else {
-      playbackOptions = options;
-    }
-    AudioPlayerManager.play(path, playbackOptions);
+  play: function(path, options) {
+    options = options || {sessionCategory: 'SoloAmbient'};
+    AudioPlayerManager.play(path, options);
   },
   playWithUrl: function(url, options) {
-    var playbackOptions = null;
-    if (!options) {
-      playbackOptions = {
-        sessionCategory: 'SoloAmbient'
-      };
-    } else {
-      playbackOptions = options;
-    }
-    AudioPlayerManager.playWithUrl(url, playbackOptions);
+    options = options || {sessionCategory: 'SoloAmbient'};
+    AudioPlayerManager.playWithUrl(url, options);
   },
   pause: function() {
     AudioPlayerManager.pause();
