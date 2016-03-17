@@ -216,29 +216,34 @@ RCT_EXPORT_METHOD(stopPlaying)
   }
 }
 
-RCT_EXPORT_METHOD(checkDeviceAuthorizationStatus:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject)
+{
   AVAudioSessionRecordPermission permissionStatus = [[AVAudioSession sharedInstance] recordPermission];
   switch (permissionStatus) {
-    case AVAudioSessionRecordPermissionUndetermined:{
-      [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        if(granted) {
-          resolve(@YES);
-        } else {
-          resolve(@NO);
-        }
-      }];
-    }
+    case AVAudioSessionRecordPermissionUndetermined:
+      resolve(@("undetermined"));
     break;
     case AVAudioSessionRecordPermissionDenied:
-      resolve(@NO);
+      resolve(@("denied"));
       break;
     case AVAudioSessionRecordPermissionGranted:
-      resolve(@YES);
+      resolve(@("granted"));
       break;
     default:
       reject(RCTErrorUnspecified, nil, RCTErrorWithMessage(@("Error checking device authorization status.")));
       break;
   }
+}
+
+RCT_EXPORT_METHOD(requestAuthorization)
+{
+  [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    if(granted) {
+      resolve(@YES);
+    } else {
+      resolve(@NO);
+    }
+  }];
 }
 
 @end

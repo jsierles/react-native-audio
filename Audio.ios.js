@@ -119,7 +119,10 @@ var AudioRecorder = {
   stopPlaying: function() {
     AudioRecorderManager.stopPlaying();
   },
-  checkDeviceAuthorizationStatus: AudioRecorderManager.checkDeviceAuthorizationStatus
+  checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
+  requestAuthorization: function() {
+    AudioRecorderManager.requestAuthorization();
+  },
 };
 
 module.exports = {AudioPlayer, AudioRecorder};
