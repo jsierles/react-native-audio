@@ -66,24 +66,20 @@ var AudioPlayer = {
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path, options) {
-
-    var recordingOptions = null;
-
-    if (!options) {
-      recordingOptions = {
-        SampleRate: 44100.0,
-        Channels: 2,
-        AudioQuality: 'High'
-      };
-    } else {
-      recordingOptions = options;
-    }
+    var defaultOptions = {
+      SampleRate: 44100.0,
+      Channels: 2,
+      AudioQuality: 'High',
+      AudioEncoding: 'caf'
+    };
+    var recordingOptions = {...defaultOptions, ...options};
 
     AudioRecorderManager.prepareRecordingAtPath(
       path,
       recordingOptions.SampleRate,
       recordingOptions.Channels,
-      recordingOptions.AudioQuality
+      recordingOptions.AudioQuality,
+      recordingOptions.AudioEncoding
     );
 
     if (this.progressSubscription) this.progressSubscription.remove();

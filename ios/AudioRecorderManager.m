@@ -27,6 +27,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   NSDate *_prevProgressUpdateTime;
   NSURL *_audioFileURL;
   NSNumber *_audioQuality;
+  NSNumber *_audioEncoding;
   NSNumber *_audioChannels;
   NSNumber *_audioSampleRate;
   AVAudioSession *_recordSession;
@@ -83,47 +84,70 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding)
 {
-
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
 
   NSString *audioFilePath = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:path];
 
-
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
   // Default options
-
   _audioQuality = [NSNumber numberWithInt:AVAudioQualityHigh];
+  _audioEncoding = [NSNumber numberWithInt:kAudioFormatAppleIMA4];
   _audioChannels = [NSNumber numberWithInt:2];
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
 
-    // Set audio quality from options
-    if (quality != nil) {
-      if ([quality  isEqual: @"Low"]) {
-        _audioQuality =[NSNumber numberWithInt:AVAudioQualityLow];
-      } else if ([quality  isEqual: @"Medium"]) {
-        _audioQuality =[NSNumber numberWithInt:AVAudioQualityMedium];
-      } else if ([quality  isEqual: @"High"]) {
-        _audioQuality =[NSNumber numberWithInt:AVAudioQualityHigh];
-      }
+  // Set audio quality from options
+  if (quality != nil) {
+    if ([quality  isEqual: @"Low"]) {
+      _audioQuality =[NSNumber numberWithInt:AVAudioQualityLow];
+    } else if ([quality  isEqual: @"Medium"]) {
+      _audioQuality =[NSNumber numberWithInt:AVAudioQualityMedium];
+    } else if ([quality  isEqual: @"High"]) {
+      _audioQuality =[NSNumber numberWithInt:AVAudioQualityHigh];
     }
+  }
 
-    // Set channels from options
-    if (channels != nil) {
-      _audioChannels = channels;
+  // Set channels from options
+  if (channels != nil) {
+    _audioChannels = channels;
+  }
+
+  // Set audio encoding from options
+  if (encoding != nil) {
+    if ([encoding  isEqual: @"lpcm"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatLinearPCM];
+    } else if ([encoding  isEqual: @"ima4"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatAppleIMA4];
+    } else if ([encoding  isEqual: @"aac"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEG4AAC];
+    } else if ([encoding  isEqual: @"MAC3"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatMACE3];
+    } else if ([encoding  isEqual: @"MAC6"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatMACE6];
+    } else if ([encoding  isEqual: @"ulaw"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatULaw];
+    } else if ([encoding  isEqual: @"alaw"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatALaw];
+    } else if ([encoding  isEqual: @".mp1"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEGLayer1];
+    } else if ([encoding  isEqual: @".mp2"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEGLayer2];
+    } else if ([encoding  isEqual: @".mp3"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEGLayer3];
+    } else if ([encoding  isEqual: @"alac"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatAppleLossless];
     }
+  }
 
-    // Set sample rate from options
-    _audioSampleRate = [NSNumber numberWithFloat:sampleRate];
-
-
+  // Set sample rate from options
+  _audioSampleRate = [NSNumber numberWithFloat:sampleRate];
 
   NSDictionary *recordSettings = [NSDictionary dictionaryWithObjectsAndKeys:
           _audioQuality, AVEncoderAudioQualityKey,
-          [NSNumber numberWithInt:16], AVEncoderBitRateKey,
+          _audioEncoding, AVFormatIDKey,
           _audioChannels, AVNumberOfChannelsKey,
           _audioSampleRate, AVSampleRateKey,
           nil];
