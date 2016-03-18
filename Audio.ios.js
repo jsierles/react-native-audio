@@ -11,11 +11,14 @@ var AudioPlayerManager = NativeModules.AudioPlayerManager;
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
 
 var AudioPlayer = {
-  play: function(path) {
-    AudioPlayerManager.play(path);
+
+  play: function(path, options) {
+    options = options || {sessionCategory: 'SoloAmbient'};
+    AudioPlayerManager.play(path, options);
   },
-  playWithUrl: function(url) {
-    AudioPlayerManager.playWithUrl(url);
+  playWithUrl: function(url, options) {
+    options = options || {sessionCategory: 'SoloAmbient'};
+    AudioPlayerManager.playWithUrl(url, options);
   },
   pause: function() {
     AudioPlayerManager.pause();
