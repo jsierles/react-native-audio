@@ -13,7 +13,7 @@ var {
   TouchableHighlight
 } = React;
 
-var {AudioRecorder, AudioPlayer} = require('react-native-audio');
+var {AudioRecorder, AudioUtils} = require('react-native-audio');
 
 var AudioExample = React.createClass({
 
@@ -28,18 +28,19 @@ var AudioExample = React.createClass({
     }
   },
   componentDidMount() {
-    AudioRecorder.prepareRecordingAtPath('/test.caf')
+    var audioPath = AudioUtils.MainBundlePath + '/test.caf';
+    AudioRecorder.prepareRecordingAtPath(audioPath);
     AudioRecorder.onProgress = (data) => {
       this.setState({currentTime: Math.floor(data.currentTime)});
     };
     AudioRecorder.onFinished = (data) => {
       this.setState({finished: data.finished});
-      console.log(`Finished recording: ${data.finished}`)
+      console.log(`Finished recording: ${data.finished}`);
     };
   },
 
   _renderButton: function(title, onPress, active) {
-    var style = (active) ? styles.activeButtonText : styles.buttonText
+    var style = (active) ? styles.activeButtonText : styles.buttonText;
 
     return (<TouchableHighlight style={styles.button} onPress={onPress}>
       <Text style={style}>
