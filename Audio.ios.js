@@ -73,7 +73,7 @@ var AudioRecorder = {
       SampleRate: 44100.0,
       Channels: 2,
       AudioQuality: 'High',
-      AudioEncoding: 'caf'
+      AudioEncoding: 'ima4'
     };
     var recordingOptions = {...defaultOptions, ...options};
 
@@ -122,4 +122,11 @@ var AudioRecorder = {
   requestAuthorization: AudioRecorderManager.requestAuthorization,
 };
 
-module.exports = {AudioPlayer, AudioRecorder};
+var AudioUtils = {
+  MainBundlePath: AudioPlayerManager.MainBundlePath,
+  CachesDirectoryPath: AudioPlayerManager.NSCachesDirectoryPath,
+  DocumentDirectoryPath: AudioPlayerManager.NSDocumentDirectoryPath,
+  LibraryDirectoryPath: AudioPlayerManager.NSLibraryDirectoryPath,
+};
+
+module.exports = {AudioPlayer, AudioRecorder, AudioUtils};

@@ -89,9 +89,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
 
-  NSString *audioFilePath = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:path];
-
-  _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
+  _audioFileURL = [NSURL fileURLWithPath:path];
 
   // Default options
   _audioQuality = [NSNumber numberWithInt:AVAudioQualityHigh];
