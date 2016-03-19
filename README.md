@@ -1,10 +1,10 @@
-## react-native-audio
+## react-native-audio (iOS only)
 
-An audio recording and playback library for react-native.
+An audio recording and playback library for react-native. It supports most configuration options available to the iOS AVAudioRecorder class.
 
-This release recording and playback of the recording only. PRs are welcome for configuring the audio settings.
+## Breaking changes in 1.0.0
 
-NOTE: The target filename must have an extension of '.caf' to record properly.
+The path provided to `AudioRecorder.prepareRecordingAtPath` now requires an absolute path. See the `AudioUtils` helper methods and the example project to see how to use them.
 
 ### Installation
 
@@ -23,13 +23,13 @@ In the AudioExample directory:
 
 ### TODO
 
+* Update project to be linkable using rnpm
 * Documentation
-* Allow setting audio properties
 * Convert JS api to a react component
 * Store audio to media library
 * Error handling over the js bridge
-* Recommend react-native-video (media) for playback
+* Android support
 
-Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and the React Native community for assistance.
+Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and Matthew Hartman for assistance.
 
 Progress tracking code borrowed from https://github.com/brentvatne/react-native-video.
