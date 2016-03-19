@@ -84,13 +84,11 @@ RCT_EXPORT_METHOD(play:(NSString *)path options:(NSDictionary *)options)
 {
   NSError *error;
 
-  NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-  NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
   [self setSessionCategory:sessionCategory];
   NSNumber *numberOfLoops = [RCTConvert NSNumber:options[@"numberOfLoops"]];
 
-  _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
+  _audioFileURL = [NSURL fileURLWithPath:path];
 
   _audioPlayer = [[AVAudioPlayer alloc]
     initWithContentsOfURL:_audioFileURL
@@ -231,4 +229,19 @@ RCT_EXPORT_METHOD(getDuration:(RCTResponseSenderBlock)callback)
   callback(@[[NSNull null], [NSNumber numberWithDouble:duration]]);
 }
 
+- (NSString *)getPathForDirectory:(int)directory
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
+  return [paths firstObject];
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"MainBundlePath": [[NSBundle mainBundle] bundlePath],
+    @"NSCachesDirectoryPath": [self getPathForDirectory:NSCachesDirectory],
+    @"NSDocumentDirectoryPath": [self getPathForDirectory:NSDocumentDirectory],
+    @"NSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory]
+  };
+}
 @end
