@@ -13,11 +13,25 @@ var AudioRecorderManager = NativeModules.AudioRecorderManager;
 var AudioPlayer = {
 
   play: function(path, options) {
-    options = options || {sessionCategory: 'SoloAmbient'};
+    if (options) {
+      if (!('sessionCategory' in options))
+        options['sessionCategory'] = 'SoloAmbient';
+      if (!('numberOfLoops' in options))
+        options['numberOfLoops'] = 0;
+    } else {
+      options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
+    }
     AudioPlayerManager.play(path, options);
   },
   playWithUrl: function(url, options) {
-    options = options || {sessionCategory: 'SoloAmbient'};
+    if (options) {
+      if (!('sessionCategory' in options))
+        options['sessionCategory'] = 'SoloAmbient';
+      if (!('numberOfLoops' in options))
+        options['numberOfLoops'] = 0;
+    } else {
+      options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
+    }
     AudioPlayerManager.playWithUrl(url, options);
   },
   pause: function() {

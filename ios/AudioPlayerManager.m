@@ -88,6 +88,7 @@ RCT_EXPORT_METHOD(play:(NSString *)path options:(NSDictionary *)options)
   NSString *audioFilePath = [resourcePath stringByAppendingPathComponent:path];
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
   [self setSessionCategory:sessionCategory];
+  NSNumber *numberOfLoops = [RCTConvert NSNumber:options[@"numberOfLoops"]];
 
   _audioFileURL = [NSURL fileURLWithPath:audioFilePath];
 
@@ -95,6 +96,7 @@ RCT_EXPORT_METHOD(play:(NSString *)path options:(NSDictionary *)options)
     initWithContentsOfURL:_audioFileURL
     error:&error];
   _audioPlayer.delegate = self;
+  _audioPlayer.numberOfLoops = [numberOfLoops integerValue];
 
   if (error) {
     [self stopProgressTimer];
@@ -112,9 +114,12 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
   NSData* data = [NSData dataWithContentsOfURL: url];
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
   [self setSessionCategory:sessionCategory];
+  NSNumber *numberOfLoops = [RCTConvert NSNumber:options[@"numberOfLoops"]];
 
   _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
   _audioPlayer.delegate = self;
+  _audioPlayer.numberOfLoops = [numberOfLoops integerValue];
+
   if (error) {
     [self stopProgressTimer];
     NSLog(@"audio playback loading error: %@", [error localizedDescription]);
