@@ -1,55 +1,46 @@
 'use strict';
 
 /**
- * This module is a thin layer over the native module. It's aim is to obscure
+ * This module is a thin layer over the native module. Its aim is to obscure
  * implementation details for registering callbacks, changing settings, etc.
 */
 
-var React, {NativeModules, NativeAppEventEmitter, DeviceEventEmitter} = require('react-native');
+import React, {
+  NativeModules,
+  NativeAppEventEmitter,
+  DeviceEventEmitter
+} from 'react-native';
 
-var AudioPlayerManager = NativeModules.AudioPlayerManager;
-var AudioRecorderManager = NativeModules.AudioRecorderManager;
+const AudioPlayerManager = NativeModules.AudioPlayerManager;
+const AudioRecorderManager = NativeModules.AudioRecorderManager;
 
-var AudioPlayer = {
-
-  play: function(path, options) {
-    if (options) {
-      if (!('sessionCategory' in options))
-        options['sessionCategory'] = 'SoloAmbient';
-      if (!('numberOfLoops' in options))
-        options['numberOfLoops'] = 0;
-    } else {
-      options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
-    }
-    AudioPlayerManager.play(path, options);
+let AudioPlayer = {
+  defaultOptions:  {
+    sessionCategory: 'SoloAmbient',
+    numberOfLoops: 0
   },
-  playWithUrl: function(url, options) {
-    if (options) {
-      if (!('sessionCategory' in options))
-        options['sessionCategory'] = 'SoloAmbient';
-      if (!('numberOfLoops' in options))
-        options['numberOfLoops'] = 0;
-    } else {
-      options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
-    }
-    AudioPlayerManager.playWithUrl(url, options);
+  play(path, options) {
+    AudioPlayerManager.play(path, {...this.defaultOptions, ...options});
   },
-  pause: function() {
+  playWithUrl(url, options) {
+    AudioPlayerManager.playWithUrl(url, {...this.defaultOptions, ...options});
+  },
+  pause() {
     AudioPlayerManager.pause();
   },
-  unpause: function() {
+  unpause() {
     AudioPlayerManager.unpause();
   },
-  stop: function() {
+  stop() {
     AudioPlayerManager.stop();
   },
-  setCurrentTime: function(time) {
+  setCurrentTime(time) {
     AudioPlayerManager.setCurrentTime(time);
   },
-  skipToSeconds: function(position) {
+  skipToSeconds(position) {
     AudioPlayerManager.skipToSeconds(position);
   },
-  setProgressSubscription: function() {
+  setProgressSubscription() {
     if (this.progressSubscription) this.progressSubscription.remove();
     this.progressSubscription = DeviceEventEmitter.addListener('playerProgress',
       (data) => {
@@ -59,7 +50,7 @@ var AudioPlayer = {
       }
     );
   },
-  setFinishedSubscription: function() {
+  setFinishedSubscription() {
     if (this.finishedSubscription) this.finishedSubscription.remove();
     this.finishedSubscription = DeviceEventEmitter.addListener('playerFinished',
       (data) => {
@@ -69,27 +60,27 @@ var AudioPlayer = {
       }
     );
   },
-  getDuration: function(callback) {
+  getDuration(callback) {
     AudioPlayerManager.getDuration((error, duration) => {
       callback(duration);
     })
   },
-  getCurrentTime: function(callback) {
+  getCurrentTime(callback) {
     AudioPlayerManager.getCurrentTime((error, currentTime) => {
       callback(currentTime);
     })
   },
 };
 
-var AudioRecorder = {
-  prepareRecordingAtPath: function(path, options) {
-    var defaultOptions = {
+let AudioRecorder = {
+  prepareRecordingAtPath(path, options) {
+    const defaultOptions = {
       SampleRate: 44100.0,
       Channels: 2,
       AudioQuality: 'High',
       AudioEncoding: 'ima4'
     };
-    var recordingOptions = {...defaultOptions, ...options};
+    const recordingOptions = {...defaultOptions, ...options};
 
     AudioRecorderManager.prepareRecordingAtPath(
       path,
@@ -117,26 +108,26 @@ var AudioRecorder = {
       }
     );
   },
-  startRecording: function() {
+  startRecording() {
     AudioRecorderManager.startRecording();
   },
-  pauseRecording: function() {
+  pauseRecording() {
     AudioRecorderManager.pauseRecording();
   },
-  stopRecording: function() {
+  stopRecording() {
     AudioRecorderManager.stopRecording();
   },
-  playRecording: function() {
+  playRecording() {
     AudioRecorderManager.playRecording();
   },
-  stopPlaying: function() {
+  stopPlaying() {
     AudioRecorderManager.stopPlaying();
   },
   checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
   requestAuthorization: AudioRecorderManager.requestAuthorization,
 };
 
-var AudioUtils = {
+let AudioUtils = {
   MainBundlePath: AudioPlayerManager.MainBundlePath,
   CachesDirectoryPath: AudioPlayerManager.NSCachesDirectoryPath,
   DocumentDirectoryPath: AudioPlayerManager.NSDocumentDirectoryPath,
