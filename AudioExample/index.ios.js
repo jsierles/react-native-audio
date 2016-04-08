@@ -28,7 +28,7 @@ var AudioExample = React.createClass({
     }
   },
   componentDidMount() {
-    var audioPath = AudioUtils.MainBundlePath + '/test.caf';
+    var audioPath = AudioUtils.DocumentDirectoryPath + '/test.caf';
     AudioRecorder.prepareRecordingAtPath(audioPath);
     AudioRecorder.onProgress = (data) => {
       this.setState({currentTime: Math.floor(data.currentTime)});
