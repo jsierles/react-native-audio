@@ -257,7 +257,8 @@ RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve rejec
   }
 }
 
-RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve)
+RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
   [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
     if(granted) {
