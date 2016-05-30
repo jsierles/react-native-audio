@@ -1,6 +1,6 @@
-## react-native-audio (iOS only)
+## react-native-audio for iOS
 
-An audio recording and playback library for react-native. It supports most configuration options available to the iOS AVAudioRecorder class.
+An audio recording and playback library for React Native iOS apps. It supports most configuration options available to the iOS AVAudioRecorder class.
 
 ## Breaking changes in 1.0.0
 
@@ -8,28 +8,23 @@ The path provided to `AudioRecorder.prepareRecordingAtPath` now requires an abso
 
 ### Installation
 
-1. `npm install react-native-audio`
-2. In the XCode's "Project navigator", right click on project's name ➜ `Add Files to <...>`
-3. Go to `node_modules` ➜ `react-native-audio`
-4. Select the `ios/Audio*Manager.*` files
+Install the package via npm and link using rnpm. Rnpm is bundled in React Native 0.27, so it should be used in favor of manual linking.
 
-### Sample App
+```
+npm install -g rnpm
+npm install react-native-audio
+rnpm link react-native-audio
+```
 
-In the AudioExample directory:
+### Running the Sample App
 
-1. `npm install`
-2. open AudioExample.xcodeproj
-3. Run
+In the `AudioExample` directory:
 
-### TODO
+```
+npm install
+react-native run-ios
+```
 
-* Update project to be linkable using rnpm
-* Documentation
-* Convert JS api to a react component
-* Store audio to media library
-* Error handling over the js bridge
-* Android support
-
-Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and Matthew Hartman for assistance.
+Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and Matthew Hartman for their assistance.
 
 Progress tracking code borrowed from https://github.com/brentvatne/react-native-video.

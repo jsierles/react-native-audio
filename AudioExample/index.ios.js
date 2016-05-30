@@ -1,34 +1,28 @@
-/**
- * Audio Recorder Sample App
- * https://github.com/jsierles/react-native-audiorecorder
- */
-'use strict';
+import React, {Component} from 'react';
 
-var React = require('react-native');
-var {
+import {
   AppRegistry,
   StyleSheet,
   Text,
   View,
   TouchableHighlight
-} = React;
+} from 'react-native';
 
-var {AudioRecorder, AudioUtils} = require('react-native-audio');
+import {AudioRecorder, AudioUtils} from 'react-native-audio';
 
-var AudioExample = React.createClass({
+class AudioExample extends Component {
 
-  getInitialState() {
-    return {
-      currentTime: 0.0,
-      recording: false,
-      stoppedRecording: false,
-      stoppedPlaying: false,
-      playing: false,
-      finished: false
-    }
-  },
+  state = {
+    currentTime: 0.0,
+    recording: false,
+    stoppedRecording: false,
+    stoppedPlaying: false,
+    playing: false,
+    finished: false
+  };
+
   componentDidMount() {
-    var audioPath = AudioUtils.DocumentDirectoryPath + '/test.caf';
+    let audioPath = AudioUtils.DocumentDirectoryPath + '/test.caf';
     AudioRecorder.prepareRecordingAtPath(audioPath);
     AudioRecorder.onProgress = (data) => {
       this.setState({currentTime: Math.floor(data.currentTime)});
@@ -37,27 +31,29 @@ var AudioExample = React.createClass({
       this.setState({finished: data.finished});
       console.log(`Finished recording: ${data.finished}`);
     };
-  },
+  }
 
-  _renderButton: function(title, onPress, active) {
+  _renderButton(title, onPress, active) {
     var style = (active) ? styles.activeButtonText : styles.buttonText;
 
-    return (<TouchableHighlight style={styles.button} onPress={onPress}>
-      <Text style={style}>
-        {title}
-      </Text>
-    </TouchableHighlight>);
-  },
+    return (
+      <TouchableHighlight style={styles.button} onPress={onPress}>
+        <Text style={style}>
+          {title}
+        </Text>
+      </TouchableHighlight>
+    );
+  }
 
-  _pause: function() {
+  _pause() {
     if (this.state.recording)
       AudioRecorder.pauseRecording();
     else if (this.state.playing) {
       AudioRecorder.pausePlaying();
     }
-  },
+  }
 
-  _stop: function() {
+  _stop() {
     if (this.state.recording) {
       AudioRecorder.stopRecording();
       this.setState({stoppedRecording: true, recording: false});
@@ -65,23 +61,23 @@ var AudioExample = React.createClass({
       AudioRecorder.stopPlaying();
       this.setState({playing: false, stoppedPlaying: true});
     }
-  },
+  }
 
-  _record: function() {
+  _record() {
     AudioRecorder.startRecording();
     this.setState({recording: true, playing: false});
-  },
+  }
 
- _play: function() {
+ _play() {
     if (this.state.recording) {
       this._stop();
       this.setState({recording: false});
     }
     AudioRecorder.playRecording();
     this.setState({playing: true});
-  },
+  }
 
-  render: function() {
+  render() {
 
     return (
       <View style={styles.container}>
@@ -95,7 +91,7 @@ var AudioExample = React.createClass({
       </View>
     );
   }
-});
+}
 
 var styles = StyleSheet.create({
   container: {

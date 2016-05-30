@@ -9,6 +9,7 @@
     "ios/AudioRecorderManager.h",
     "ios/AudioPlayerManager.m",
     "ios/AudioPlayerManager.h",
+    "ios/RNAudio.xcodeproj",
     "README.md",
     "LICENSE",
     "Audio.ios.js"
