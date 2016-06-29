@@ -22,8 +22,15 @@ class AudioExample extends Component {
   };
 
   componentDidMount() {
-    let audioPath = AudioUtils.DocumentDirectoryPath + '/test.caf';
-    AudioRecorder.prepareRecordingAtPath(audioPath);
+    let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
+
+    AudioRecorder.prepareRecordingAtPath(audioPath, {
+      SampleRate: 22050,
+      Channels: 1,
+      AudioQuality: "Low",
+      AudioEncoding: "aac"
+    });
+    
     AudioRecorder.onProgress = (data) => {
       this.setState({currentTime: Math.floor(data.currentTime)});
     };
