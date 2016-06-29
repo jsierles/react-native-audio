@@ -25,6 +25,34 @@ npm install
 react-native run-ios
 ```
 
+### Usage
+
+This library supports recording, basic playback and offers progress callbacks for both.
+
+To record in AAC format, at 22050 KHz in low quality mono:
+
+```
+import {AudioRecorder, AudioUtils} from 'react-native-audio';
+let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
+
+AudioRecorder.prepareRecordingAtPath(audioPath, {
+  SampleRate: 22050,
+  Channels: 1,
+  AudioQuality: "Low",
+  AudioEncoding: "aac"
+});
+```
+
+See [the example](https://github.com/jsierles/react-native-audio/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play options, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
+
+### Supported audio formats
+
+A subset of formats listed here are supported: https://developer.apple.com/reference/coreaudio/1572096-audio_data_format_identifiers
+
+Currently supported format arguments: lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac.
+
+MP3 recording is not supported on iOS.
+
 Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey and Matthew Hartman for their assistance.
 
 Progress tracking code borrowed from https://github.com/brentvatne/react-native-video.
