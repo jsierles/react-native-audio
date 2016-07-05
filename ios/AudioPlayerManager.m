@@ -130,19 +130,19 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
 
 - (void)setSessionCategory:(NSString *)sessionCategory {
   if ([sessionCategory isEqualToString:@"Ambient"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   } else if ([sessionCategory isEqualToString:@"SoloAmbient"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategorySoloAmbient error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategorySoloAmbient withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   } else if ([sessionCategory isEqualToString:@"Playback"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   } else if ([sessionCategory isEqualToString:@"Record"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   } else if ([sessionCategory isEqualToString:@"PlayAndRecord"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   } else if ([sessionCategory isEqualToString:@"AudioProcessing"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAudioProcessing error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAudioProcessing withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   } else if ([sessionCategory isEqualToString:@"MultiRoute"]) {
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute error:nil];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
   }
 }
 

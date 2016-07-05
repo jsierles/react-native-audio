@@ -151,7 +151,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
-  [_recordSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+  [_recordSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
 
   _audioRecorder = [[AVAudioRecorder alloc]
                 initWithURL:_audioFileURL
