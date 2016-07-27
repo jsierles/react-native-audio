@@ -31,6 +31,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   NSNumber *_audioChannels;
   NSNumber *_audioSampleRate;
   AVAudioSession *_recordSession;
+  BOOL _meteringEnabled;
 }
 
 @synthesize bridge = _bridge;
@@ -48,9 +49,15 @@ RCT_EXPORT_MODULE();
 
   if (_prevProgressUpdateTime == nil ||
    (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
-      [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:@{
-      @"currentTime": [NSNumber numberWithFloat:_currentTime]
-    }];
+      NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+      [body setObject:[NSNumber numberWithFloat:_currentTime] forKey:@"currentTime"];
+      if (_meteringEnabled) {
+          [_audioRecorder updateMeters];
+          float _currentMetering = [_audioRecorder averagePowerForChannel: 0];
+          [body setObject:[NSNumber numberWithFloat:_currentMetering] forKey:@"currentMetering"];
+      }
+
+      [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:body];
 
     _prevProgressUpdateTime = [NSDate date];
   }
@@ -84,7 +91,7 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled)
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
@@ -96,6 +103,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _audioEncoding = [NSNumber numberWithInt:kAudioFormatAppleIMA4];
   _audioChannels = [NSNumber numberWithInt:2];
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
+  _meteringEnabled = NO;
 
   // Set audio quality from options
   if (quality != nil) {
@@ -148,6 +156,11 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
           _audioSampleRate, AVSampleRateKey,
           nil];
 
+  // Enable metering from options
+  if (meteringEnabled != NO) {
+    _meteringEnabled = meteringEnabled;
+  }
+
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
@@ -158,6 +171,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
                 settings:recordSettings
                 error:&error];
 
+  _audioRecorder.meteringEnabled = _meteringEnabled;
   _audioRecorder.delegate = self;
 
   if (error) {
