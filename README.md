@@ -43,7 +43,7 @@ AudioRecorder.prepareRecordingAtPath(audioPath, {
 });
 ```
 
-See [the example](https://github.com/jsierles/react-native-audio/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play options, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
+See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play options, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
 
 ### Supported audio formats
 
