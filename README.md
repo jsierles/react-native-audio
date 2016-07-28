@@ -29,7 +29,7 @@ react-native run-ios
 
 This library supports recording, basic playback and offers progress callbacks for both.
 
-To record in AAC format, at 22050 KHz in low quality mono:
+To record in AAC format, at 22050 KHz in low quality mono with metering enabled:
 
 ```
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
@@ -39,7 +39,8 @@ AudioRecorder.prepareRecordingAtPath(audioPath, {
   SampleRate: 22050,
   Channels: 1,
   AudioQuality: "Low",
-  AudioEncoding: "aac"
+  AudioEncoding: "aac",
+  MeteringEnabled: true
 });
 ```
 
