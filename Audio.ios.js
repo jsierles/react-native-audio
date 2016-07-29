@@ -87,7 +87,8 @@ var AudioRecorder = {
       SampleRate: 44100.0,
       Channels: 2,
       AudioQuality: 'High',
-      AudioEncoding: 'ima4'
+      AudioEncoding: 'ima4',
+      MeteringEnabled: false
     };
     var recordingOptions = {...defaultOptions, ...options};
 
@@ -96,7 +97,8 @@ var AudioRecorder = {
       recordingOptions.SampleRate,
       recordingOptions.Channels,
       recordingOptions.AudioQuality,
-      recordingOptions.AudioEncoding
+      recordingOptions.AudioEncoding,
+      recordingOptions.MeteringEnabled
     );
 
     if (this.progressSubscription) this.progressSubscription.remove();
