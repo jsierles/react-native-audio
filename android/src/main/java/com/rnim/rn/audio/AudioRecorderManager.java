@@ -23,16 +23,11 @@ import android.media.AudioManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
 
 class AudioRecorderManager extends ReactContextBaseJavaModule {
-  private Context context;
-  private MediaRecorder recorder;
-
-  private String currentOutputFile;
-  private boolean isRecording = false;
-  private AudioPlayerManager audioPlayerManager;
   private static final String DocumentDirectoryPath = "DocumentDirectoryPath";
   private static final String PicturesDirectoryPath = "PicturesDirectoryPath";
   private static final String MainBundlePath = "MainBundlePath";
@@ -40,6 +35,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private static final String LibraryDirectoryPath = "LibraryDirectoryPath";
   private static final String MusicDirectoryPath = "MusicDirectoryPath";
   private static final String DownloadsDirectoryPath = "DownloadsDirectoryPath";
+  private Context context;
+  private MediaRecorder recorder;
+  private String currentOutputFile;
+  private boolean isRecording = false;
+  private AudioPlayerManager audioPlayerManager;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
@@ -135,6 +135,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     isRecording = false;
     recorder.release();
     promise.resolve(currentOutputFile);
+    sendEvent("recordingFinished", null);
   }
 
   @ReactMethod
@@ -164,7 +165,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   }
 
 
-
+  private void sendEvent(String eventName, Object params) {
+    getReactApplicationContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, params);
+  }
 
 
 }
