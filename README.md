@@ -1,4 +1,4 @@
-## react-native-audio for iOS
+## react-native-audio for iOS and android
 
 An audio recording and playback library for React Native iOS apps. It supports most configuration options available to the iOS AVAudioRecorder class.
 
