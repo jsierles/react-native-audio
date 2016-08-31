@@ -196,6 +196,8 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
         mediaPlayer.stop();
         mediaPlayer.release();
         mediaPlayer = null;
+        isPlaying = false;
+        isPaused = false;
       }
     });
 
