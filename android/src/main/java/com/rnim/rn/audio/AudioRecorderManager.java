@@ -161,7 +161,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void playRecording(final Promise promise) {
-    audioPlayerManager.play(currentOutputFile, promise);
+    audioPlayerManager.play(currentOutputFile, null, promise);
   }
 
 
