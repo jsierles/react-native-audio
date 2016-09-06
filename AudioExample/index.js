@@ -27,7 +27,8 @@ class AudioExample extends Component {
         SampleRate: 22050,
         Channels: 1,
         AudioQuality: "Low",
-        AudioEncoding: "aac"
+        AudioEncoding: "aac",
+        AudioEncodingBitRate: 32000
       });
     }
 

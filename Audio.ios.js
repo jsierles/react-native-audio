@@ -88,7 +88,9 @@ var AudioRecorder = {
       Channels: 2,
       AudioQuality: 'High',
       AudioEncoding: 'ima4',
-      MeteringEnabled: false
+      OutputFormat: 'mpeg_4',
+      MeteringEnabled: false,
+      AudioEncodingBitRate: 32000
     };
     var recordingOptions = {...defaultOptions, ...options};
 
