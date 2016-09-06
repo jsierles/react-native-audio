@@ -1,29 +1,26 @@
 ## react-native-audio for iOS and android
 
-An audio recording and playback library for React Native iOS apps. It supports most configuration options available to the iOS AVAudioRecorder class.
+An audio recording and playback library for React Native iOS apps.
 
-## Breaking changes in 1.0.0
-
-The path provided to `AudioRecorder.prepareRecordingAtPath` now requires an absolute path. See the `AudioUtils` helper methods and the example project to see how to use them.
+On iOS, it supports most iOS AVAudioRecorder class configuration options.
 
 ### Installation
 
-Install the package via npm and link using rnpm. Rnpm is bundled in React Native 0.27, so it should be used in favor of manual linking.
+Install the package via npm, and link the binary to your iOS and Android projects:
 
 ```
-npm install -g rnpm
 npm install react-native-audio
-rnpm link react-native-audio
-```
-
-Configure the project,  by running rnpm link step above or running
-
-
-```
 react-native link react-native-audio
 ```
 
-#### Android only
+#### Extra Android installation step
+
+Update AndroidManifest.xml by adding the `RECORD_AUDIO` permission:
+```
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
+
+### Running the Sample App On iOS
 
 Update AndroidManifest.xml by adding the `RECORD_AUDIO` permission :
 ```
@@ -48,9 +45,18 @@ npm install
 react-native run-android
 ```
 
+### Running the Sample App On Android
+
+In the `AudioExample` directory:
+
+```
+npm install
+react-native run-android
+```
+
 ### Usage
 
-This library supports recording, basic playback and offers progress callbacks for both.
+This library supports recording, basic playback and progress reporting. Progress reporting is iOS only for now.
 
 To record in AAC format, at 22050 KHz in low quality mono with metering enabled:
 
