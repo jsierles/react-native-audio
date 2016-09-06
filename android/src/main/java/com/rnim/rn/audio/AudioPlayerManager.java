@@ -121,7 +121,7 @@ import java.io.FileInputStream;
      }
 
      @ReactMethod
-     public void playFromPath(String path, final Promise promise) {
+     public void play(String path, final Promise promise) {
         if (isPlaying){
             Log.e("INVALID_STATE", "Please wait for previous playback to finish.");
             promise.reject("INVALID_STATE", "Please set valid path");
