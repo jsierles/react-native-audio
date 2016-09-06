@@ -1,6 +1,5 @@
 package com.rnim.rn.audio;
 
-import android.Manifest;
 import android.content.Context;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,13 +14,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.pm.PackageManager;
 import android.os.Environment;
-import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.media.AudioManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+
 import android.util.Log;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
