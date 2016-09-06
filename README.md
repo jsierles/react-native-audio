@@ -1,4 +1,4 @@
-## react-native-audio for iOS
+## react-native-audio for iOS and android
 
 An audio recording and playback library for React Native iOS apps. It supports most configuration options available to the iOS AVAudioRecorder class.
 
@@ -16,13 +16,36 @@ npm install react-native-audio
 rnpm link react-native-audio
 ```
 
-### Running the Sample App
+Configure the project,  by running rnpm link step above or running
+
+
+```
+react-native link react-native-audio
+```
+
+#### Android only
+
+Update AndroidManifest.xml by adding the `RECORD_AUDIO` permission :
+```
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
+
+### Running the Sample App On IOS
 
 In the `AudioExample` directory:
 
 ```
 npm install
 react-native run-ios
+```
+
+### Running the Sample App On Android
+
+In the `AudioExample` directory:
+
+```
+npm install
+react-native run-android
 ```
 
 ### Usage

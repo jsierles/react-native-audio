@@ -5,7 +5,7 @@
  * implementation details for registering callbacks, changing settings, etc.
 */
 
-var React, {NativeModules, NativeAppEventEmitter, DeviceEventEmitter} = require('react-native');
+var React, {NativeModules, NativeAppEventEmitter, DeviceEventEmitter, Platform} = require('react-native');
 
 var AudioPlayerManager = NativeModules.AudioPlayerManager;
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
@@ -92,14 +92,20 @@ var AudioRecorder = {
     };
     var recordingOptions = {...defaultOptions, ...options};
 
-    AudioRecorderManager.prepareRecordingAtPath(
-      path,
-      recordingOptions.SampleRate,
-      recordingOptions.Channels,
-      recordingOptions.AudioQuality,
-      recordingOptions.AudioEncoding,
-      recordingOptions.MeteringEnabled
-    );
+    if (Platform.OS === 'ios'){
+      AudioRecorderManager.prepareRecordingAtPath(
+        path,
+        recordingOptions.SampleRate,
+        recordingOptions.Channels,
+        recordingOptions.AudioQuality,
+        recordingOptions.AudioEncoding,
+        recordingOptions.MeteringEnabled
+      );
+    }
+    else {
+      return AudioRecorderManager.prepareRecordingAtPath(
+        path,recordingOptions)
+    }
 
     if (this.progressSubscription) this.progressSubscription.remove();
     this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
@@ -120,29 +126,49 @@ var AudioRecorder = {
     );
   },
   startRecording: function() {
-    AudioRecorderManager.startRecording();
+    return AudioRecorderManager.startRecording();
   },
   pauseRecording: function() {
-    AudioRecorderManager.pauseRecording();
+    return AudioRecorderManager.pauseRecording();
   },
   stopRecording: function() {
-    AudioRecorderManager.stopRecording();
+    return AudioRecorderManager.stopRecording();
   },
   playRecording: function() {
-    AudioRecorderManager.playRecording();
+    return AudioRecorderManager.playRecording();
   },
   stopPlaying: function() {
-    AudioRecorderManager.stopPlaying();
+    return AudioRecorderManager.stopPlaying();
+  },
+  // android only
+  pausePlaying: function() {
+    return AudioRecorderManager.pausePlaying();
   },
   checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
   requestAuthorization: AudioRecorderManager.requestAuthorization,
 };
 
-var AudioUtils = {
-  MainBundlePath: AudioPlayerManager.MainBundlePath,
-  CachesDirectoryPath: AudioPlayerManager.NSCachesDirectoryPath,
-  DocumentDirectoryPath: AudioPlayerManager.NSDocumentDirectoryPath,
-  LibraryDirectoryPath: AudioPlayerManager.NSLibraryDirectoryPath,
-};
+let AudioUtils = {};
+
+if (Platform.OS == 'ios'){
+  AudioUtils = {
+    MainBundlePath: AudioPlayerManager.MainBundlePath,
+    CachesDirectoryPath: AudioPlayerManager.NSCachesDirectoryPath,
+    DocumentDirectoryPath: AudioPlayerManager.NSDocumentDirectoryPath,
+    LibraryDirectoryPath: AudioPlayerManager.NSLibraryDirectoryPath,
+  };
+}
+else if (Platform.OS == 'android') {
+  AudioUtils = {
+    MainBundlePath: AudioPlayerManager.MainBundlePath,
+    CachesDirectoryPath: AudioPlayerManager.CachesDirectoryPath,
+    DocumentDirectoryPath: AudioPlayerManager.DocumentDirectoryPath,
+    LibraryDirectoryPath: AudioPlayerManager.LibraryDirectoryPath,
+    PicturesDirectoryPath: AudioPlayerManager.PicturesDirectoryPath,
+    MusicDirectoryPath: AudioPlayerManager.MusicDirectoryPath,
+    DownloadsDirectoryPath: AudioPlayerManager.DownloadsDirectoryPath
+  };
+}
+
 
 module.exports = {AudioPlayer, AudioRecorder, AudioUtils};
