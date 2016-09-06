@@ -134,8 +134,8 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       return;
     }
     if (path == null) {
-      Log.e("INVALID_STATE", "Please set valid path");
-      promise.reject("INVALID_STATE", "Please set valid path");
+      Log.e("INVALID_PATH", "Please set valid path");
+      promise.reject("INVALID_PATH", "Please set valid path");
       return;
     }
 
