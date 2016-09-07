@@ -69,6 +69,20 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
 
 
   @ReactMethod
+  public void getDurationFromPath(String path, Promise promise ) {
+    if (path == null) {
+      Log.e("PATH_NOT_SET", "Please add path");
+      promise.reject("PATH_NOT_SET", "Please add path");
+      return;
+    }
+    boolean mediaPlayerReady = preparePlaybackAtPath("local", path, promise);
+    if (!mediaPlayerReady){
+      return;
+    }
+    promise.resolve(mediaPlayer.getDuration());
+  }
+
+  @ReactMethod
   public void getDuration(Promise promise) {
     if (mediaPlayer == null) {
       Log.e("PLAYER_NOT_PREPARED", "Please call startPlaying before stopping playback");
