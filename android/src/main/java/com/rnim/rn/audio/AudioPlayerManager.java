@@ -1,6 +1,5 @@
 package com.rnim.rn.audio;
 
-import android.Manifest;
 import android.content.Context;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,13 +14,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.pm.PackageManager;
 import android.os.Environment;
-import android.media.MediaRecorder;
 import android.media.MediaPlayer;
 import android.media.AudioManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+
 import android.util.Log;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -71,6 +67,20 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     return constants;
   }
 
+
+  @ReactMethod
+  public void getDurationFromPath(String path, Promise promise ) {
+    if (path == null) {
+      Log.e("PATH_NOT_SET", "Please add path");
+      promise.reject("PATH_NOT_SET", "Please add path");
+      return;
+    }
+    boolean mediaPlayerReady = preparePlaybackAtPath("local", path, promise);
+    if (!mediaPlayerReady){
+      return;
+    }
+    promise.resolve(mediaPlayer.getDuration());
+  }
 
   @ReactMethod
   public void getDuration(Promise promise) {
@@ -127,7 +137,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void play(String path, final Promise promise) {
+  public void play(String path, ReadableMap playbackSettings, final Promise promise) {
     if (isPlaying) {
       Log.e("INVALID_STATE", "Please wait for previous playback to finish.");
       promise.reject("INVALID_STATE", "Please set valid path");
@@ -138,8 +148,8 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       return;
     }
     if (path == null) {
-      Log.e("INVALID_STATE", "Please set valid path");
-      promise.reject("INVALID_STATE", "Please set valid path");
+      Log.e("INVALID_PATH", "Please set valid path");
+      promise.reject("INVALID_PATH", "Please set valid path");
       return;
     }
 

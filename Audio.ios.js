@@ -21,7 +21,7 @@ var AudioPlayer = {
     } else {
       options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
     }
-    AudioPlayerManager.play(path, options);
+    return AudioPlayerManager.play(path, options);
   },
   playWithUrl: function(url, options) {
     if (options) {
@@ -32,22 +32,22 @@ var AudioPlayer = {
     } else {
       options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
     }
-    AudioPlayerManager.playWithUrl(url, options);
+    return AudioPlayerManager.playWithUrl(url, options);
   },
   pause: function() {
-    AudioPlayerManager.pause();
+    return AudioPlayerManager.pause();
   },
   unpause: function() {
-    AudioPlayerManager.unpause();
+    return AudioPlayerManager.unpause();
   },
   stop: function() {
-    AudioPlayerManager.stop();
+    return AudioPlayerManager.stop();
   },
   setCurrentTime: function(time) {
-    AudioPlayerManager.setCurrentTime(time);
+    return AudioPlayerManager.setCurrentTime(time);
   },
   skipToSeconds: function(position) {
-    AudioPlayerManager.skipToSeconds(position);
+    return AudioPlayerManager.skipToSeconds(position);
   },
   setProgressSubscription: function() {
     if (this.progressSubscription) this.progressSubscription.remove();
@@ -69,6 +69,10 @@ var AudioPlayer = {
       }
     );
   },
+  getDurationFromPath: function(path){
+    return AudioPlayerManager.getDurationFromPath(path);
+  },
+
   getDuration: function(callback) {
     AudioPlayerManager.getDuration((error, duration) => {
       callback(duration);
@@ -88,7 +92,9 @@ var AudioRecorder = {
       Channels: 2,
       AudioQuality: 'High',
       AudioEncoding: 'ima4',
-      MeteringEnabled: false
+      OutputFormat: 'mpeg_4',
+      MeteringEnabled: false,
+      AudioEncodingBitRate: 32000
     };
     var recordingOptions = {...defaultOptions, ...options};
 
