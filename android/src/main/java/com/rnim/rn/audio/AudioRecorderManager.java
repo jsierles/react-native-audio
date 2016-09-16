@@ -51,7 +51,6 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
-
     constants.put(DocumentDirectoryPath, this.getReactApplicationContext().getFilesDir().getAbsolutePath());
     constants.put(PicturesDirectoryPath, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
     constants.put(MainBundlePath, "");
@@ -85,15 +84,17 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     recorder = new MediaRecorder();
     try {
       recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-      recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-      recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+      int outputFormat = getOutputFormatFromString(recordingSettings.getString("OutputFormat"));
+      recorder.setOutputFormat(outputFormat);
+      int audioEncoder = getAudioEncoderFromString(recordingSettings.getString("AudioEncoding"));
+      recorder.setAudioEncoder(audioEncoder);
       recorder.setAudioSamplingRate(recordingSettings.getInt("SampleRate"));
       recorder.setAudioChannels(recordingSettings.getInt("Channels"));
-      recorder.setAudioEncodingBitRate(32000); //recordingSettings.getInt("EncodingBitRate"));
+      recorder.setAudioEncodingBitRate(recordingSettings.getInt("AudioEncodingBitRate"));
       recorder.setOutputFile(recordingPath);
     }
     catch(final Exception e) {
-      promise.reject("COULDNT_CONFIGURE_AUDIO_SOURCE" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
+      promise.reject("COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
       return;
     }
 
@@ -105,6 +106,47 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       promise.reject("COULDNT_PREPARE_RECORDING_AT_PATH "+recordingPath, e.getMessage());
     }
 
+  }
+
+  private int getAudioEncoderFromString(String audioEncoder) {
+   switch (audioEncoder) {
+     case "aac":
+       return MediaRecorder.AudioEncoder.AAC;
+     case "aac_eld":
+       return MediaRecorder.AudioEncoder.AAC_ELD;
+     case "amr_nb":
+       return MediaRecorder.AudioEncoder.AMR_NB;
+     case "amr_wb":
+       return MediaRecorder.AudioEncoder.AMR_WB;
+     case "he_aac":
+       return MediaRecorder.AudioEncoder.HE_AAC;
+     case "vorbis":
+      return MediaRecorder.AudioEncoder.VORBIS;
+     default:
+       Log.d("INVALID_AUDIO_ENCODER", "USING MediaRecorder.AudioEncoder.DEFAULT instead of "+audioEncoder+": "+MediaRecorder.AudioEncoder.DEFAULT);
+       return MediaRecorder.AudioEncoder.DEFAULT;
+   }
+  }
+
+  private int getOutputFormatFromString(String outputFormat) {
+    switch (outputFormat) {
+      case "mpeg_4":
+        return MediaRecorder.OutputFormat.MPEG_4;
+      case "aac_adts":
+        return MediaRecorder.OutputFormat.AAC_ADTS;
+      case "amr_nb":
+        return MediaRecorder.OutputFormat.AMR_NB;
+      case "amr_wb":
+        return MediaRecorder.OutputFormat.AMR_WB;
+      case "three_gpp":
+        return MediaRecorder.OutputFormat.THREE_GPP;
+      case "webm":
+        return MediaRecorder.OutputFormat.WEBM;
+      default:
+        Log.d("INVALID_OUPUT_FORMAT", "USING MediaRecorder.OutputFormat.DEFAULT : "+MediaRecorder.OutputFormat.DEFAULT);
+        return MediaRecorder.OutputFormat.DEFAULT;
+
+    }
   }
 
   @ReactMethod
@@ -161,7 +203,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void playRecording(final Promise promise) {
-    audioPlayerManager.play(currentOutputFile, promise);
+    audioPlayerManager.play(currentOutputFile, null, promise);
   }
 
 
