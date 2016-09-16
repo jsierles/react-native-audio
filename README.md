@@ -13,8 +13,6 @@ npm install react-native-audio
 react-native link react-native-audio
 ```
 
-```
-
 #### Extra Android installation step
 
 Update AndroidManifest.xml by adding the `RECORD_AUDIO` permission:
@@ -24,27 +22,11 @@ Update AndroidManifest.xml by adding the `RECORD_AUDIO` permission:
 
 ### Running the Sample App On iOS
 
-Update AndroidManifest.xml by adding the `RECORD_AUDIO` permission :
-```
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-```
-
-### Running the Sample App On IOS
-
 In the `AudioExample` directory:
 
 ```
 npm install
 react-native run-ios
-```
-
-### Running the Sample App On Android
-
-In the `AudioExample` directory:
-
-```
-npm install
-react-native run-android
 ```
 
 ### Running the Sample App On Android
