@@ -142,4 +142,5 @@ class AudioExample extends Component {
     }
 
   });
-AppRegistry.registerComponent('AudioExample', () => AudioExample);
+
+export default AudioExample;

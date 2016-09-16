@@ -12,7 +12,8 @@
     "ios/RNAudio.xcodeproj",
     "README.md",
     "LICENSE",
-    "Audio.ios.js"
+    "Audio.ios.js",
+    "android/*"
   ],
   "keywords": [
     "react-native",
