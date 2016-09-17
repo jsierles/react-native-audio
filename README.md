@@ -47,13 +47,15 @@ AudioRecorder.prepareRecordingAtPath(audioPath, {
 
 #### Cross-platform options
 
+```
 SampleRate: int
 Channels: int
 AudioQuality: string
 AudioEncoding: string
+```
 
-Encodings supported on iOS: lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac
-Encodings supported on Android: aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis
+Encodings supported on iOS: `lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac`
+Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 #### iOS-only fields
 
@@ -62,7 +64,7 @@ The `MeteringEnabled` boolean to enable audio metering.
 #### Android-only fields
 
 AudioEncodingBitRate: int
-OutputFormat: string, (mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm)
+OutputFormat: string, `mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm`
 
 See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play features, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
 
