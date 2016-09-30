@@ -94,7 +94,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void stopPlaying(Promise promise) {
+  public void stop(Promise promise) {
     if (!isPlaying) {
       Log.e("INVALID_STATE", "Please call play or playWithURL before stopping playback");
       promise.reject("INVALID_STATE", "Please call play or playWithURL before stopping playback");

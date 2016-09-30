@@ -188,7 +188,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void stopPlaying(Promise promise){
-    audioPlayerManager.stopPlaying(promise);
+    audioPlayerManager.stop(promise);
   }
 
   @ReactMethod
