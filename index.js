@@ -32,7 +32,6 @@ var AudioPlayer = {
     } else {
       options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
     }
-
     return AudioPlayerManager.playWithUrl(url, options);
   },
   pause: function() {
