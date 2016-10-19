@@ -54,7 +54,7 @@ AudioQuality: string
 AudioEncoding: string
 ```
 
-Encodings supported on iOS: `lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac`
+Encodings supported on iOS: `lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac, amr`
 Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 #### iOS-only fields
