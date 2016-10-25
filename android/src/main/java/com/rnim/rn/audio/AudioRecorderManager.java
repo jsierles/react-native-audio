@@ -151,33 +151,43 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRecording(Promise promise){
-    if (recorder == null){
-      Log.e("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
-      promise.reject("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
-      return;
-    }
-    if (isRecording){
-      Log.e("INVALID_STATE", "Please call stopRecording before starting recording");
-      promise.reject("INVALID_STATE", "Please call stopRecording before starting recording");
-      return;
-    }
-    recorder.start();
-    isRecording = true;
-    promise.resolve(currentOutputFile);
+      if (recorder == null){
+          Log.e("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
+          promise.reject("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
+          return;
+      }
+      if (isRecording){
+          Log.e("INVALID_STATE", "Please call stopRecording before starting recording");
+          promise.reject("INVALID_STATE", "Please call stopRecording before starting recording");
+          return;
+      }
+      try {
+          recorder.start();
+      } catch(Exception e) {
+          promise.reject("START_FAILED", "START_FAILED");
+          return;
+      }
+      isRecording = true;
+      promise.resolve(currentOutputFile);
   }
 
   @ReactMethod
   public void stopRecording(Promise promise){
-    if (!isRecording){
-      Log.e("INVALID_STATE", "Please call startRecording before stopping recording");
-      promise.reject("INVALID_STATE", "Please call startRecording before stopping recording");
-      return;
-    }
-    recorder.stop();
-    isRecording = false;
-    recorder.release();
-    promise.resolve(currentOutputFile);
-    sendEvent("recordingFinished", null);
+      if (!isRecording){
+          Log.e("INVALID_STATE", "Please call startRecording before stopping recording");
+          promise.reject("INVALID_STATE", "Please call startRecording before stopping recording");
+          return;
+      }
+      try {
+          recorder.stop();
+      } catch(Exception e) {
+          e.printStackTrace();
+      }
+      isRecording = false;
+      recorder.release();
+      recorder = null;
+      promise.resolve(currentOutputFile);
+      sendEvent("recordingFinished", null);
   }
 
   @ReactMethod
