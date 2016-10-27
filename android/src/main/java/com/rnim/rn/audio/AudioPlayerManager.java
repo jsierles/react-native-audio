@@ -105,6 +105,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     isPlaying = false;
     isPaused = false;
     mediaPlayer = null;
+    sendEvent("playerFinished", null);
     promise.resolve(currentFileName);
   }
 
@@ -189,7 +190,6 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       return;
     }
     playMedia("remote", url, promise);
-    sendEvent("playerFinished", null);
     isPlaying = true;
     isPaused = false;
     return;
@@ -209,6 +209,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
         mediaPlayer = null;
         isPlaying = false;
         isPaused = false;
+        sendEvent("playerFinished", null);
       }
     });
 
