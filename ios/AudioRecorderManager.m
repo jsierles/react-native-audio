@@ -143,6 +143,8 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
       _audioEncoding =[NSNumber numberWithInt:kAudioFormatMPEGLayer2];
     } else if ([encoding  isEqual: @"alac"]) {
       _audioEncoding =[NSNumber numberWithInt:kAudioFormatAppleLossless];
+    } else if ([encoding  isEqual: @".amr"]) {
+      _audioEncoding =[NSNumber numberWithInt:kAudioFormatAMR];
     }
   }
 
