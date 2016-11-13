@@ -5,8 +5,8 @@
  * implementation details for registering callbacks, changing settings, etc.
 */
 
-var React, {NativeModules, NativeAppEventEmitter, DeviceEventEmitter, Platform} = require('react-native');
-
+var React, {NativeModules, Platform} = require('react-native');
+var NativeAppEventEmitter = require('RCTNativeAppEventEmitter')
 var AudioPlayerManager = NativeModules.AudioPlayerManager;
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
 
@@ -55,7 +55,7 @@ var AudioPlayer = {
   },
   setProgressSubscription: function() {
     if (this.progressSubscription) this.progressSubscription.remove();
-    this.progressSubscription = DeviceEventEmitter.addListener('playerProgress',
+    this.progressSubscription = NativeAppEventEmitter.addListener('playerProgress',
       (data) => {
         if (this.onProgress) {
           this.onProgress(data);
@@ -65,7 +65,7 @@ var AudioPlayer = {
   },
   setFinishedSubscription: function() {
     if (this.finishedSubscription) this.finishedSubscription.remove();
-    this.finishedSubscription = DeviceEventEmitter.addListener('playerFinished',
+    this.finishedSubscription = NativeAppEventEmitter.addListener('playerFinished',
       (data) => {
         if (this.onFinished) {
           this.onFinished(data);
@@ -113,8 +113,8 @@ var AudioRecorder = {
       );
     }
     else {
-      return AudioRecorderManager.prepareRecordingAtPath(
-        path,recordingOptions)
+      AudioRecorderManager.prepareRecordingAtPath(
+        path, recordingOptions)
     }
 
     if (this.progressSubscription) this.progressSubscription.remove();

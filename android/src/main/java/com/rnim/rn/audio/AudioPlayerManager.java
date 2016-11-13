@@ -20,7 +20,7 @@ import android.media.AudioManager;
 
 import android.util.Log;
 
-import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 
 import java.io.FileInputStream;
 
@@ -259,8 +259,8 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
 
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(eventName, params);
+      .getJSModule(RCTNativeAppEventEmitter.class)
+      .emit(eventName, params);
   }
 
 }
