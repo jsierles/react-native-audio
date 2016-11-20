@@ -5,7 +5,7 @@ Record and play back audio in your iOS or Android React Native apps.
 Install the npm package and link it to your project:
 
 ```
-npm install react-native-audio
+npm install react-native-audio --save
 react-native link react-native-audio
 ```
 
