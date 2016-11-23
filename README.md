@@ -9,6 +9,13 @@ npm install react-native-audio
 react-native link react-native-audio
 ```
 
+On *iOS* you need to add a usage description to `Info.plist`:
+
+```
+<key>NSMicrophoneUsageDescription</key>
+<string>This sample uses the microphone to record your speech and convert it to text.</string>
+```
+
 On *Android* you need to add a permission to `AndroidManifest.xml`:
 
 ```
@@ -54,7 +61,7 @@ AudioQuality: string
 AudioEncoding: string
 ```
 
-Encodings supported on iOS: `lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac`
+Encodings supported on iOS: `lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac, amr`
 Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 #### iOS-only fields

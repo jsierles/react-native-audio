@@ -178,7 +178,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void playFromURL(String url, final Promise promise) {
+  public void playWithUrl(String url, ReadableMap playbackOptions, final Promise promise) {
     if (isPlaying) {
       Log.e("INVALID_STATE", "Please wait for previous playback to finish.");
       promise.reject("INVALID_STATE", "Please set valid path");
