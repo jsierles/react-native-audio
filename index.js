@@ -78,11 +78,11 @@ var AudioPlayer = {
   },
 
   getDuration: function(callback) {
-    if(Platform.OS=='ios'){
+    if (Platform.OS === 'ios') {
       AudioPlayerManager.getDuration((error, duration) => {
         callback(duration);
       })
-    }else {
+    } else {
       AudioPlayerManager.getDuration().then((duration) => {
         callback(duration/1000.0);
       })
