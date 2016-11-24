@@ -202,6 +202,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
 
     mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
       public void onCompletion(MediaPlayer mp) {
+        sendEvent("playerFinished", null);
         promise.resolve(path);
         mediaPlayer.stop();
         mediaPlayer.release();
