@@ -32,7 +32,11 @@ var AudioPlayer = {
     } else {
       options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
     }
-    return AudioPlayerManager.playWithUrl(url, options);
+    if(Platform.OS=='ios'){
+      return AudioPlayerManager.playWithUrl(url, options);
+    }else{
+      return AudioPlayerManager.playFromURL(url);
+    }
   },
   pause: function() {
     return AudioPlayerManager.pause();
