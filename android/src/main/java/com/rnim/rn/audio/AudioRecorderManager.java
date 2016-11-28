@@ -23,7 +23,7 @@ import android.media.AudioManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
 
@@ -151,44 +151,43 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void startRecording(Promise promise){
-    if (recorder == null){
-        Log.e("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
-        promise.reject("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
-        return;
-    }
-    if (isRecording){
-        Log.e("INVALID_STATE", "Please call stopRecording before starting recording");
-        promise.reject("INVALID_STATE", "Please call stopRecording before starting recording");
-        return;
-    }
-    try {
-        recorder.start();
-    } catch(Exception e) {
-        promise.reject("START_FAILED", "START_FAILED");
-        return;
-    }
-    isRecording = true;
-    promise.resolve(currentOutputFile);
+      if (recorder == null){
+          Log.e("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
+          promise.reject("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
+          return;
+      }
+      if (isRecording){
+          Log.e("INVALID_STATE", "Please call stopRecording before starting recording");
+          promise.reject("INVALID_STATE", "Please call stopRecording before starting recording");
+          return;
+      }
+      try {
+          recorder.start();
+      } catch(Exception e) {
+          promise.reject("START_FAILED", "START_FAILED");
+          return;
+      }
+      isRecording = true;
+      promise.resolve(currentOutputFile);
   }
 
   @ReactMethod
   public void stopRecording(Promise promise){
-    if (!isRecording){
-      Log.e("INVALID_STATE", "Please call startRecording before stopping recording");
-      promise.reject("INVALID_STATE", "Please call startRecording before stopping recording");
-      return;
-    }
-    try {
-      recorder.stop();
-      recorder.reset();
+      if (!isRecording){
+          Log.e("INVALID_STATE", "Please call startRecording before stopping recording");
+          promise.reject("INVALID_STATE", "Please call startRecording before stopping recording");
+          return;
+      }
+      try {
+          recorder.stop();
+      } catch(Exception e) {
+          e.printStackTrace();
+      }
+      isRecording = false;
       recorder.release();
       recorder = null;
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
-    isRecording = false;
-    promise.resolve(currentOutputFile);
-    sendEvent("recordingFinished", null);
+      promise.resolve(currentOutputFile);
+      sendEvent("recordingFinished", null);
   }
 
   @ReactMethod
@@ -217,9 +216,12 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     audioPlayerManager.play(currentOutputFile, null, promise);
   }
 
+
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
-      .getJSModule(RCTNativeAppEventEmitter.class)
-      .emit(eventName, params);
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, params);
   }
+
+
 }
