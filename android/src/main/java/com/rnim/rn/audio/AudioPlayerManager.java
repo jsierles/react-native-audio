@@ -2,9 +2,11 @@ package com.rnim.rn.audio;
 
 import android.content.Context;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
@@ -13,6 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import java.lang.Runnable;
 
 import android.os.Environment;
 import android.media.MediaPlayer;
@@ -20,6 +26,7 @@ import android.media.AudioManager;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
@@ -131,6 +138,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     }
     mediaPlayer.seekTo(currentPosition);
     mediaPlayer.start();
+    this.startTimer();
     isPaused = false;
     isPlaying = true;
     promise.resolve(currentFileName);
@@ -212,6 +220,34 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     });
 
     mediaPlayer.start();
+    this.startTimer();
+  }
+
+  private void startTimer() {
+    final Timer timer = new Timer();
+    timer.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
+        runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int position = mediaPlayer.getCurrentPosition();
+                int duration = mediaPlayer.getDuration();
+                WritableMap data = Arguments.createMap();
+                data.putDouble("currentDuration", duration / 1000);
+                data.putDouble("currentTime", position / 1000);
+                sendEvent("playerProgress", data);
+              } else {
+                timer.cancel();
+                timer.purge();
+              }
+            } catch (Exception error){}
+          }
+        });
+      }
+    }, 0, 500);
   }
 
   private boolean preparePlaybackAtPath(String pathType, String path, Promise promise) {
