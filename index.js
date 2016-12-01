@@ -69,7 +69,7 @@ var AudioPlayer = {
       }
     );
   },
-  getDurationFromPath: function(path){
+  getDurationFromPath: function(path) {
     return AudioPlayerManager.getDurationFromPath(path);
   },
 
@@ -98,7 +98,7 @@ var AudioRecorder = {
     };
     var recordingOptions = {...defaultOptions, ...options};
 
-    if (Platform.OS === 'ios'){
+    if (Platform.OS === 'ios') {
       AudioRecorderManager.prepareRecordingAtPath(
         path,
         recordingOptions.SampleRate,
@@ -107,10 +107,8 @@ var AudioRecorder = {
         recordingOptions.AudioEncoding,
         recordingOptions.MeteringEnabled
       );
-    }
-    else {
-      return AudioRecorderManager.prepareRecordingAtPath(
-        path,recordingOptions)
+    } else {
+      return AudioRecorderManager.prepareRecordingAtPath(path, recordingOptions);
     }
 
     if (this.progressSubscription) this.progressSubscription.remove();
@@ -156,15 +154,14 @@ var AudioRecorder = {
 
 let AudioUtils = {};
 
-if (Platform.OS == 'ios'){
+if (Platform.OS === 'ios') {
   AudioUtils = {
     MainBundlePath: AudioPlayerManager.MainBundlePath,
     CachesDirectoryPath: AudioPlayerManager.NSCachesDirectoryPath,
     DocumentDirectoryPath: AudioPlayerManager.NSDocumentDirectoryPath,
     LibraryDirectoryPath: AudioPlayerManager.NSLibraryDirectoryPath,
   };
-}
-else if (Platform.OS == 'android') {
+} else if (Platform.OS === 'android') {
   AudioUtils = {
     MainBundlePath: AudioPlayerManager.MainBundlePath,
     CachesDirectoryPath: AudioPlayerManager.CachesDirectoryPath,
@@ -175,6 +172,5 @@ else if (Platform.OS == 'android') {
     DownloadsDirectoryPath: AudioPlayerManager.DownloadsDirectoryPath
   };
 }
-
 
 module.exports = {AudioPlayer, AudioRecorder, AudioUtils};
