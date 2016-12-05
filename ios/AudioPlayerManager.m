@@ -86,6 +86,8 @@ RCT_EXPORT_METHOD(play:(NSString *)path options:(NSDictionary *)options)
 
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
   [self setSessionCategory:sessionCategory];
+  NSString *output = [RCTConvert NSString:options[@"output"]];
+  [self setAudioOutput:output];
   NSNumber *numberOfLoops = [RCTConvert NSNumber:options[@"numberOfLoops"]];
 
   _audioFileURL = [NSURL fileURLWithPath:path];
@@ -144,6 +146,16 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
   } else if ([sessionCategory isEqualToString:@"MultiRoute"]) {
     [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryMultiRoute error:nil];
   }
+}
+
+- (void)setAudioOutput:(NSString *)output {
+    if([output isEqualToString:@"Speaker"]){
+        [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    } else if([output isEqualToString:@"None"]){
+        [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+    } else {
+        [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    }
 }
 
 RCT_EXPORT_METHOD(pause)
