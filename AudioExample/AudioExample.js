@@ -8,7 +8,7 @@ import {
   TouchableHighlight
 } from 'react-native';
 
-import {AudioRecorder, AudioUtils} from 'react-native-audio';
+import {AudioRecorder, AudioPlayer, AudioUtils} from 'react-native-audio';
 
 class AudioExample extends Component {
 
@@ -95,6 +95,22 @@ class AudioExample extends Component {
       this.setState({playing: true});
     }
 
+    _playMp3() {
+      let path = AudioUtils.MainBundlePath + '/test.mp3';
+      let options = {sessionCategory: 'PlayAndRecord', numberOfLoops: 0, output: "None"};
+      AudioPlayer.play(path, options);
+    }
+
+    _playMp3Speaker() {
+      let path = AudioUtils.MainBundlePath + '/test.mp3';
+      let options = {sessionCategory: 'PlayAndRecord', numberOfLoops: 0, output: "Speaker"};
+      AudioPlayer.play(path, options);
+    }
+
+    _stopMp3(){
+      AudioPlayer.stop();
+    }
+
     render() {
 
       return (
@@ -104,6 +120,9 @@ class AudioExample extends Component {
             {this._renderButton("STOP", () => {this._stop()} )}
             {this._renderButton("PAUSE", () => {this._pause()} )}
             {this._renderButton("PLAY", () => {this._play()}, this.state.playing )}
+            {this._renderButton("PLAY MP3 None", () => {this._playMp3()} )}
+            {this._renderButton("PLAY MP3 Speaker", () => {this._playMp3Speaker()} )}
+            {this._renderButton("Stop MP3", () => {this._stopMp3()} )}
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>
