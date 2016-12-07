@@ -96,15 +96,17 @@ class AudioExample extends Component {
     }
 
     _playMp3() {
-      let path = AudioUtils.MainBundlePath + '/test.mp3';
+      let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
+      //let path = AudioUtils.MainBundlePath+ '/test.mp3';
       let options = {sessionCategory: 'PlayAndRecord', numberOfLoops: 0, output: "None"};
-      AudioPlayer.play(path, options);
+      AudioPlayer.play(audioPath, options);
     }
 
     _playMp3Speaker() {
-      let path = AudioUtils.MainBundlePath + '/test.mp3';
+      //let path = AudioUtils.MainBundlePath + '/test.mp3';
+      let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
       let options = {sessionCategory: 'PlayAndRecord', numberOfLoops: 0, output: "Speaker"};
-      AudioPlayer.play(path, options);
+      AudioPlayer.play(audioPath, options);
     }
 
     _stopMp3(){
@@ -116,9 +118,9 @@ class AudioExample extends Component {
       return (
         <View style={styles.container}>
           <View style={styles.controls}>
-            {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
             {this._renderButton("STOP", () => {this._stop()} )}
             {this._renderButton("PAUSE", () => {this._pause()} )}
+            {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
             {this._renderButton("PLAY", () => {this._play()}, this.state.playing )}
             {this._renderButton("PLAY MP3 None", () => {this._playMp3()} )}
             {this._renderButton("PLAY MP3 Speaker", () => {this._playMp3Speaker()} )}

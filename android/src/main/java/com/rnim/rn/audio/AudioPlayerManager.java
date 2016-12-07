@@ -152,7 +152,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       promise.reject("INVALID_PATH", "Please set valid path");
       return;
     }
-
+    setAudioOutput(playbackSettings);
     mediaPlayer = new MediaPlayer();
     playMedia("local", path, promise);
     isPlaying = true;
@@ -262,4 +262,25 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
             .emit(eventName, params);
   }
 
+  private void setAudioOutput(ReadableMap playbackSettings)
+  {
+    if(playbackSettings != null && playbackSettings.hasKey("output"))
+    {
+      String audioPort = playbackSettings.getString("output");
+      AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+      switch (audioPort){
+        case "Bluetooth":
+          audioManager.setBluetoothScoOn(true);
+          break;
+        case "Speaker":
+          audioManager.setMicrophoneMute(true);
+          break;
+        case "None":
+          audioManager.setSpeakerphoneOn(false);
+          break;
+        default:
+          audioManager.setMicrophoneMute(true);
+      }
+    }
+  }
 }
