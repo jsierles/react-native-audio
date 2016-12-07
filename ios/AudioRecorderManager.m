@@ -78,7 +78,11 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
+  NSData *data = [NSData dataWithContentsOfFile:_audioFileURL];
+  NSString *base64 = [data base64EncodedStringWithOptions:0];
   [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
+      @"base64":base64,
+      @"duration":@(_currentTime),
       @"status": flag ? @"OK" : @"ERROR",
       @"audioFileURL": [_audioFileURL absoluteString]
     }];
