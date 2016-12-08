@@ -215,11 +215,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   }
 
   private boolean preparePlaybackAtPath(String pathType, String path, Promise promise) {
-    if (mediaPlayer == null) {
-      mediaPlayer = new MediaPlayer();
-    } else {
-      mediaPlayer.reset();
-    }
+    mediaPlayer = new MediaPlayer();
 
     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     try {
