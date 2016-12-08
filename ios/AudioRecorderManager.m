@@ -22,6 +22,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   AVAudioPlayer *_audioPlayer;
 
   NSTimeInterval _currentTime;
+  NSTimeInterval _duration;
   id _progressUpdateTimer;
   int _progressUpdateInterval;
   NSDate *_prevProgressUpdateTime;
@@ -82,7 +83,7 @@ RCT_EXPORT_MODULE();
   NSString *base64 = [data base64EncodedStringWithOptions:0];
   [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
       @"base64":base64,
-      @"duration":@(_currentTime),
+      @"duration":@(_duration),
       @"status": flag ? @"OK" : @"ERROR",
       @"audioFileURL": [_audioFileURL absoluteString]
     }];
@@ -200,6 +201,7 @@ RCT_EXPORT_METHOD(startRecording)
 
 RCT_EXPORT_METHOD(stopRecording)
 {
+  _duration = _currentTime;
   [_audioRecorder stop];
   [_recordSession setActive:NO error:nil];
   _prevProgressUpdateTime = nil;
