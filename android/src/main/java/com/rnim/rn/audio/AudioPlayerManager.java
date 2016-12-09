@@ -138,22 +138,15 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void play(String path, ReadableMap playbackSettings, final Promise promise) {
-    if (isPlaying) {
-      Log.e("INVALID_STATE", "Please wait for previous playback to finish.");
-      promise.reject("INVALID_STATE", "Please set valid path");
-      return;
-    }
-    if (isPaused) {
-      unpause(promise);
-      return;
-    }
+
     if (path == null) {
       Log.e("INVALID_PATH", "Please set valid path");
       promise.reject("INVALID_PATH", "Please set valid path");
       return;
     }
-    setAudioOutput(playbackSettings);
     mediaPlayer = new MediaPlayer();
+    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    setAudioOutput(playbackSettings);
     playMedia("local", path, promise);
     isPlaying = true;
     isPaused = false;
@@ -270,16 +263,24 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
       switch (audioPort){
         case "Bluetooth":
+          audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+          audioManager.startBluetoothSco();
           audioManager.setBluetoothScoOn(true);
-          break;
         case "Speaker":
-          audioManager.setMicrophoneMute(true);
+          audioManager.setMode(AudioManager.MODE_NORMAL);
+          audioManager.stopBluetoothSco();
+          audioManager.setBluetoothScoOn(false);
+          audioManager.setSpeakerphoneOn(true);
           break;
         case "None":
+          audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+          audioManager.stopBluetoothSco();
           audioManager.setSpeakerphoneOn(false);
+          audioManager.setBluetoothScoOn(false);
           break;
         default:
-          audioManager.setMicrophoneMute(true);
+          //audioManager.setSpeakerphoneOn(true);
+          break;
       }
     }
   }
