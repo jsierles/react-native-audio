@@ -74,9 +74,15 @@ var AudioPlayer = {
   },
 
   getDuration: function(callback) {
-    AudioPlayerManager.getDuration((error, duration) => {
-      callback(duration);
-    })
+    if (Platform.OS === 'ios') {
+      AudioPlayerManager.getDuration((error, duration) => {
+        callback(duration);
+      })
+    } else {
+      AudioPlayerManager.getDuration().then((duration) => {
+        callback(duration/1000.0);
+      })
+    }
   },
   getCurrentTime: function(callback) {
     AudioPlayerManager.getCurrentTime((error, currentTime) => {
