@@ -23,11 +23,14 @@ import android.util.Log;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 class AudioPlayerManager extends ReactContextBaseJavaModule {
 
   private Context context;
   private MediaPlayer mediaPlayer;
+  private Timer timer;
   private String currentFileName;
   private int currentPosition;
   private boolean isPlaying = false;
@@ -119,6 +122,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     currentPosition = mediaPlayer.getCurrentPosition();
     isPaused = true;
     isPlaying = false;
+    stopTimer();
     promise.resolve(currentFileName);
   }
 
@@ -133,6 +137,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     mediaPlayer.start();
     isPaused = false;
     isPlaying = true;
+    startTimer();
     promise.resolve(currentFileName);
   }
 
@@ -201,10 +206,33 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
         mediaPlayer = null;
         isPlaying = false;
         isPaused = false;
+        sendEvent("playerFinished", null);
+        stopTimer();
       }
     });
+    startTimer();
+  }
 
+  private void startTimer()
+  {
+    timer = new Timer();
     mediaPlayer.start();
+    TimerTask task = new TimerTask() {
+      @Override
+      public void run() {
+        sendEvent("playerProgress", mediaPlayer.getCurrentPosition());
+      }
+    };
+    timer.schedule(task, 0, 250);
+  }
+
+  private void stopTimer()
+  {
+    if(timer != null)
+    {
+      timer.cancel();
+      timer.purge();
+    }
   }
 
   private boolean preparePlaybackAtPath(String pathType, String path, Promise promise) {

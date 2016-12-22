@@ -42,6 +42,18 @@ class AudioExample extends Component {
         this.setState({finished: data.finished});
         console.log(`Finished recording: ${data.finished}`);
       };
+
+      AudioPlayer.onProgress = (data) => {
+        console.log(data);
+      }
+
+      AudioPlayer.setProgressSubscription();
+
+      AudioPlayer.onFinished= (data) => {
+        console.log(data);
+      }
+
+      AudioPlayer.setFinishedSubscription();
     }
 
     _renderButton(title, onPress, active) {
@@ -121,6 +133,7 @@ class AudioExample extends Component {
             {this._renderButton("STOP", () => {this._stop()} )}
             {this._renderButton("PAUSE", () => {this._pause()} )}
             {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
+            {this._renderButton("STOP", () => {this._stop()} )}
             {this._renderButton("PLAY", () => {this._play()}, this.state.playing )}
             {this._renderButton("PLAY MP3 None", () => {this._playMp3()} )}
             {this._renderButton("PLAY MP3 Speaker", () => {this._playMp3Speaker()} )}
