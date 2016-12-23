@@ -75,7 +75,7 @@ The `MeteringEnabled` boolean to enable audio metering.
 AudioEncodingBitRate: int
 OutputFormat: string, `mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm`
 
-See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play features, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
+See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more details. For playing audio check out [React Native Sound](https://github.com/zmxv/react-native-sound)
 
 MP3 recording is *not supported* since the underlying platforms do not support it.
 
