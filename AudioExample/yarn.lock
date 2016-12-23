@@ -1592,7 +1592,7 @@ file-type@^3.1.0:
 
 "file:./..":
   name react-native-audio
-  version "2.3.0"
+  version "2.3.1"
 
 filename-regex@^2.0.0:
   version "2.0.0"
@@ -2994,8 +2994,8 @@ react-deep-force-update@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
 
-"react-native-audio@file:./../":
-  version "2.3.0"
+"react-native-audio@file:./..":
+  version "2.3.1"
 
 react-native-sound:
   version "0.8.3"

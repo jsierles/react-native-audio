@@ -37,8 +37,8 @@ class AudioExample extends Component {
         this.setState({currentTime: Math.floor(data.currentTime)});
       };
       AudioRecorder.onFinished = (data) => {
-        this.setState({finished: data.finished});
-        console.log(`Finished recording: ${data.finished}`);
+        this.setState({finished: data.status == "OK"});
+        console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${data.audioFileURL}`);
       };
     }
 
@@ -65,18 +65,26 @@ class AudioExample extends Component {
       if (this.state.recording) {
         AudioRecorder.stopRecording();
         this.setState({stoppedRecording: true, recording: false});
+      }
     }
 
     _play() {
       this._stop();
-      var sound = new Sound(this.state.audioPath, Sound.MAIN_BUNDLE, (error) => {
+      var sound = new Sound(this.state.audioPath, '', (error) => {
         if (error) {
           console.log('failed to load the sound', error);
-        } else {
-          console.log('duration in seconds: ' + sound.getDuration() +
-              'number of channels: ' + sound.getNumberOfChannels());
         }
       });
+
+      setTimeout(() => {
+        sound.play((success) => {
+          if (success) {
+             console.log('successfully finished playing');
+           } else {
+             console.log('playback failed due to audio decoding errors');
+           }
+        });
+      }, 500)
     }
 
     _record() {
