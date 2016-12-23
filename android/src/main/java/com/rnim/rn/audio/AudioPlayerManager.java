@@ -9,6 +9,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -220,7 +223,9 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     TimerTask task = new TimerTask() {
       @Override
       public void run() {
-        sendEvent("playerProgress", mediaPlayer.getCurrentPosition());
+        WritableMap map = Arguments.createMap();
+        map.putDouble("currentTime", mediaPlayer.getCurrentPosition()/1000.0);
+        sendEvent("playerProgress", map);
       }
     };
     timer.schedule(task, 0, 250);
