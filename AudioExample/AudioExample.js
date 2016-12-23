@@ -8,18 +8,17 @@ import {
   TouchableHighlight
 } from 'react-native';
 
+import Sound from 'react-native-sound';
 import {AudioRecorder, AudioUtils} from 'react-native-audio';
 
 class AudioExample extends Component {
-
 
     state = {
       currentTime: 0.0,
       recording: false,
       stoppedRecording: false,
-      stoppedPlaying: false,
-      playing: false,
-      finished: false
+      finished: false,
+      audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac'
     };
 
     prepareRecordingPath(audioPath){
@@ -33,8 +32,7 @@ class AudioExample extends Component {
     }
 
     componentDidMount() {
-      let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
-      this.prepareRecordingPath(audioPath);
+      this.prepareRecordingPath(this.state.audioPath);
       AudioRecorder.onProgress = (data) => {
         this.setState({currentTime: Math.floor(data.currentTime)});
       };
@@ -61,38 +59,32 @@ class AudioExample extends Component {
         AudioRecorder.pauseRecording();
         this.setState({stoppedRecording: true, recording: false});
       }
-      else if (this.state.playing) {
-        AudioRecorder.pausePlaying();
-        this.setState({playing: false, stoppedPlaying: true});
-      }
     }
 
     _stop() {
       if (this.state.recording) {
         AudioRecorder.stopRecording();
         this.setState({stoppedRecording: true, recording: false});
-      } else if (this.state.playing) {
-        AudioRecorder.stopPlaying();
-        this.setState({playing: false, stoppedPlaying: true});
-      }
+    }
+
+    _play() {
+      this._stop();
+      var sound = new Sound(this.state.audioPath, Sound.MAIN_BUNDLE, (error) => {
+        if (error) {
+          console.log('failed to load the sound', error);
+        } else {
+          console.log('duration in seconds: ' + sound.getDuration() +
+              'number of channels: ' + sound.getNumberOfChannels());
+        }
+      });
     }
 
     _record() {
       if(this.state.stoppedRecording){
-        let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
-        this.prepareRecordingPath(audioPath);
+        this.prepareRecordingPath(this.state.audioPath);
       }
       AudioRecorder.startRecording();
-      this.setState({recording: true, playing: false});
-    }
-
-   _play() {
-      if (this.state.recording) {
-        this._stop();
-        this.setState({recording: false});
-      }
-      AudioRecorder.playRecording();
-      this.setState({playing: true});
+      this.setState({recording: true});
     }
 
     render() {
@@ -101,9 +93,9 @@ class AudioExample extends Component {
         <View style={styles.container}>
           <View style={styles.controls}>
             {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
+            {this._renderButton("PLAY", () => {this._play()} )}
             {this._renderButton("STOP", () => {this._stop()} )}
             {this._renderButton("PAUSE", () => {this._pause()} )}
-            {this._renderButton("PLAY", () => {this._play()}, this.state.playing )}
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>

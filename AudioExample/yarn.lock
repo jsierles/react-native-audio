@@ -1590,6 +1590,10 @@ file-type@^3.1.0:
   version "3.9.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-3.9.0.tgz#257a078384d1db8087bc449d107d52a52672b9e9"
 
+"file:./..":
+  name react-native-audio
+  version "2.3.0"
+
 filename-regex@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.0.tgz#996e3e80479b98b9897f15a8a58b3d084e926775"
@@ -2990,8 +2994,12 @@ react-deep-force-update@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
 
-"react-native-audio@file:../":
-  version "2.2.0"
+"react-native-audio@file:./../":
+  version "2.3.0"
+
+react-native-sound:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.8.3.tgz#2c0b08dde0c9afee33e6aef3de020f2781c38bed"
 
 react-native@0.39.0:
   version "0.39.0"

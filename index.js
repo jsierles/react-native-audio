@@ -1,89 +1,15 @@
 'use strict';
 
-/**
- * This module is a thin layer over the native module. It's aim is to obscure
- * implementation details for registering callbacks, changing settings, etc.
-*/
+import React from "react";
 
-var React, {NativeModules, NativeAppEventEmitter, DeviceEventEmitter, Platform} = require('react-native');
+import ReactNative, {
+  NativeModules,
+  NativeAppEventEmitter,
+  DeviceEventEmitter,
+  Platform
+} from "react-native";
 
-var AudioPlayerManager = NativeModules.AudioPlayerManager;
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
-
-var AudioPlayer = {
-
-  play: function(path, options) {
-    if (options) {
-      if (!('sessionCategory' in options))
-        options['sessionCategory'] = 'SoloAmbient';
-      if (!('numberOfLoops' in options))
-        options['numberOfLoops'] = 0;
-    } else {
-      options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
-    }
-    return AudioPlayerManager.play(path, options);
-  },
-  playWithUrl: function(url, options) {
-    if (options) {
-      if (!('sessionCategory' in options))
-        options['sessionCategory'] = 'SoloAmbient';
-      if (!('numberOfLoops' in options))
-        options['numberOfLoops'] = 0;
-    } else {
-      options = {sessionCategory: 'SoloAmbient', numberOfLoops: 0}
-    }
-    return AudioPlayerManager.playWithUrl(url, options);
-  },
-  pause: function() {
-    return AudioPlayerManager.pause();
-  },
-  unpause: function() {
-    return AudioPlayerManager.unpause();
-  },
-  stop: function() {
-    return AudioPlayerManager.stop();
-  },
-  setCurrentTime: function(time) {
-    return AudioPlayerManager.setCurrentTime(time);
-  },
-  skipToSeconds: function(position) {
-    return AudioPlayerManager.skipToSeconds(position);
-  },
-  setProgressSubscription: function() {
-    if (this.progressSubscription) this.progressSubscription.remove();
-    this.progressSubscription = DeviceEventEmitter.addListener('playerProgress',
-      (data) => {
-        if (this.onProgress) {
-          this.onProgress(data);
-        }
-      }
-    );
-  },
-  setFinishedSubscription: function() {
-    if (this.finishedSubscription) this.finishedSubscription.remove();
-    this.finishedSubscription = DeviceEventEmitter.addListener('playerFinished',
-      (data) => {
-        if (this.onFinished) {
-          this.onFinished(data);
-        }
-      }
-    );
-  },
-  getDurationFromPath: function(path) {
-    return AudioPlayerManager.getDurationFromPath(path);
-  },
-
-  getDuration: function(callback) {
-    AudioPlayerManager.getDuration((error, duration) => {
-      callback(duration);
-    })
-  },
-  getCurrentTime: function(callback) {
-    AudioPlayerManager.getCurrentTime((error, currentTime) => {
-      callback(currentTime);
-    })
-  },
-};
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path, options) {
@@ -138,16 +64,6 @@ var AudioRecorder = {
   stopRecording: function() {
     return AudioRecorderManager.stopRecording();
   },
-  playRecording: function() {
-    return AudioRecorderManager.playRecording();
-  },
-  stopPlaying: function() {
-    return AudioRecorderManager.stopPlaying();
-  },
-  // android only
-  pausePlaying: function() {
-    return AudioRecorderManager.pausePlaying();
-  },
   checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
   requestAuthorization: AudioRecorderManager.requestAuthorization,
 };
@@ -156,21 +72,21 @@ let AudioUtils = {};
 
 if (Platform.OS === 'ios') {
   AudioUtils = {
-    MainBundlePath: AudioPlayerManager.MainBundlePath,
-    CachesDirectoryPath: AudioPlayerManager.NSCachesDirectoryPath,
-    DocumentDirectoryPath: AudioPlayerManager.NSDocumentDirectoryPath,
-    LibraryDirectoryPath: AudioPlayerManager.NSLibraryDirectoryPath,
+    MainBundlePath: AudioRecorderManager.MainBundlePath,
+    CachesDirectoryPath: AudioRecorderManager.NSCachesDirectoryPath,
+    DocumentDirectoryPath: AudioRecorderManager.NSDocumentDirectoryPath,
+    LibraryDirectoryPath: AudioRecorderManager.NSLibraryDirectoryPath,
   };
 } else if (Platform.OS === 'android') {
   AudioUtils = {
-    MainBundlePath: AudioPlayerManager.MainBundlePath,
-    CachesDirectoryPath: AudioPlayerManager.CachesDirectoryPath,
-    DocumentDirectoryPath: AudioPlayerManager.DocumentDirectoryPath,
-    LibraryDirectoryPath: AudioPlayerManager.LibraryDirectoryPath,
-    PicturesDirectoryPath: AudioPlayerManager.PicturesDirectoryPath,
-    MusicDirectoryPath: AudioPlayerManager.MusicDirectoryPath,
-    DownloadsDirectoryPath: AudioPlayerManager.DownloadsDirectoryPath
+    MainBundlePath: AudioRecorderManager.MainBundlePath,
+    CachesDirectoryPath: AudioRecorderManager.CachesDirectoryPath,
+    DocumentDirectoryPath: AudioRecorderManager.DocumentDirectoryPath,
+    LibraryDirectoryPath: AudioRecorderManager.LibraryDirectoryPath,
+    PicturesDirectoryPath: AudioRecorderManager.PicturesDirectoryPath,
+    MusicDirectoryPath: AudioRecorderManager.MusicDirectoryPath,
+    DownloadsDirectoryPath: AudioRecorderManager.DownloadsDirectoryPath
   };
 }
 
-module.exports = {AudioPlayer, AudioRecorder, AudioUtils};
+module.exports = {AudioRecorder, AudioUtils};

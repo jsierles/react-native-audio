@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		429D457A1CFC96E100CBD51A /* AudioRecorderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 429D45761CFC96E100CBD51A /* AudioRecorderManager.m */; };
-		429D457B1CFC96E100CBD51A /* AudioPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 429D45781CFC96E100CBD51A /* AudioPlayerManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +25,6 @@
 /* Begin PBXFileReference section */
 		429D45761CFC96E100CBD51A /* AudioRecorderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioRecorderManager.m; sourceTree = SOURCE_ROOT; };
 		429D45771CFC96E100CBD51A /* AudioRecorderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioRecorderManager.h; sourceTree = SOURCE_ROOT; };
-		429D45781CFC96E100CBD51A /* AudioPlayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioPlayerManager.m; sourceTree = SOURCE_ROOT; };
-		429D45791CFC96E100CBD51A /* AudioPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioPlayerManager.h; sourceTree = SOURCE_ROOT; };
 		42F559BA1CFC90C400DC3F84 /* libRNAudio.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAudio.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -63,8 +60,6 @@
 			children = (
 				429D45761CFC96E100CBD51A /* AudioRecorderManager.m */,
 				429D45771CFC96E100CBD51A /* AudioRecorderManager.h */,
-				429D45781CFC96E100CBD51A /* AudioPlayerManager.m */,
-				429D45791CFC96E100CBD51A /* AudioPlayerManager.h */,
 			);
 			path = RNAudio;
 			sourceTree = "<group>";
@@ -126,7 +121,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				429D457A1CFC96E100CBD51A /* AudioRecorderManager.m in Sources */,
-				429D457B1CFC96E100CBD51A /* AudioPlayerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
