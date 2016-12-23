@@ -19,7 +19,6 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
 @implementation AudioRecorderManager {
 
   AVAudioRecorder *_audioRecorder;
-  AVAudioPlayer *_audioPlayer;
 
   NSTimeInterval _currentTime;
   id _progressUpdateTimer;
@@ -41,8 +40,6 @@ RCT_EXPORT_MODULE();
 - (void)sendProgressUpdate {
   if (_audioRecorder && _audioRecorder.recording) {
     _currentTime = _audioRecorder.currentTime;
-  } else if (_audioPlayer && _audioPlayer.playing) {
-    _currentTime = _audioPlayer.currentTime;
   } else {
     return;
   }
@@ -166,7 +163,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
-  [_recordSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+  [_recordSession setCategory:AVAudioSessionCategoryRecord error:nil];
 
   _audioRecorder = [[AVAudioRecorder alloc]
                 initWithURL:_audioFileURL
@@ -209,47 +206,6 @@ RCT_EXPORT_METHOD(pauseRecording)
   }
 }
 
-RCT_EXPORT_METHOD(playRecording)
-{
-  if (_audioRecorder.recording) {
-    NSLog(@"stop the recording before playing");
-    return;
-
-  } else {
-
-    NSError *error;
-
-    if (!_audioPlayer.playing) {
-      _audioPlayer = [[AVAudioPlayer alloc]
-        initWithContentsOfURL:_audioRecorder.url
-        error:&error];
-
-      if (error) {
-        [self stopProgressTimer];
-        NSLog(@"audio playback loading error: %@", [error localizedDescription]);
-        // TODO: dispatch error over the bridge
-      } else {
-        [self startProgressTimer];
-        [_audioPlayer play];
-      }
-    }
-  }
-}
-
-RCT_EXPORT_METHOD(pausePlaying)
-{
-  if (_audioPlayer.playing) {
-    [_audioPlayer pause];
-  }
-}
-
-RCT_EXPORT_METHOD(stopPlaying)
-{
-  if (_audioPlayer.playing) {
-    [_audioPlayer stop];
-  }
-}
-
 RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject)
 {
   AVAudioSessionRecordPermission permissionStatus = [[AVAudioSession sharedInstance] recordPermission];
@@ -279,6 +235,22 @@ RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
       resolve(@NO);
     }
   }];
+}
+
+- (NSString *)getPathForDirectory:(int)directory
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
+  return [paths firstObject];
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+    @"MainBundlePath": [[NSBundle mainBundle] bundlePath],
+    @"NSCachesDirectoryPath": [self getPathForDirectory:NSCachesDirectory],
+    @"NSDocumentDirectoryPath": [self getPathForDirectory:NSDocumentDirectory],
+    @"NSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory]
+  };
 }
 
 @end
