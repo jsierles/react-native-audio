@@ -110,6 +110,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     mediaPlayer.release();
     isPlaying = false;
     isPaused = false;
+    stopTimer();
     promise.resolve(currentFileName);
   }
 
@@ -146,11 +147,24 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void play(String path, ReadableMap playbackSettings, final Promise promise) {
-
     if (path == null) {
       Log.e("INVALID_PATH", "Please set valid path");
       promise.reject("INVALID_PATH", "Please set valid path");
       return;
+    }
+    if (isPlaying) {
+      /* Comment by Grace Han 2016-12-23
+         Can not replace the code below to stop(promise)
+         In stop(promise) method, it will resolve the promise,
+         and then when the audio complete playing, it will resolve the same promise again!
+         Reject same promise twice will lead to error: ...only one callback may be registered to a function in a native module
+         Same issue refers to: https://github.com/facebook/react-native/issues/7522
+      */
+      mediaPlayer.stop();
+      mediaPlayer.release();
+      isPlaying = false;
+      isPaused = false;
+      stopTimer();
     }
     mediaPlayer = new MediaPlayer();
     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -174,7 +188,7 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       promise.reject("INVALID_STATE", "No playback");
       return;
     }
-    mediaPlayer.seekTo(position);
+    mediaPlayer.seekTo(position*1000);
   }
 
   @ReactMethod
@@ -213,19 +227,21 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
         stopTimer();
       }
     });
+    mediaPlayer.start();
     startTimer();
   }
 
   private void startTimer()
   {
     timer = new Timer();
-    mediaPlayer.start();
     TimerTask task = new TimerTask() {
       @Override
       public void run() {
-        WritableMap map = Arguments.createMap();
-        map.putDouble("currentTime", mediaPlayer.getCurrentPosition()/1000.0);
-        sendEvent("playerProgress", map);
+        if (mediaPlayer != null && isPlaying) {
+          WritableMap map = Arguments.createMap();
+          map.putDouble("currentTime", mediaPlayer.getCurrentPosition()/1000.0);
+          sendEvent("playerProgress", map);
+        }
       }
     };
     timer.schedule(task, 0, 250);
