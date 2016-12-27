@@ -106,20 +106,20 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
     WritableArray outputsArray = Arguments.createArray();
 
     WritableMap map = Arguments.createMap();
-    map.putString("key", "Earphone");
-    map.putString("name", "Earphone");
+    map.putString("key", "Phone");
+    map.putString("name", "Phone");
     outputsArray.pushMap(map);
 
     map = Arguments.createMap();
-    map.putString("key", "Speaker");
-    map.putString("name", "Speaker");
+    map.putString("key", "Phone Speaker");
+    map.putString("name", "Phone Speaker");
     outputsArray.pushMap(map);
 
     AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
     if (audioManager.isWiredHeadsetOn()) {
       map = Arguments.createMap();
-      map.putString("key", "Headset");
-      map.putString("name","Headset");
+      map.putString("key", "Headphones");
+      map.putString("name","Headphones");
       outputsArray.pushMap(map);
     } else if (audioManager.isBluetoothA2dpOn() || audioManager.isBluetoothScoOn()) {
       map = Arguments.createMap();
