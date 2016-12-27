@@ -241,6 +241,40 @@ RCT_EXPORT_METHOD(getDuration:(RCTResponseSenderBlock)callback)
   callback(@[[NSNull null], [NSNumber numberWithDouble:duration]]);
 }
 
+RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
+{
+  NSMutableArray *array = [NSMutableArray arrayWithArray:
+  @[
+    @{ @"key": @"Earphone", @"name": @"Earphone" },
+    @{ @"key": @"Speaker", @"name": @"Speaker" }
+   ]];
+  
+  BOOL isHeadsetOn = false;
+  BOOL isBluetoothConnected = false;
+  
+  AVAudioSessionRouteDescription* route = [[AVAudioSession sharedInstance] currentRoute];
+  for (AVAudioSessionPortDescription* desc in [route outputs]) {
+    if ([[desc portType] isEqualToString:AVAudioSessionPortHeadphones]) {
+      isHeadsetOn = true;
+      continue;
+    }
+    
+    if ([[desc portType] isEqualToString:AVAudioSessionPortBluetoothA2DP] ||
+        [[desc portType] isEqualToString:AVAudioSessionPortBluetoothLE] ||
+        [[desc portType] isEqualToString:AVAudioSessionPortBluetoothHFP]) {
+      isBluetoothConnected = true;
+    }
+  }
+  if (isHeadsetOn) {
+    [array addObject: @{ @"key": @"Headset", @"name": @"Headset" }];
+  }
+  if (isBluetoothConnected) {
+    [array addObject: @{ @"key": @"Bluetooth", @"name": @"Bluetooth" }];
+  }
+  
+  callback(@[array]);
+}
+
 - (NSString *)getPathForDirectory:(int)directory
 {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
