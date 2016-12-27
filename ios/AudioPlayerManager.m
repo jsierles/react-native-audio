@@ -15,6 +15,11 @@
 NSString *const AudioPlayerEventProgress = @"playerProgress";
 NSString *const AudioPlayerEventFinished = @"playerFinished";
 
+NSString *const OutputPhone = @"Phone";
+NSString *const OutputPhoneSpeaker = @"Phone Speaker";
+NSString *const OutputBluetooth = @"Bluetooth";
+NSString *const OutputHeadphones = @"Headphones";
+
 @implementation AudioPlayerManager {
 
   AVAudioPlayer *_audioPlayer;
@@ -243,11 +248,7 @@ RCT_EXPORT_METHOD(getDuration:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
 {
-  NSMutableArray *array = [NSMutableArray arrayWithArray:
-  @[
-    @{ @"key": @"Phone", @"name": @"Phone" },
-    @{ @"key": @"Phone Speaker", @"name": @"Phone Speaker" }
-   ]];
+  NSMutableArray *array = [NSMutableArray arrayWithArray: @[OutputPhone, OutputPhoneSpeaker]];
   
   BOOL isHeadsetOn = false;
   BOOL isBluetoothConnected = false;
@@ -266,10 +267,10 @@ RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
     }
   }
   if (isHeadsetOn) {
-    [array addObject: @{ @"key": @"Headphones", @"name": @"Headphones" }];
+    [array addObject: OutputHeadphones];
   }
   if (isBluetoothConnected) {
-    [array addObject: @{ @"key": @"Bluetooth", @"name": @"Bluetooth" }];
+    [array addObject: OutputBluetooth];
   }
   
   callback(@[array]);
