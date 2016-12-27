@@ -245,8 +245,8 @@ RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
 {
   NSMutableArray *array = [NSMutableArray arrayWithArray:
   @[
-    @{ @"key": @"Earphone", @"name": @"Earphone" },
-    @{ @"key": @"Speaker", @"name": @"Speaker" }
+    @{ @"key": @"Phone", @"name": @"Phone" },
+    @{ @"key": @"Phone Speaker", @"name": @"Phone Speaker" }
    ]];
   
   BOOL isHeadsetOn = false;
@@ -266,7 +266,7 @@ RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
     }
   }
   if (isHeadsetOn) {
-    [array addObject: @{ @"key": @"Headset", @"name": @"Headset" }];
+    [array addObject: @{ @"key": @"Headphones", @"name": @"Headphones" }];
   }
   if (isBluetoothConnected) {
     [array addObject: @{ @"key": @"Bluetooth", @"name": @"Bluetooth" }];
