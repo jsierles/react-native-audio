@@ -2,14 +2,17 @@ package com.rnim.rn.audio;
 
 import android.content.Context;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 import java.io.File;
@@ -96,7 +99,35 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       return;
     }
     promise.resolve(mediaPlayer.getDuration());
+  }
 
+  @ReactMethod
+  public void getOutputs(Callback callback) {
+    WritableArray outputsArray = Arguments.createArray();
+
+    WritableMap map = Arguments.createMap();
+    map.putString("key", "Earphone");
+    map.putString("name", "Earphone");
+    outputsArray.pushMap(map);
+
+    map = Arguments.createMap();
+    map.putString("key", "Speaker");
+    map.putString("name", "Speaker");
+    outputsArray.pushMap(map);
+
+    AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+    if (audioManager.isWiredHeadsetOn()) {
+      map = Arguments.createMap();
+      map.putString("key", "Headset");
+      map.putString("name","Headset");
+      outputsArray.pushMap(map);
+    } else if (audioManager.isBluetoothA2dpOn() || audioManager.isBluetoothScoOn()) {
+      map = Arguments.createMap();
+      map.putString("key", "Bluetooth");
+      map.putString("name","Bluetooth");
+      outputsArray.pushMap(map);
+    }
+    callback.invoke(outputsArray);
   }
 
   @ReactMethod
