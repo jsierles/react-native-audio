@@ -125,6 +125,12 @@ class AudioExample extends Component {
       AudioPlayer.stop();
     }
 
+    _getDuration() {
+      AudioPlayer.getOutputs(outputs => {
+        console.log('outputs========', outputs)
+      })
+    }
+
     render() {
 
       return (
@@ -138,6 +144,7 @@ class AudioExample extends Component {
             {this._renderButton("PLAY MP3 None", () => {this._playMp3()} )}
             {this._renderButton("PLAY MP3 Speaker", () => {this._playMp3Speaker()} )}
             {this._renderButton("Stop MP3", () => {this._stopMp3()} )}
+            {this._renderButton("Get outputs", () => {this._getDuration()} )}
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>
