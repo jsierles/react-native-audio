@@ -49,6 +49,11 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   private static final String MusicDirectoryPath = "MusicDirectoryPath";
   private static final String DownloadsDirectoryPath = "DownloadsDirectoryPath";
 
+  private static final String OUTPUT_PHONE = "Phone";
+  private static final String OUTPUT_PHONE_SPAKER = "Phone Speaker";
+  private static final String OUTPUT_BLUETOOTH = "Bluetooth";
+  private static final String OUTPUT_HEADPHONES = "Headphones";
+
 
   public AudioPlayerManager(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -105,27 +110,14 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   public void getOutputs(Callback callback) {
     WritableArray outputsArray = Arguments.createArray();
 
-    WritableMap map = Arguments.createMap();
-    map.putString("key", "Phone");
-    map.putString("name", "Phone");
-    outputsArray.pushMap(map);
-
-    map = Arguments.createMap();
-    map.putString("key", "Phone Speaker");
-    map.putString("name", "Phone Speaker");
-    outputsArray.pushMap(map);
+    outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE);
+    outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE_SPAKER);
 
     AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
     if (audioManager.isWiredHeadsetOn()) {
-      map = Arguments.createMap();
-      map.putString("key", "Headphones");
-      map.putString("name","Headphones");
-      outputsArray.pushMap(map);
+      outputsArray.pushString(AudioPlayerManager.OUTPUT_HEADPHONES);
     } else if (audioManager.isBluetoothA2dpOn() || audioManager.isBluetoothScoOn()) {
-      map = Arguments.createMap();
-      map.putString("key", "Bluetooth");
-      map.putString("name","Bluetooth");
-      outputsArray.pushMap(map);
+      outputsArray.pushString(AudioPlayerManager.OUTPUT_BLUETOOTH);
     }
     callback.invoke(outputsArray);
   }
