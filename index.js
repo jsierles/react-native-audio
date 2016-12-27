@@ -83,6 +83,11 @@ var AudioPlayer = {
       callback(currentTime);
     })
   },
+  getOutputs: function(callback) {
+    AudioPlayerManager.getOutputs(outputs => {
+      callback(outputs);
+    })
+  },
 };
 
 var AudioRecorder = {
