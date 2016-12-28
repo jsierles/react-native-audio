@@ -334,16 +334,20 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
       String audioPort = playbackSettings.getString("output");
       AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
       switch (audioPort){
-        case "Bluetooth":
+        case AudioPlayerManager.OUTPUT_BLUETOOTH:
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
           audioManager.startBluetoothSco();
           audioManager.setBluetoothScoOn(true);
-        case "Speaker":
-          audioManager.setMode(AudioManager.MODE_NORMAL);
-          audioManager.stopBluetoothSco();
-          audioManager.setBluetoothScoOn(false);
+        case AudioPlayerManager.OUTPUT_PHONE_SPAKER:
+          if (audioManager.isBluetoothScoOn() || audioManager.isBluetoothA2dpOn()) {
+            audioManager.setMode(AudioManager.MODE_IN_CALL);
+          } else {
+            audioManager.setMode(AudioManager.MODE_NORMAL);
+          }
           audioManager.setSpeakerphoneOn(true);
           break;
+        case AudioPlayerManager.OUTPUT_PHONE:
+          audioManager.setMode(AudioManager.MODE_IN_CALL);
         case "None":
           audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
           audioManager.stopBluetoothSco();
