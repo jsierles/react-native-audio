@@ -254,8 +254,7 @@ RCT_EXPORT_METHOD(getDuration:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
 {
-  NSMutableArray *array = [NSMutableArray arrayWithArray: @[OutputPhone, OutputPhoneSpeaker]];
-  
+  NSMutableArray *array;
   BOOL isHeadsetOn = false;
   BOOL isBluetoothConnected = false;
   
@@ -273,10 +272,11 @@ RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
     }
   }
   if (isHeadsetOn) {
-    [array addObject: OutputHeadphones];
-  }
-  if (isBluetoothConnected) {
-    [array addObject: OutputBluetooth];
+    array = [NSMutableArray arrayWithArray: @[OutputHeadphones]];
+  } else if (isBluetoothConnected) {
+    array = [NSMutableArray arrayWithArray: @[OutputPhone, OutputPhoneSpeaker, OutputBluetooth]];
+  } else {
+    array = [NSMutableArray arrayWithArray: @[OutputPhone, OutputPhoneSpeaker]];
   }
   
   callback(@[array]);
