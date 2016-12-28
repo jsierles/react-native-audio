@@ -110,14 +110,16 @@ class AudioPlayerManager extends ReactContextBaseJavaModule {
   public void getOutputs(Callback callback) {
     WritableArray outputsArray = Arguments.createArray();
 
-    outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE);
-    outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE_SPAKER);
-
     AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
     if (audioManager.isWiredHeadsetOn()) {
       outputsArray.pushString(AudioPlayerManager.OUTPUT_HEADPHONES);
     } else if (audioManager.isBluetoothA2dpOn() || audioManager.isBluetoothScoOn()) {
+      outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE);
+      outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE_SPAKER);
       outputsArray.pushString(AudioPlayerManager.OUTPUT_BLUETOOTH);
+    } else {
+      outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE);
+      outputsArray.pushString(AudioPlayerManager.OUTPUT_PHONE_SPAKER);
     }
     callback.invoke(outputsArray);
   }
