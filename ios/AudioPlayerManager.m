@@ -154,12 +154,18 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
 }
 
 - (void)setAudioOutput:(NSString *)output {
-    if([output isEqualToString:@"Speaker"]){
-        [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
-    } else if([output isEqualToString:@"None"]){
-        [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+    if([output isEqualToString:OutputPhoneSpeaker]){
+      AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+      [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+      [audioSession setActive:YES error:nil];
+      [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    } else if ([output isEqualToString:OutputPhone]){
+      AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+      [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+      [audioSession setActive:YES error:nil];
+      [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
     } else {
-        [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+      [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
     }
 }
 
