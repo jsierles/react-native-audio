@@ -131,8 +131,13 @@ class AudioExample extends Component {
       })
     }
 
-    render() {
+    _playViaOutput(output) {
+      let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';      
+      let options = {output: output};
+      AudioPlayer.play(audioPath, options)      
+    }
 
+    render() {
       return (
         <View style={styles.container}>
           <View style={styles.controls}>
@@ -140,11 +145,14 @@ class AudioExample extends Component {
             {this._renderButton("PAUSE", () => {this._pause()} )}
             {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
             {this._renderButton("STOP", () => {this._stop()} )}
-            {this._renderButton("PLAY", () => {this._play()}, this.state.playing )}
-            {this._renderButton("PLAY MP3 None", () => {this._playMp3()} )}
-            {this._renderButton("PLAY MP3 Speaker", () => {this._playMp3Speaker()} )}
-            {this._renderButton("Stop MP3", () => {this._stopMp3()} )}
+
             {this._renderButton("Get outputs", () => {this._getDuration()} )}
+
+            {this._renderButton("Phone", () => {this._playViaOutput("Phone")} )}
+            {this._renderButton("Phone Speaker", () => {this._playViaOutput("Phone Speaker")} )}            
+            {this._renderButton("Bluetooth", () => {this._playViaOutput("Bluetooth")} )}
+            {this._renderButton("Headphones", () => {this._playViaOutput("Headphones")} )}
+
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>
