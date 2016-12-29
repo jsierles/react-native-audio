@@ -254,6 +254,11 @@ RCT_EXPORT_METHOD(getDuration:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(getOutputs:(RCTResponseSenderBlock)callback)
 {
+  //Reset audio output route and session catetory when get the list
+  AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+  [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+  [audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+
   NSMutableArray *array;
   BOOL isHeadsetOn = false;
   BOOL isBluetoothConnected = false;
