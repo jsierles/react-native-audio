@@ -7,13 +7,17 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.content.pm.PackageManager;
 import android.os.Environment;
@@ -38,6 +42,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private MediaRecorder recorder;
   private String currentOutputFile;
   private boolean isRecording = false;
+  private Timer timer;
+  private int recorderSecondsElapsed;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
@@ -160,6 +166,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     }
     recorder.start();
     isRecording = true;
+    startTimer();
     promise.resolve(currentOutputFile);
   }
 
@@ -173,6 +180,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     recorder.stop();
     isRecording = false;
     recorder.release();
+    stopTimer();    
     promise.resolve(currentOutputFile);
     sendEvent("recordingFinished", null);
   }
@@ -183,6 +191,29 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     stopRecording(promise);
   }
 
+    private void startTimer(){
+    stopTimer();
+    timer = new Timer();
+    timer.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
+        WritableMap body = Arguments.createMap();
+        body.putInt("currentTime", recorderSecondsElapsed);
+        sendEvent("recordingProgress", body);
+        recorderSecondsElapsed++;
+      }
+    }, 0, 1000);
+  }
+
+  private void stopTimer(){
+    recorderSecondsElapsed = 0;
+    if (timer != null) {
+      timer.cancel();
+      timer.purge();
+      timer = null;
+    }
+  }
+  
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
