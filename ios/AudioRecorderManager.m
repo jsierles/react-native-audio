@@ -7,10 +7,10 @@
 //
 
 #import "AudioRecorderManager.h"
-#import "RCTConvert.h"
-#import "RCTBridge.h"
-#import "RCTUtils.h"
-#import "RCTEventDispatcher.h"
+#import <React/RCTConvert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTUtils.h>
+#import <React/RCTEventDispatcher.h>
 #import <AVFoundation/AVFoundation.h>
 
 NSString *const AudioRecorderEventProgress = @"recordingProgress";
