@@ -20,7 +20,6 @@ public class ReactNativeAudioPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new AudioPlayerManager(reactContext));
         modules.add(new AudioRecorderManager(reactContext));
 
         return modules;

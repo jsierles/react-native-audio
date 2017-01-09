@@ -1,11 +1,15 @@
-Record and play back audio in your iOS or Android React Native apps.
+Record audio in iOS or Android React Native apps.
+
+## BREAKING CHANGES in v3.0.0
+
+Playback support was removed in favor of using more mature libraries like [react-native-sound](https://github.com/zmxv/react-native-sound)
 
 ### Installation
 
 Install the npm package and link it to your project:
 
 ```
-npm install react-native-audio
+npm install react-native-audio --save
 react-native link react-native-audio
 ```
 
@@ -33,8 +37,6 @@ react-native run-android
 ```
 
 ### Usage
-
-This library supports recording, basic playback and progress reporting.
 
 NOTE: Progress reporting is *iOS only* for now.
 
@@ -73,7 +75,7 @@ The `MeteringEnabled` boolean to enable audio metering.
 AudioEncodingBitRate: int
 OutputFormat: string, `mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm`
 
-See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play features, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
+See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more details. For playing audio check out [React Native Sound](https://github.com/zmxv/react-native-sound)
 
 MP3 recording is *not supported* since the underlying platforms do not support it.
 

@@ -18,7 +18,6 @@ import java.util.Map;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.media.MediaRecorder;
-import android.media.MediaPlayer;
 import android.media.AudioManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -39,13 +38,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private MediaRecorder recorder;
   private String currentOutputFile;
   private boolean isRecording = false;
-  private AudioPlayerManager audioPlayerManager;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
-    this.audioPlayerManager = new AudioPlayerManager(reactContext);
   }
 
   @Override
@@ -193,27 +190,6 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     // Added this function to have the same api for android and iOS, stops recording now
     stopRecording(promise);
   }
-
-  @ReactMethod
-  public void stopPlaying(Promise promise){
-    audioPlayerManager.stop(promise);
-  }
-
-  @ReactMethod
-  public void pausePlaying(Promise promise){
-    audioPlayerManager.pause(promise);
-  }
-
-  @ReactMethod
-  public void unpausePlaying(Promise promise){
-    audioPlayerManager.unpause(promise);
-  }
-
-  @ReactMethod
-  public void playRecording(final Promise promise) {
-    audioPlayerManager.play(currentOutputFile, null, promise);
-  }
-
 
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
