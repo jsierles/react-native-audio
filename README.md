@@ -91,5 +91,7 @@ react-native run-ios
 ## Support
 
 This package is forked from [https://github.com/jsierles/react-native-audio](https://github.com/jsierles/react-native-audio).
+
 We borrow some features from it, learn a lot and add features such as: Playing via appointed outputs, get current available outputs, add audio progress reporting support for Andoid and so on.
+
 If you like the component and want to support it, feel free to donate any amount or help with issues.
