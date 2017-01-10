@@ -60,7 +60,7 @@ react-native run-ios
 #### AudioRecorder
 | Method                 | Method Description                                                                                                                        | Parameters    | Parameters Description                                                            |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------|
-| prepareRecordingAtPath | This method must be called before recording to set up the recording path and set the recording audio quality and output format and so on. | path, options | path: the local path to store the recording audio. options: the recording options |
+| prepareRecordingAtPath | This method must be called before recording to set up the recording path and set the recording audio quality and output format and so on. | path, options | `path`: the local path to store the recording audio. `options`: the recording options |
 | startRecording         | Start recording                                                                                                                           |               |                                                                                   |
 | pauseRecording         | Pause recording                                                                                                                           |               |                                                                                   |
 | stopRecording          | When this method is called, the recorded audio file will be saved to local automatically.                                                 |               |                                                                                   |
@@ -76,14 +76,20 @@ react-native run-ios
 
 | Method                  | Method Description                                                                                                   | Parameters    | Parameters Description                              |
 |-------------------------|----------------------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------|
-| play                    | Play audio form path with options                                                                                    | path, options | path: local audio path options: the playing options |
-| playWithUrl             |                                                                                                                      | url, options  | url: audio url options: the playing options         |
+| play                    | Play audio form path with options                                                                                    | path, options | `path`: local audio path `options`: the playing options |
+| playWithUrl             |                                                                                                                      | url, options  | `url`: audio url `options`: the playing options         |
 | pause                   | Pause playing                                                                                                        |               |                                                     |
 | unpause                 | Unpause playing                                                                                                      |               |                                                     |
 | stop                    | Stop playing audio                                                                                                   |               |                                                     |
-| skipToSeconds           | Play audio from some position, the unit is second                                                                    | position      | position: use second as unit                        |
+| skipToSeconds           | Play audio from some position, the unit is second                                                                    | position      | `position`: use second as unit                        |
 | onProgress              | Playing progress reporting callback, must call function setProgressSubscription to subscribe the onProgress callback | data          |                                                     |
 | setProgressSubscription | onProgress callback subscriotion                                                                                     |               |                                                     |
 | onFinished              | Playing finish callback, must call function setFinishedSubscription to subscribe the onFinished callback             |               |                                                     |
 | setFinishedSubscription | onFinished callback subscription                                                                                     |               |                                                     |
-| getOutputs              | Get current available outputs, will return an array of String, for example: ["Phone", "Phone Speaker", "Bluetooth"]  |               |                                                     |
+| getOutputs              | Get current available outputs, will return an array of String, for example the outputs can be: `["Phone", "Phone Speaker", "Bluetooth"]`  |               |                                                     |
+
+## Support
+
+This package is forked from [https://github.com/jsierles/react-native-audio](https://github.com/jsierles/react-native-audio).
+We borrow some features from it, learn a lot and add features such as: Playing via appointed outputs, get current available outputs, add audio progress reporting support for Andoid and so on.
+If you like the component and want to support it, feel free to donate any amount or help with issues.
