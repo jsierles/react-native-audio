@@ -79,7 +79,6 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     }
 
     recorder = new MediaRecorder();
-
     try {
       recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
       int outputFormat = getOutputFormatFromString(recordingSettings.getString("OutputFormat"));
@@ -172,14 +171,14 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       return;
     }
 
-     try {
-            recorder.stop();
-            recorder.release();
-            recorder = null;
-        }
-        catch(final Exception e) {
-            recorder = null;
-        }
+    try {
+      recorder.stop();
+      recorder.release();
+      recorder = null;
+    }
+    catch(final Exception e) {
+      ecorder = null;
+    }
     isRecording = false;
     promise.resolve(currentOutputFile);
     sendEvent("recordingFinished", null);
