@@ -88,6 +88,20 @@ react-native run-ios
 | setFinishedSubscription | onFinished callback subscription                                                                                     |               |                                                     |
 | getOutputs              | Get current available outputs, will return an array of String, for example the outputs can be: `["Phone", "Phone Speaker", "Bluetooth"]`  |               |                                                     |
 
+
+##### Available Playback Outputs
+
+When playing audio, there are chances that the headphone is plugged, or the bluetooth headset is connected to your device.
+
+`react-native-audio-player-recorder` supports to get current the available outputs.
+
+
+
+##### Set Playback Outputs With Options
+
+
+
+
 ## Support
 
 This package is forked from [https://github.com/jsierles/react-native-audio](https://github.com/jsierles/react-native-audio).
