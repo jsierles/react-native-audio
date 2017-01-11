@@ -95,11 +95,36 @@ When playing audio, there are chances that the headphone is plugged, or the blue
 
 `react-native-audio-player-recorder` supports to get current the available outputs.
 
-
+```
+_getAvailableOutputs() {
+  AudioPlayer.getOutputs(outputs => {
+    console.log('outputs========', outputs)
+  })
+}
+```
 
 ##### Set Playback Outputs With Options
 
+`react-native-audio-player-recorder` supports to play audio via appointed output.
 
+Play Audio via outputs by passing `output` params:
+
+- Receiver: `Phone`
+
+- Loud Speaker: `Phone Speaker`
+
+- Bluetooth: `Bluetooth`
+
+- Headphones: `Headphones`
+
+
+```
+_playViaOutput(output) {
+  let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';      
+  let options = {output: 'Phone'};
+  AudioPlayer.play(audioPath, options)      
+}
+```
 
 
 ## Support
