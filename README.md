@@ -1,13 +1,37 @@
-Record and play back audio in your iOS or Android React Native apps.
+# React Native Audio Player Recorder [![npm version](https://badge.fury.io/js/react-native-audio-player-recorder.svg)](http://badge.fury.io/js/react-native-audio-player-recorder)
 
-### Installation
+[![NPM](https://nodei.co/npm/react-native-audio-player-recorder.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/react-native-audio-player-recorder/)
 
-Install the npm package and link it to your project:
+Record and play back audio through Loud Speaker, Receiver, Bluetooth and Headphones in your iOS or Android React Native apps.
 
+## Features
+`react-native-audio-player-recorder` is a package that allows you to:
+
+- Record audio on both iOS and Android with `Progress reporting` and features such as: `recording`, `pause recording` and `stop recording`.
+- Play audio on both iOS and Android with `progress reporting` and features such as: `playing`, `pause playing` and `stop playing`.
+
+## Installation
+
+### Install package
+
+Install with npm:
+
+```bash
+npm install react-native-audio-player-recorder --save
 ```
-npm install react-native-audio --save
-react-native link react-native-audio
+
+Or install with yarn:
+```bash
+yarn add react-native-audio-player-recorder
 ```
+
+### Link native libraries
+
+```bash
+react-native link react-native-audio-player-recorder
+```
+
+### Configration for iOS and Android
 
 On *iOS* you need to add a usage description to `Info.plist`:
 
@@ -22,61 +46,91 @@ On *Android* you need to add a permission to `AndroidManifest.xml`:
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-### Running the Sample App
+## Quick Getting Started
 
 In the `AudioExample` directory:
 
 ```
 npm install
 react-native run-ios
-react-native run-android
 ```
 
-### Usage
+### API Documentation
 
-This library supports recording, basic playback and progress reporting.
+#### AudioRecorder
+| Method                 | Method Description                                                                                                                        | Parameters    | Parameters Description                                                            |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------|
+| prepareRecordingAtPath | This method must be called before recording to set up the recording path and set the recording audio quality and output format and so on. | path, options | `path`: the local path to store the recording audio. `options`: the recording options |
+| startRecording         | Start recording                                                                                                                           |               |                                                                                   |
+| pauseRecording         | Pause recording                                                                                                                           |               |                                                                                   |
+| stopRecording          | When this method is called, the recorded audio file will be saved to local automatically.                                                 |               |                                                                                   |
+| playRecording          | Playing the recorded audio after recording finishes.                                                                                      |               |                                                                                   |
+| stopPlaying            | Stop playing the recorded audio.                                                                                                          |               |                                                                                   |
+| pausePlaying           | Pause playing the recorded audio.                                                                                                         |               |                                                                                   |
+| onProgress             | Recording progress reporting callback function.                                                                                           |               |                                                                                   |
+| onFinished             | Recording finishes callback function.                                                                                                     |               |                                                                                   |
 
-NOTE: Progress reporting is *iOS only* for now.
 
-To record in AAC format, at 22050 KHz in low quality mono:
+
+#### AudioPlayer
+
+| Method                  | Method Description                                                                                                   | Parameters    | Parameters Description                              |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------|---------------|-----------------------------------------------------|
+| play                    | Play audio form path with options                                                                                    | path, options | `path`: local audio path `options`: the playing options |
+| playWithUrl             |                                                                                                                      | url, options  | `url`: audio url `options`: the playing options         |
+| pause                   | Pause playing                                                                                                        |               |                                                     |
+| unpause                 | Unpause playing                                                                                                      |               |                                                     |
+| stop                    | Stop playing audio                                                                                                   |               |                                                     |
+| skipToSeconds           | Play audio from some position, the unit is second                                                                    | position      | `position`: use second as unit                        |
+| onProgress              | Playing progress reporting callback, must call function setProgressSubscription to subscribe the onProgress callback | data          |                                                     |
+| setProgressSubscription | onProgress callback subscriotion                                                                                     |               |                                                     |
+| onFinished              | Playing finish callback, must call function setFinishedSubscription to subscribe the onFinished callback             |               |                                                     |
+| setFinishedSubscription | onFinished callback subscription                                                                                     |               |                                                     |
+| getOutputs              | Get current available outputs, will return an array of String, for example the outputs can be: `["Phone", "Phone Speaker", "Bluetooth"]`  |               |                                                     |
+
+
+##### Available Playback Outputs
+
+When playing audio, there are chances that the headphone is plugged, or the bluetooth headset is connected to your device.
+
+`react-native-audio-player-recorder` supports to get current the available outputs.
 
 ```
-import {AudioRecorder, AudioUtils} from 'react-native-audio';
-let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
-
-AudioRecorder.prepareRecordingAtPath(audioPath, {
-  SampleRate: 22050,
-  Channels: 1,
-  AudioQuality: "Low",
-  AudioEncoding: "aac"
-});
+_getAvailableOutputs() {
+  AudioPlayer.getOutputs(outputs => {
+    console.log('outputs========', outputs)
+  })
+}
 ```
 
-#### Cross-platform options
+##### Set Playback Outputs With Options
+
+`react-native-audio-player-recorder` supports to play audio via appointed output.
+
+Play Audio via outputs by passing `output` params:
+
+- Receiver: `Phone`
+
+- Loud Speaker: `Phone Speaker`
+
+- Bluetooth: `Bluetooth`
+
+- Headphones: `Headphones`
+
 
 ```
-SampleRate: int
-Channels: int
-AudioQuality: string
-AudioEncoding: string
+_playViaOutput(output) {
+  let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';      
+  let options = {output: 'Phone'};
+  AudioPlayer.play(audioPath, options)      
+}
 ```
 
-Encodings supported on iOS: `lpcm, ima4, aac, MAC3, MAC6, ulaw, alaw, mp1, mp2, alac, amr`
-Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
-#### iOS-only fields
+## Support
 
-The `MeteringEnabled` boolean to enable audio metering.
+This package is forked from [https://github.com/jsierles/react-native-audio](https://github.com/jsierles/react-native-audio).
 
-#### Android-only fields
+We borrow some features from it, learn a lot and add features such as: Playing via appointed outputs, get current available outputs, add audio progress reporting support for Andoid and so on.
 
-AudioEncodingBitRate: int
-OutputFormat: string, `mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm`
-
-See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more options, including playback and callbacks. For more audio play features, check out [React Native Sound](https://github.com/zmxv/react-native-sound)
-
-MP3 recording is *not supported* since the underlying platforms do not support it.
-
-Thanks to Brent Vatne, Johannes Lumpe, Kureev Alexey, Matthew Hartman and Rakan Nimer for their assistance.
-
-Progress tracking code borrowed from https://github.com/brentvatne/react-native-video.
+If you like the component and want to support it, feel free to donate any amount or help with issues.
