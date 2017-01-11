@@ -1,9 +1,9 @@
 {
-  "name": "react-native-audio",
+  "name": "react-native-audio-player-recorder",
   "version": "1.1.1",
-  "description": "React Native extension for recording audio",
+  "description": "React Native extension for playing and recording audio",
   "main": "index.js",
-  "author": "Joshua Sierles <joshua@diluvia.net> (https://github.com/jsierles)",
+  "author": "Shinetech (https://github.com/Shinetechchina/react-native-audio-player-recorder)",
   "files": [
     "ios/AudioRecorderManager.m",
     "ios/AudioRecorderManager.h",
@@ -18,11 +18,12 @@
   "keywords": [
     "react-native",
     "audio",
-    "record"
+    "record",
+    "play"
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:jsierles/react-native-audio.git"
+    "url": "https://github.com/Shinetechchina/react-native-audio-player-recorder.git"
   },
   "nativePackage": true
 }
