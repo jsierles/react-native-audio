@@ -1,3 +1,5 @@
 rootProject.name = 'Example'
+include ':react-native-audio-player-recorder'
+project(':react-native-audio-player-recorder').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio-player-recorder/android')
 
 include ':app'
