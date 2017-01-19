@@ -1,4 +1,6 @@
 rootProject.name = 'Example'
+include ':react-native-vector-icons'
+project(':react-native-vector-icons').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-vector-icons/android')
 include ':react-native-audio-player-recorder'
 project(':react-native-audio-player-recorder').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio-player-recorder/android')
 

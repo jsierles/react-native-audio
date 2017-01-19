@@ -241,6 +241,16 @@ babel-core@^6.0.0, babel-core@^6.18.0, babel-core@^6.18.2, babel-core@^6.7.2:
     slash "^1.0.0"
     source-map "^0.5.0"
 
+babel-eslint:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-7.1.1.tgz#8a6a884f085aa7060af69cfc77341c2f99370fb2"
+  dependencies:
+    babel-code-frame "^6.16.0"
+    babel-traverse "^6.15.0"
+    babel-types "^6.15.0"
+    babylon "^6.13.0"
+    lodash.pickby "^4.6.0"
+
 babel-generator@^6.18.0, babel-generator@^6.19.0, babel-generator@^6.21.0:
   version "6.21.0"
   resolved "https://registry.yarnpkg.com/babel-generator/-/babel-generator-6.21.0.tgz#605f1269c489a1c75deeca7ea16d43d4656c8494"
@@ -766,7 +776,7 @@ babel-template@^6.14.0, babel-template@^6.15.0, babel-template@^6.16.0, babel-te
     babylon "^6.11.0"
     lodash "^4.2.0"
 
-babel-traverse@^6.16.0, babel-traverse@^6.18.0, babel-traverse@^6.19.0, babel-traverse@^6.21.0:
+babel-traverse@^6.15.0, babel-traverse@^6.16.0, babel-traverse@^6.18.0, babel-traverse@^6.19.0, babel-traverse@^6.21.0:
   version "6.21.0"
   resolved "https://registry.yarnpkg.com/babel-traverse/-/babel-traverse-6.21.0.tgz#69c6365804f1a4f69eb1213f85b00a818b8c21ad"
   dependencies:
@@ -780,7 +790,7 @@ babel-traverse@^6.16.0, babel-traverse@^6.18.0, babel-traverse@^6.19.0, babel-tr
     invariant "^2.2.0"
     lodash "^4.2.0"
 
-babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.21.0, babel-types@^6.8.0, babel-types@^6.9.0:
+babel-types@^6.15.0, babel-types@^6.16.0, babel-types@^6.18.0, babel-types@^6.19.0, babel-types@^6.21.0, babel-types@^6.8.0, babel-types@^6.9.0:
   version "6.21.0"
   resolved "https://registry.yarnpkg.com/babel-types/-/babel-types-6.21.0.tgz#314b92168891ef6d3806b7f7a917fdf87c11a4b2"
   dependencies:
@@ -2740,6 +2750,10 @@ lodash.padstart@^4.1.0:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.padstart/-/lodash.padstart-4.6.1.tgz#d2e3eebff0d9d39ad50f5cbd1b52a7bce6bb611b"
 
+lodash.pickby@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.pickby/-/lodash.pickby-4.6.0.tgz#7dea21d8c18d7703a27c704c15d3b84a67e33aff"
+
 lodash.restparam@^3.0.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/lodash.restparam/-/lodash.restparam-3.6.1.tgz#936a4e309ef330a7645ed4145986c85ae5b20805"
@@ -3284,6 +3298,13 @@ react-deep-force-update@^1.0.0:
 react-native-audio-player-recorder:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-native-audio-player-recorder/-/react-native-audio-player-recorder-1.1.1.tgz#be3aff72135cc577389bf6a0a7c670b5366ef178"
+
+react-native-vector-icons:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-4.0.0.tgz#6a2f8f4c6ace613aed7748cd530809283e5b1538"
+  dependencies:
+    lodash "^4.0.0"
+    yargs "^6.3.0"
 
 react-native@^0.40.0:
   version "0.40.0"
