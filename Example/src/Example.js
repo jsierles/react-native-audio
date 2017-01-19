@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import {
   ScrollView,
-  View,
   StyleSheet
 } from 'react-native'
 import { 
@@ -12,7 +11,8 @@ import {
 
 import Constants from './Constants'
 import RecordButton from './RecordButton'
-import IconButton from './IconButton'
+import ActionButtons from './ActionButtons'
+import Outputs from './Outputs'
 
 const AUDIO_PATH = AudioUtils.DocumentDirectoryPath + '/example.aac'
 const MAX_AUDIO_LENGTH = 60
@@ -27,6 +27,13 @@ export default class Example extends Component {
       isPaused: false,
       currentTime: 0,
       durationSeconds: MAX_AUDIO_LENGTH,
+      outputs: [
+        {key: 'Phone', active: false}, 
+        {key: 'Phone Speaker', active: false}, 
+        {key: 'Bluetooth', active: false}, 
+        {key: 'Headphones', active: false}
+      ],
+      selectedOutput: 'Phone Speaker',
       isSliding: false,
     }
     this.timer = null
@@ -34,6 +41,19 @@ export default class Example extends Component {
   
   componentDidMount() {
     this.setCallbacks()
+    this.setOutputs()
+  }
+
+  setOutputs() {
+    AudioPlayer.getOutputs(outputs => {
+      outputs.forEach((availableOutput) => {
+        this.state.outputs.forEach((output) => {
+          if (output.key === availableOutput) {
+            output.active = true
+          }
+        })  
+      })
+    })
   }
 
   setCallbacks() {
@@ -103,8 +123,13 @@ export default class Example extends Component {
       this.setState({isPlaying: true, isPaused: false})
       return
     }
-    AudioPlayer.play(AUDIO_PATH, { output: 'Phone Speaker' })
+    AudioPlayer.play(AUDIO_PATH, { output: this.state.selectedOutput })
     this.setState({isPlaying: true})
+  }
+
+  playViaOutput = (output) => {
+    AudioPlayer.play(AUDIO_PATH, { output: output })
+    this.setState({isPlaying: true, selectedOutput: output})
   }
 
   pausePlaying = () => {
@@ -117,33 +142,11 @@ export default class Example extends Component {
     this.setState({isPlaying: false})
   }
 
-  renderActionButtons() {
-    const { 
-      isRecording, 
-      isFinishRecorded, 
-      isPlaying 
-    } = this.state
+  render() {
+    const { isRecording, isFinishRecorded, isPlaying, outputs } = this.state
     const playPauseIcon = isPlaying ? 'pause-circle-o' : 'play-circle-o'
     const playPauseHandler = isPlaying ? this.pausePlaying : this.startPlaying
 
-    return (
-      <View style={styles.buttonGroup}>
-        <IconButton 
-          iconName='stop-circle-o' 
-          isDisabled={isFinishRecorded || !isRecording} 
-          onPressHandler={this.stopRecording} 
-        />
-        <IconButton 
-          iconName={playPauseIcon}
-          isDisabled={!isFinishRecorded || isRecording} 
-          onPressHandler={playPauseHandler} 
-        />
-      </View>
-    )
-  }
-
-  render() {
-    const { isRecording, isFinishRecorded } = this.state
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <RecordButton 
@@ -151,7 +154,14 @@ export default class Example extends Component {
           isFinishRecorded={isFinishRecorded}
           onPressHandler={this.record} 
         />
-        {this.renderActionButtons()}
+        <ActionButtons 
+          isFinishRecorded={isFinishRecorded} 
+          isRecording={isRecording}
+          playPauseIcon={playPauseIcon}
+          playPauseHandler={playPauseHandler}
+          stopRecording={this.stopRecording}
+        />
+        <Outputs outputs={outputs} audioExist={isFinishRecorded} onPressHandler={this.playViaOutput} />
       </ScrollView>
     )
   }
@@ -164,9 +174,5 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: 'center'
-  },
-  buttonGroup: {
-    flex: 1,
-    flexDirection: 'row',
   },
 })
