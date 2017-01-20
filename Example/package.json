@@ -1,0 +1,38 @@
+{
+  "name": "Example",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "eslint": "^3.13.1",
+    "react": "15.4.2",
+    "react-native": "0.40.0",
+    "react-native-audio-player-recorder": "2.0.0",
+    "react-native-router-flux": "^3.37.0",
+    "react-native-slider": "^0.9.1",
+    "react-native-vector-icons": "^4.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "babel-jest": "18.0.0",
+    "babel-preset-react-native": "1.9.1",
+    "eslint": "^3.13.1",
+    "eslint-plugin-react": "^6.9.0",
+    "jest": "18.1.0",
+    "react-test-renderer": "15.4.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "description": "Example code for react-native-audio-player-recorder",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/Shinetechchina/react-native-audio-player-recorder",
+    "type": "git"
+  },
+  "author": "Grace Han",
+  "license": "MIT"
+}
