@@ -8,8 +8,9 @@ import {
 import { 
   AudioPlayer, 
 } from 'react-native-audio-player-recorder'
-
 import Slider from 'react-native-slider'
+
+import PlayButton from './PlayButton'
 import Outputs from './Outputs'
 import { secondsToTime } from '../timeConverter'
 import Constants from '../Constants'
@@ -22,6 +23,8 @@ export default class Player extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      isPlaying: false,
+      isPaused: false,
       currentTime: 0,
       outputs: [
         {key: 'Phone', active: false}, 
@@ -88,26 +91,51 @@ export default class Player extends Component {
     this.setState({isSliding: true})
   }
 
-  playViaOutput = (output) => {
-    AudioPlayer.play(Constants.AUDIO_PATH, { output: output })
-    this.setState({isPlaying: true, selectedOutput: output})
+  playViaOutput = () => {
+    const { isPaused } = this.state
+    if (isPaused) {
+      AudioPlayer.unpause()
+      this.setState({isPaused: false})      
+    } else {
+      AudioPlayer.play(Constants.AUDIO_PATH, { output: this.state.selectedOutput })
+    }
+    this.setState({isPlaying: true})
+  }
+
+  selectOutput = (output) => {
+    this.setState({selectedOutput: output})
+  }
+
+  pause = () => {
+    AudioPlayer.pause()
+    this.setState({isPaused: true, isPlaying: false})
   }
 
   render() {
     const { durationSeconds } = this.props
     const {
+      isPlaying,
       outputs,
       currentTime,
+      selectedOutput,
     } = this.state
 
-    let songPercentage = durationSeconds ? currentTime / durationSeconds : 0
+    let percentage = durationSeconds ? currentTime / durationSeconds : 0
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Outputs outputs={outputs} onPressHandler={this.playViaOutput} />
+        <Text style={styles.outputText}>
+          Playing audio via 
+          <Text style={styles.defaultOutput}> {selectedOutput}</Text>
+        </Text>
+        <PlayButton 
+          iconName={isPlaying ? 'pause-circle-o' : 'play-circle-o'}
+          onPressHandler={isPlaying ? this.pause : this.playViaOutput}
+        />
+        <Outputs outputs={outputs} onPressHandler={this.selectOutput} />
         <View style={styles.sliderContainer}>
           <Text style={styles.indicatorText}>{secondsToTime(currentTime)}</Text>
           <Slider
-            value={songPercentage}
+            value={percentage}
             onValueChange={this.sliderValueChange}
             onSlidingStart={this.sliderStart}
             onSlidingComplete={this.sliderComplete}
@@ -132,6 +160,7 @@ const styles = StyleSheet.create({
   sliderContainer: {
     height: 150,
     flexDirection: 'row',
+    marginTop: 50,
     paddingLeft: 16,
     paddingRight: 16,
   },
@@ -144,5 +173,13 @@ const styles = StyleSheet.create({
   },
   slider: {
     flex: 1,
+  },
+  defaultOutput: {
+    color: Constants.CUSTOM_RED,
+    fontWeight: 'bold',
+  },
+  outputText: {
+    marginTop: 26,
+    fontSize: 16,
   },
 })

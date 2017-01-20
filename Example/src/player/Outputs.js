@@ -14,7 +14,7 @@ export default function Outputs(props) {
   } 
   return (
     <View style={styles.outputContainer}>
-      <Text style={styles.text}>Available Outputs</Text>
+      <Text style={styles.text}>Outputs List</Text>
       <View style={styles.blockContainer}>
         {renderItems(outputs, onPressHandler)}
       </View>
@@ -56,11 +56,12 @@ function renderItems(outputs, onPressHandler) {
 
 const styles = StyleSheet.create({
   text: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: Constants.CUSTOM_RED,
     marginTop: 16,
-    marginBottom: 16,
+    marginBottom: 36,
+    textAlign: 'center',
   },
   outputBlock: {
     padding: 5,
