@@ -7,20 +7,20 @@
 //
 
 #import "AudioRecorderManager.h"
-#import "RCTConvert.h"
-#import "RCTBridge.h"
-#import "RCTUtils.h"
-#import "RCTEventDispatcher.h"
+#import "React/RCTConvert.h"
+#import "React/RCTBridge.h"
+#import "React/RCTUtils.h"
+#import "React/RCTEventDispatcher.h"
 #import <AVFoundation/AVFoundation.h>
 
 NSString *const AudioRecorderEventProgress = @"recordingProgress";
 NSString *const AudioRecorderEventFinished = @"recordingFinished";
 
 @implementation AudioRecorderManager {
-
+  
   AVAudioRecorder *_audioRecorder;
   AVAudioPlayer *_audioPlayer;
-
+  
   NSTimeInterval _currentTime;
   id _progressUpdateTimer;
   int _progressUpdateInterval;
@@ -46,19 +46,19 @@ RCT_EXPORT_MODULE();
   } else {
     return;
   }
-
+  
   if (_prevProgressUpdateTime == nil ||
-   (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
-      NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
-      [body setObject:[NSNumber numberWithFloat:_currentTime] forKey:@"currentTime"];
-      if (_meteringEnabled) {
-          [_audioRecorder updateMeters];
-          float _currentMetering = [_audioRecorder averagePowerForChannel: 0];
-          [body setObject:[NSNumber numberWithFloat:_currentMetering] forKey:@"currentMetering"];
-      }
-
-      [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:body];
-
+      (([_prevProgressUpdateTime timeIntervalSinceNow] * -1000.0) >= _progressUpdateInterval)) {
+    NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+    [body setObject:[NSNumber numberWithFloat:_currentTime] forKey:@"currentTime"];
+    if (_meteringEnabled) {
+      [_audioRecorder updateMeters];
+      float _currentMetering = [_audioRecorder averagePowerForChannel: 0];
+      [body setObject:[NSNumber numberWithFloat:_currentMetering] forKey:@"currentMetering"];
+    }
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:body];
+    
     _prevProgressUpdateTime = [NSDate date];
   }
 }
@@ -70,18 +70,18 @@ RCT_EXPORT_MODULE();
 - (void)startProgressTimer {
   _progressUpdateInterval = 250;
   _prevProgressUpdateTime = nil;
-
+  
   [self stopProgressTimer];
-
+  
   _progressUpdateTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(sendProgressUpdate)];
   [_progressUpdateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
   [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
-      @"status": flag ? @"OK" : @"ERROR",
-      @"audioFileURL": [_audioFileURL absoluteString]
-    }];
+                                                                                      @"status": flag ? @"OK" : @"ERROR",
+                                                                                      @"audioFileURL": [_audioFileURL absoluteString]
+                                                                                      }];
 }
 
 - (NSString *) applicationDocumentsDirectory
@@ -95,16 +95,16 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
-
+  
   _audioFileURL = [NSURL fileURLWithPath:path];
-
+  
   // Default options
   _audioQuality = [NSNumber numberWithInt:AVAudioQualityHigh];
   _audioEncoding = [NSNumber numberWithInt:kAudioFormatAppleIMA4];
   _audioChannels = [NSNumber numberWithInt:2];
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
   _meteringEnabled = NO;
-
+  
   // Set audio quality from options
   if (quality != nil) {
     if ([quality  isEqual: @"Low"]) {
@@ -115,12 +115,12 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
       _audioQuality =[NSNumber numberWithInt:AVAudioQualityHigh];
     }
   }
-
+  
   // Set channels from options
   if (channels != nil) {
     _audioChannels = channels;
   }
-
+  
   // Set audio encoding from options
   if (encoding != nil) {
     if ([encoding  isEqual: @"lpcm"]) {
@@ -147,40 +147,40 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
       _audioEncoding =[NSNumber numberWithInt:kAudioFormatAMR];
     }
   }
-
+  
   // Set sample rate from options
   _audioSampleRate = [NSNumber numberWithFloat:sampleRate];
-
+  
   NSDictionary *recordSettings = [NSDictionary dictionaryWithObjectsAndKeys:
-          _audioQuality, AVEncoderAudioQualityKey,
-          _audioEncoding, AVFormatIDKey,
-          _audioChannels, AVNumberOfChannelsKey,
-          _audioSampleRate, AVSampleRateKey,
-          nil];
-
+                                  _audioQuality, AVEncoderAudioQualityKey,
+                                  _audioEncoding, AVFormatIDKey,
+                                  _audioChannels, AVNumberOfChannelsKey,
+                                  _audioSampleRate, AVSampleRateKey,
+                                  nil];
+  
   // Enable metering from options
   if (meteringEnabled != NO) {
     _meteringEnabled = meteringEnabled;
   }
-
+  
   NSError *error = nil;
-
+  
   _recordSession = [AVAudioSession sharedInstance];
   [_recordSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-
+  
   _audioRecorder = [[AVAudioRecorder alloc]
-                initWithURL:_audioFileURL
-                settings:recordSettings
-                error:&error];
-
+                    initWithURL:_audioFileURL
+                    settings:recordSettings
+                    error:&error];
+  
   _audioRecorder.meteringEnabled = _meteringEnabled;
   _audioRecorder.delegate = self;
-
+  
   if (error) {
-      NSLog(@"error: %@", [error localizedDescription]);
-      // TODO: dispatch error over the bridge
-    } else {
-      [_audioRecorder prepareToRecord];
+    NSLog(@"error: %@", [error localizedDescription]);
+    // TODO: dispatch error over the bridge
+  } else {
+    [_audioRecorder prepareToRecord];
   }
 }
 
@@ -190,7 +190,7 @@ RCT_EXPORT_METHOD(startRecording)
     [self startProgressTimer];
     [_recordSession setActive:YES error:nil];
     [_audioRecorder record];
-
+    
   }
 }
 
@@ -214,16 +214,16 @@ RCT_EXPORT_METHOD(playRecording)
   if (_audioRecorder.recording) {
     NSLog(@"stop the recording before playing");
     return;
-
+    
   } else {
-
+    
     NSError *error;
-
+    
     if (!_audioPlayer.playing) {
       _audioPlayer = [[AVAudioPlayer alloc]
-        initWithContentsOfURL:_audioRecorder.url
-        error:&error];
-
+                      initWithContentsOfURL:_audioRecorder.url
+                      error:&error];
+      
       if (error) {
         [self stopProgressTimer];
         NSLog(@"audio playback loading error: %@", [error localizedDescription]);
@@ -256,7 +256,7 @@ RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve rejec
   switch (permissionStatus) {
     case AVAudioSessionRecordPermissionUndetermined:
       resolve(@("undetermined"));
-    break;
+      break;
     case AVAudioSessionRecordPermissionDenied:
       resolve(@("denied"));
       break;
