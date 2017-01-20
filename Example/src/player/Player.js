@@ -23,7 +23,7 @@ export default class Player extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isPlaying: false,
+      isPlaying: true,
       isPaused: false,
       currentTime: 0,
       outputs: [
@@ -32,26 +32,17 @@ export default class Player extends Component {
         {key: 'Bluetooth', active: false}, 
         {key: 'Headphones', active: false}
       ],
-      selectedOutput: 'Phone Speaker',
+      selectedOutput: 'Phone',
       isSliding: false,
     }
   }
 
   componentWillMount() {
-    this.setOutputs()
     this.setCallbacks()
   }
 
-  setOutputs() {
-    AudioPlayer.getOutputs(outputs => {
-      outputs.forEach((availableOutput) => {
-        this.state.outputs.forEach((output) => {
-          if (output.key === availableOutput) {
-            output.active = true
-          }
-        })  
-      })
-    })
+  componentDidMount() {
+    this.playViaOutput()
   }
 
   setCallbacks() {
@@ -91,7 +82,20 @@ export default class Player extends Component {
     this.setState({isSliding: true})
   }
 
+  setOutputs() {
+    AudioPlayer.getOutputs(outputs => {
+      outputs.forEach((availableOutput) => {
+        this.state.outputs.forEach((output) => {
+          if (output.key === availableOutput) {
+            output.active = true
+          }
+        })  
+      })
+    })
+  }
+  
   playViaOutput = () => {
+    this.setOutputs()
     const { isPaused } = this.state
     if (isPaused) {
       AudioPlayer.unpause()
