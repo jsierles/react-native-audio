@@ -134,7 +134,7 @@ export default class Example extends Component {
 
   pausePlaying = () => {
     AudioPlayer.pause()
-    this.setState({isPaused: true})
+    this.setState({isPaused: true, isPlaying: false})
   }
 
   stopPlaying() {
