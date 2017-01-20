@@ -127,7 +127,7 @@ export default class Recorder extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.marginTop + 16,
+    marginTop: Constants.marginTop + 26,
     flex: 1,
   },
   content: {

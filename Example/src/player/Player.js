@@ -93,7 +93,7 @@ export default class Player extends Component {
       })
     })
   }
-  
+
   playViaOutput = () => {
     this.setOutputs()
     const { isPaused } = this.state
@@ -127,14 +127,14 @@ export default class Player extends Component {
     let percentage = durationSeconds ? currentTime / durationSeconds : 0
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.outputText}>
-          Playing audio via 
-          <Text style={styles.defaultOutput}> {selectedOutput}</Text>
-        </Text>
         <PlayButton 
           iconName={isPlaying ? 'pause-circle-o' : 'play-circle-o'}
           onPressHandler={isPlaying ? this.pause : this.playViaOutput}
         />
+        <Text style={styles.outputText}>
+          Playing audio via 
+          <Text style={styles.defaultOutput}> {selectedOutput}</Text>
+        </Text>
         <Outputs outputs={outputs} onPressHandler={this.selectOutput} />
         <View style={styles.sliderContainer}>
           <Text style={styles.indicatorText}>{secondsToTime(currentTime)}</Text>
@@ -144,6 +144,7 @@ export default class Player extends Component {
             onSlidingStart={this.sliderStart}
             onSlidingComplete={this.sliderComplete}
             style={styles.slider}
+            trackStyle={styles.track}
             minimumTrackTintColor={Constants.CUSTOM_RED}
             thumbTintColor={Constants.CUSTOM_RED}
           />
@@ -155,14 +156,13 @@ export default class Player extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.marginTop + 16,
+    marginTop: Constants.marginTop + 26,
     flex: 1,
   },
   content: {
     alignItems: 'center'
   },
   sliderContainer: {
-    height: 150,
     flexDirection: 'row',
     marginTop: 50,
     paddingLeft: 16,
@@ -178,12 +178,16 @@ const styles = StyleSheet.create({
   slider: {
     flex: 1,
   },
+  track: {
+    marginTop: -4,
+  },
   defaultOutput: {
     color: Constants.CUSTOM_RED,
     fontWeight: 'bold',
   },
   outputText: {
     marginTop: 26,
+    marginBottom: 10,
     fontSize: 16,
   },
 })
