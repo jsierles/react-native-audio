@@ -48,7 +48,7 @@ On *Android* you need to add a permission to `AndroidManifest.xml`:
 
 ## Quick Getting Started
 
-In the `AudioExample` directory:
+In the `Example` directory:
 
 ```
 npm install
