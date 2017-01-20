@@ -14,15 +14,40 @@ Record and play back audio through Loud Speaker, Receiver, Bluetooth and Headpho
 
 ### Install package
 
-Install with npm:
+- Install with npm:
+
+If you're using react-native version < `0.40.0`
+
+Please run:
 
 ```bash
-npm install react-native-audio-player-recorder --save
+npm install react-native-audio-player-recorder@1.1.1 --save
 ```
 
-Or install with yarn:
+If you're using react-native version >= `0.40.0`
+
+Please run
+
 ```bash
-yarn add react-native-audio-player-recorder
+npm install react-native-audio-player-recorder@2.0.0 --save
+```
+
+- Install with yarn:
+
+If you're using react-native version < `0.40.0`
+
+Please run:
+
+```bash
+yarn add react-native-audio-player-recorder@1.1.1
+```
+
+If you're using react-native version >= `0.40.0`
+
+Please run
+
+```bash
+yarn add react-native-audio-player-recorder@2.0.0
 ```
 
 ### Link native libraries
