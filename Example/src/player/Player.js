@@ -156,7 +156,7 @@ export default class Player extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.marginTop + 26,
+    marginTop: Constants.PLATFORM_MARGIN_TOP + 26,
     flex: 1,
   },
   content: {
