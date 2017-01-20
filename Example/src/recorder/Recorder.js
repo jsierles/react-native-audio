@@ -6,18 +6,15 @@ import {
 import { 
   AudioPlayer, 
   AudioRecorder, 
-  AudioUtils
 } from 'react-native-audio-player-recorder'
+import { Actions } from 'react-native-router-flux'
 
-import Constants from './Constants'
 import RecordButton from './RecordButton'
 import ActionButtons from './ActionButtons'
-import Outputs from './Outputs'
+import Button from './Button'
+import Constants from '../Constants'
 
-const AUDIO_PATH = AudioUtils.DocumentDirectoryPath + '/example.aac'
-const MAX_AUDIO_LENGTH = 60
-
-export default class Example extends Component {
+export default class Recorder extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -26,52 +23,13 @@ export default class Example extends Component {
       isPlaying: false,
       isPaused: false,
       currentTime: 0,
-      durationSeconds: MAX_AUDIO_LENGTH,
-      outputs: [
-        {key: 'Phone', active: false}, 
-        {key: 'Phone Speaker', active: false}, 
-        {key: 'Bluetooth', active: false}, 
-        {key: 'Headphones', active: false}
-      ],
-      selectedOutput: 'Phone Speaker',
-      isSliding: false,
+      audioLength: 0
     }
     this.timer = null
   }
-  
-  componentDidMount() {
-    this.setCallbacks()
-    this.setOutputs()
-  }
-
-  setOutputs() {
-    AudioPlayer.getOutputs(outputs => {
-      outputs.forEach((availableOutput) => {
-        this.state.outputs.forEach((output) => {
-          if (output.key === availableOutput) {
-            output.active = true
-          }
-        })  
-      })
-    })
-  }
-
-  setCallbacks() {
-    AudioPlayer.onFinished = () => {
-      this.setState({isPlaying: false})
-    }
-    AudioPlayer.setFinishedSubscription()
-    
-    AudioPlayer.onProgress = (data) => {
-      if (!this.state.isSliding && this.state.isPlaying) {
-        this.setState({currentTime: Math.round(data.currentTime)})
-      }
-    }
-    AudioPlayer.setProgressSubscription()
-  }
 
   prepareRecordingPath(){
-    AudioRecorder.prepareRecordingAtPath(AUDIO_PATH, {
+    AudioRecorder.prepareRecordingAtPath(Constants.AUDIO_PATH, {
       SampleRate: 22050,
       Channels: 1,
       AudioQuality: 'Low',
@@ -81,10 +39,7 @@ export default class Example extends Component {
   }
 
   record = () => {
-    const { isFinishRecorded, isPlaying } = this.state
-    if (isFinishRecorded) {
-      this.setState({durationSeconds: MAX_AUDIO_LENGTH, isFinishRecorded: false})
-    }
+    const { isPlaying } = this.state
     if (isPlaying) {
       this.stopPlaying()
     }
@@ -95,25 +50,26 @@ export default class Example extends Component {
       isPlaying: false,
       isRecording: true,
       isFinishRecorded: false,
+      audioLength: 0,
       currentTime: 0
     })
 
     this.timer = setInterval(() => {
       const time = this.state.currentTime + 1
       this.setState({currentTime: time})
-      if (time === MAX_AUDIO_LENGTH) {
+      if (time === Constants.MAX_AUDIO_LENGTH) {
         this.stopRecording()
       }
     }, 1000)
   }
 
   stopRecording = () => {
-    const { isRecording, currentTime } = this.state
+    const { isRecording } = this.state
     if (!isRecording) return
 
     AudioRecorder.stopRecording()
+    this.setState({audioLength: this.state.currentTime + 1})
     clearInterval(this.timer)
-    this.setState({durationSeconds: currentTime + 1})
     this.setState({ isRecording: false, isFinishRecorded: true, currentTime: 0})
   }
 
@@ -123,13 +79,8 @@ export default class Example extends Component {
       this.setState({isPlaying: true, isPaused: false})
       return
     }
-    AudioPlayer.play(AUDIO_PATH, { output: this.state.selectedOutput })
+    AudioPlayer.play(Constants.AUDIO_PATH)
     this.setState({isPlaying: true})
-  }
-
-  playViaOutput = (output) => {
-    AudioPlayer.play(AUDIO_PATH, { output: output })
-    this.setState({isPlaying: true, selectedOutput: output})
   }
 
   pausePlaying = () => {
@@ -142,11 +93,18 @@ export default class Example extends Component {
     this.setState({isPlaying: false})
   }
 
+  playAudio = () => {
+    Actions.player({durationSeconds: this.state.audioLength})
+  }
+
   render() {
-    const { isRecording, isFinishRecorded, isPlaying, outputs } = this.state
+    const { 
+      isRecording, 
+      isFinishRecorded, 
+      isPlaying, 
+    } = this.state
     const playPauseIcon = isPlaying ? 'pause-circle-o' : 'play-circle-o'
     const playPauseHandler = isPlaying ? this.pausePlaying : this.startPlaying
-
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <RecordButton 
@@ -161,7 +119,7 @@ export default class Example extends Component {
           playPauseHandler={playPauseHandler}
           stopRecording={this.stopRecording}
         />
-        <Outputs outputs={outputs} audioExist={isFinishRecorded} onPressHandler={this.playViaOutput} />
+        <Button text='Play' isDisabled={!isFinishRecorded} onPressHandler={this.playAudio} />
       </ScrollView>
     )
   }
@@ -169,7 +127,7 @@ export default class Example extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.marginTop,
+    marginTop: Constants.marginTop + 16,
     flex: 1,
   },
   content: {

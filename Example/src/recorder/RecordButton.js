@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-import Constants from './Constants'
+import Constants from '../Constants'
 
 export default function RecordButton(props) {
   const { isRecording, isFinishRecorded, onPressHandler} = props

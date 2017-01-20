@@ -5,13 +5,10 @@ import {
   StyleSheet
 } from 'react-native'
 
-import Constants from './Constants'
+import Constants from '../Constants'
 
 export default function Outputs(props) {
-  const { outputs, audioExist, onPressHandler } = props
-  if (!audioExist) {
-    return <Text style={styles.text}>No recorded audio to play.</Text>
-  }
+  const { outputs, onPressHandler } = props
   if (outputs.length === 0) {
     return <Text style={styles.text}>No available outputs.</Text>
   } 
@@ -27,7 +24,6 @@ export default function Outputs(props) {
 
 Outputs.propTypes = {
   outputs: PropTypes.array,
-  audioExist: PropTypes.bool.isRequired,
   onPressHandler: PropTypes.func.isRequired,
 }
 
@@ -59,9 +55,6 @@ function renderItems(outputs, onPressHandler) {
 }
 
 const styles = StyleSheet.create({
-  outputContainer: {
-    
-  },
   text: {
     fontSize: 18,
     fontWeight: 'bold',

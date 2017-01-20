@@ -6,7 +6,7 @@ import {
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-import Constants from './Constants'
+import Constants from '../Constants'
 
 export default function IconButton(props) {
   const { isDisabled, onPressHandler, iconName } = props
