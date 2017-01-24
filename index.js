@@ -13,30 +13,6 @@ var AudioRecorderManager = NativeModules.AudioRecorderManager;
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path, options) {
-    var defaultOptions = {
-      SampleRate: 44100.0,
-      Channels: 2,
-      AudioQuality: 'High',
-      AudioEncoding: 'ima4',
-      OutputFormat: 'mpeg_4',
-      MeteringEnabled: false,
-      AudioEncodingBitRate: 32000
-    };
-    var recordingOptions = {...defaultOptions, ...options};
-
-    if (Platform.OS === 'ios') {
-      AudioRecorderManager.prepareRecordingAtPath(
-        path,
-        recordingOptions.SampleRate,
-        recordingOptions.Channels,
-        recordingOptions.AudioQuality,
-        recordingOptions.AudioEncoding,
-        recordingOptions.MeteringEnabled
-      );
-    } else {
-      return AudioRecorderManager.prepareRecordingAtPath(path, recordingOptions);
-    }
-
     if (this.progressSubscription) this.progressSubscription.remove();
     this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
       (data) => {
@@ -54,6 +30,31 @@ var AudioRecorder = {
         }
       }
     );
+
+    var defaultOptions = {
+      SampleRate: 44100.0,
+      Channels: 2,
+      AudioQuality: 'High',
+      AudioEncoding: 'ima4',
+      OutputFormat: 'mpeg_4',
+      MeteringEnabled: false,
+      AudioEncodingBitRate: 32000
+    };
+
+    var recordingOptions = {...defaultOptions, ...options};
+
+    if (Platform.OS === 'ios') {
+      AudioRecorderManager.prepareRecordingAtPath(
+        path,
+        recordingOptions.SampleRate,
+        recordingOptions.Channels,
+        recordingOptions.AudioQuality,
+        recordingOptions.AudioEncoding,
+        recordingOptions.MeteringEnabled
+      );
+    } else {
+      return AudioRecorderManager.prepareRecordingAtPath(path, recordingOptions);
+    }
   },
   startRecording: function() {
     return AudioRecorderManager.startRecording();
