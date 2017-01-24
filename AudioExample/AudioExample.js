@@ -47,8 +47,10 @@ class AudioExample extends Component {
         };
 
         AudioRecorder.onFinished = (data) => {
-          this.setState({finished: data.status == "OK"});
-          console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${data.audioFileURL}`);
+          // Android callback comes in the form of a promise instead.
+          if (Platform.OS === 'ios') {
+            this._finishRecording(data.status === "OK", data.audioFileURL);
+          }
         };
       });
     }
@@ -82,22 +84,51 @@ class AudioExample extends Component {
       );
     }
 
-    _pause() {
-      if (this.state.recording){
-        AudioRecorder.pauseRecording();
-        this.setState({stoppedRecording: true, recording: false});
+    async _pause() {
+      if (!this.state.recording) {
+        console.warn('Can\'t pause, not recording!');
+        return;
+      }
+
+      this.setState({stoppedRecording: true, recording: false});
+
+      try {
+        const filePath = await AudioRecorder.pauseRecording();
+
+        // Pause is currently equivalent to stop on Android.
+        if (Platform.OS === 'android') {
+          this._finishRecording(true, filePath);
+        }
+      } catch (error) {
+        console.error(error);
       }
     }
 
-    _stop() {
-      if (this.state.recording) {
-        AudioRecorder.stopRecording();
-        this.setState({stoppedRecording: true, recording: false});
+    async _stop() {
+      if (!this.state.recording) {
+        console.warn('Can\'t stop, not recording!');
+        return;
+      }
+
+      this.setState({stoppedRecording: true, recording: false});
+
+      try {
+        const filePath = await AudioRecorder.stopRecording();
+
+        if (Platform.OS === 'android') {
+          this._finishRecording(true, filePath);
+        }
+        return filePath;
+      } catch (error) {
+        console.error(error);
       }
     }
 
     _play() {
-      this._stop();
+      if (this.state.recording) {
+        this._stop();
+      }
+
       var sound = new Sound(this.state.audioPath, '', (error) => {
         if (error) {
           console.log('failed to load the sound', error);
@@ -115,7 +146,12 @@ class AudioExample extends Component {
       }, 500)
     }
 
-    _record() {
+    async _record() {
+      if (this.state.recording) {
+        console.warn('Already recording!');
+        return;
+      }
+
       if (!this.state.hasPermission) {
         console.warn('Can\'t record, no permission granted!');
         return;
@@ -124,8 +160,19 @@ class AudioExample extends Component {
       if(this.state.stoppedRecording){
         this.prepareRecordingPath(this.state.audioPath);
       }
-      AudioRecorder.startRecording();
+
       this.setState({recording: true});
+
+      try {
+        const filePath = await AudioRecorder.startRecording();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    _finishRecording(didSucceed, filePath) {
+      this.setState({ finished: didSucceed });
+      console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
     }
 
     render() {
