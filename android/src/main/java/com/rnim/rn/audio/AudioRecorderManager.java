@@ -178,6 +178,9 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       return;
     }
 
+    stopTimer();
+    isRecording = false;
+
     try {
       recorder.stop();
       recorder.release();
@@ -192,8 +195,6 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder = null;
     }
 
-    isRecording = false;
-    stopTimer();
     promise.resolve(currentOutputFile);
     sendEvent("recordingFinished", null);
   }
@@ -204,7 +205,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     stopRecording(promise);
   }
 
-    private void startTimer(){
+  private void startTimer(){
     stopTimer();
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {
