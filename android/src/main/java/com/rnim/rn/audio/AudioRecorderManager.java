@@ -181,9 +181,14 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     try {
       recorder.stop();
       recorder.release();
-      recorder = null;
     }
-    catch (final Exception e) {
+    catch (final RuntimeException e) {
+      // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
+      Log.e("RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
+      promise.reject("RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
+      return;
+    }
+    finally {
       recorder = null;
     }
 
