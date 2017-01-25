@@ -5,7 +5,9 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableHighlight
+  TouchableHighlight,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 
 import Sound from 'react-native-sound';
@@ -18,7 +20,8 @@ class AudioExample extends Component {
       recording: false,
       stoppedRecording: false,
       finished: false,
-      audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac'
+      audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
+      hasPermission: undefined,
     };
 
     prepareRecordingPath(audioPath){
@@ -32,14 +35,39 @@ class AudioExample extends Component {
     }
 
     componentDidMount() {
-      this.prepareRecordingPath(this.state.audioPath);
-      AudioRecorder.onProgress = (data) => {
-        this.setState({currentTime: Math.floor(data.currentTime)});
+      this._checkPermission().then((hasPermission) => {
+        this.setState({ hasPermission });
+
+        if (!hasPermission) return;
+
+        this.prepareRecordingPath(this.state.audioPath);
+
+        AudioRecorder.onProgress = (data) => {
+          this.setState({currentTime: Math.floor(data.currentTime)});
+        };
+
+        AudioRecorder.onFinished = (data) => {
+          this.setState({finished: data.status == "OK"});
+          console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${data.audioFileURL}`);
+        };
+      });
+    }
+
+    _checkPermission() {
+      if (Platform.OS !== 'android') {
+        return Promise.resolve(true);
+      }
+
+      const rationale = {
+        'title': 'Microphone Permission',
+        'message': 'AudioExample needs access to your microphone so you can record audio.'
       };
-      AudioRecorder.onFinished = (data) => {
-        this.setState({finished: data.status == "OK"});
-        console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${data.audioFileURL}`);
-      };
+
+      return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, rationale)
+        .then((result) => {
+          console.log('Permission result:', result);
+          return (result === true || result === PermissionsAndroid.RESULTS.GRANTED);
+        });
     }
 
     _renderButton(title, onPress, active) {
@@ -88,6 +116,11 @@ class AudioExample extends Component {
     }
 
     _record() {
+      if (!this.state.hasPermission) {
+        console.warn('Can\'t record, no permission granted!');
+        return;
+      }
+
       if(this.state.stoppedRecording){
         this.prepareRecordingPath(this.state.audioPath);
       }
