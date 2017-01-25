@@ -31,6 +31,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.io.FileInputStream;
 
 class AudioRecorderManager extends ReactContextBaseJavaModule {
+
+  private static final String TAG = "ReactNativeAudio";
+
   private static final String DocumentDirectoryPath = "DocumentDirectoryPath";
   private static final String PicturesDirectoryPath = "PicturesDirectoryPath";
   private static final String MainBundlePath = "MainBundlePath";
@@ -38,6 +41,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private static final String LibraryDirectoryPath = "LibraryDirectoryPath";
   private static final String MusicDirectoryPath = "MusicDirectoryPath";
   private static final String DownloadsDirectoryPath = "DownloadsDirectoryPath";
+
   private Context context;
   private MediaRecorder recorder;
   private String currentOutputFile;
@@ -80,8 +84,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   @ReactMethod
   public void prepareRecordingAtPath(String recordingPath, ReadableMap recordingSettings, Promise promise) {
     if (isRecording){
-      Log.e("INVALID_STATE", "Please call stopRecording before starting recording");
-      promise.reject("INVALID_STATE", "Please call stopRecording before starting recording");
+      logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
     }
 
     recorder = new MediaRecorder();
@@ -97,7 +100,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.setOutputFile(recordingPath);
     }
     catch(final Exception e) {
-      promise.reject("COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
+      logAndRejectPromise(promise, "COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
       return;
     }
 
@@ -106,7 +109,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.prepare();
       promise.resolve(currentOutputFile);
     } catch (final Exception e) {
-      promise.reject("COULDNT_PREPARE_RECORDING_AT_PATH "+recordingPath, e.getMessage());
+      logAndRejectPromise(promise, "COULDNT_PREPARE_RECORDING_AT_PATH "+recordingPath, e.getMessage());
     }
 
   }
@@ -155,13 +158,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   @ReactMethod
   public void startRecording(Promise promise){
     if (recorder == null){
-      Log.e("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
-      promise.reject("RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
+      logAndRejectPromise(promise, "RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
       return;
     }
     if (isRecording){
-      Log.e("INVALID_STATE", "Please call stopRecording before starting recording");
-      promise.reject("INVALID_STATE", "Please call stopRecording before starting recording");
+      logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
       return;
     }
     recorder.start();
@@ -173,8 +174,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   @ReactMethod
   public void stopRecording(Promise promise){
     if (!isRecording){
-      Log.e("INVALID_STATE", "Please call startRecording before stopping recording");
-      promise.reject("INVALID_STATE", "Please call startRecording before stopping recording");
+      logAndRejectPromise(promise, "INVALID_STATE", "Please call startRecording before stopping recording");
       return;
     }
 
@@ -187,8 +187,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     }
     catch (final RuntimeException e) {
       // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
-      Log.e("RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
-      promise.reject("RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
+      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
       return;
     }
     finally {
@@ -234,5 +233,9 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
             .emit(eventName, params);
   }
 
+  private void logAndRejectPromise(Promise promise, String errorCode, String errorMessage) {
+    Log.e(TAG, errorMessage);
+    promise.reject(errorCode, errorMessage);
+  }
 
 }
