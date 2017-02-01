@@ -124,26 +124,30 @@ class AudioExample extends Component {
       }
     }
 
-    _play() {
+    async _play() {
       if (this.state.recording) {
-        this._stop();
+        await this._stop();
       }
 
-      var sound = new Sound(this.state.audioPath, '', (error) => {
-        if (error) {
-          console.log('failed to load the sound', error);
-        }
-      });
-
+      // These timeouts are a hacky workaround for some issues with react-native-sound.
+      // See https://github.com/zmxv/react-native-sound/issues/89.
       setTimeout(() => {
-        sound.play((success) => {
-          if (success) {
-             console.log('successfully finished playing');
-           } else {
-             console.log('playback failed due to audio decoding errors');
-           }
+        var sound = new Sound(this.state.audioPath, '', (error) => {
+          if (error) {
+            console.log('failed to load the sound', error);
+          }
         });
-      }, 500)
+
+        setTimeout(() => {
+          sound.play((success) => {
+            if (success) {
+              console.log('successfully finished playing');
+            } else {
+              console.log('playback failed due to audio decoding errors');
+            }
+          });
+        }, 100);
+      }, 100);
     }
 
     async _record() {
