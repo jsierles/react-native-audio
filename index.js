@@ -1,21 +1,22 @@
 'use strict';
 
-import React from "react";
+import React from 'react';
 
 import ReactNative, {
   NativeModules,
   NativeAppEventEmitter,
   DeviceEventEmitter,
-  Platform
-} from "react-native";
+  Platform,
+} from 'react-native';
 
 var AudioRecorderManager = NativeModules.AudioRecorderManager;
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path, options) {
     if (this.progressSubscription) this.progressSubscription.remove();
-    this.progressSubscription = NativeAppEventEmitter.addListener('recordingProgress',
-      (data) => {
+    this.progressSubscription = NativeAppEventEmitter.addListener(
+      'recordingProgress',
+      data => {
         if (this.onProgress) {
           this.onProgress(data);
         }
@@ -23,8 +24,9 @@ var AudioRecorder = {
     );
 
     if (this.finishedSubscription) this.finishedSubscription.remove();
-    this.finishedSubscription = NativeAppEventEmitter.addListener('recordingFinished',
-      (data) => {
+    this.finishedSubscription = NativeAppEventEmitter.addListener(
+      'recordingFinished',
+      data => {
         if (this.onFinished) {
           this.onFinished(data);
         }
@@ -38,13 +40,13 @@ var AudioRecorder = {
       AudioEncoding: 'ima4',
       OutputFormat: 'mpeg_4',
       MeteringEnabled: false,
-      AudioEncodingBitRate: 32000
+      AudioEncodingBitRate: 32000,
     };
 
-    var recordingOptions = {...defaultOptions, ...options};
+    var recordingOptions = { ...defaultOptions, ...options };
 
     if (Platform.OS === 'ios') {
-      AudioRecorderManager.prepareRecordingAtPath(
+      return AudioRecorderManager.prepareRecordingAtPath(
         path,
         recordingOptions.SampleRate,
         recordingOptions.Channels,
@@ -53,7 +55,10 @@ var AudioRecorder = {
         recordingOptions.MeteringEnabled
       );
     } else {
-      return AudioRecorderManager.prepareRecordingAtPath(path, recordingOptions);
+      return AudioRecorderManager.prepareRecordingAtPath(
+        path,
+        recordingOptions
+      );
     }
   },
   startRecording: function() {
@@ -90,8 +95,8 @@ if (Platform.OS === 'ios') {
     LibraryDirectoryPath: AudioRecorderManager.LibraryDirectoryPath,
     PicturesDirectoryPath: AudioRecorderManager.PicturesDirectoryPath,
     MusicDirectoryPath: AudioRecorderManager.MusicDirectoryPath,
-    DownloadsDirectoryPath: AudioRecorderManager.DownloadsDirectoryPath
+    DownloadsDirectoryPath: AudioRecorderManager.DownloadsDirectoryPath,
   };
 }
 
-module.exports = {AudioRecorder, AudioUtils};
+module.exports = { AudioRecorder, AudioUtils };
