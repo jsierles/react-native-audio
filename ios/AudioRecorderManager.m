@@ -180,7 +180,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
       reject(@"error: %@", [error localizedDescription]);
     } else {
       [_audioRecorder prepareToRecord];
-    resolve([_audioFileURL path]);
+      resolve([_audioFileURL path]);
   }
 }
 
@@ -208,7 +208,7 @@ RCT_EXPORT_METHOD(pauseRecording:(RCTPromiseResolveBlock)resolve reject:(__unuse
   if (_audioRecorder.recording) {
     [self stopProgressTimer];
     [_audioRecorder pause];
-      resolve([_audioFileURL path]);
+    resolve([_audioFileURL path]);
   }
 }
 
