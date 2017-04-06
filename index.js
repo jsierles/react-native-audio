@@ -38,6 +38,7 @@ var AudioRecorder = {
       AudioEncoding: 'ima4',
       OutputFormat: 'mpeg_4',
       MeteringEnabled: false,
+      MeasurementMode: false,
       AudioEncodingBitRate: 32000
     };
 
@@ -50,7 +51,8 @@ var AudioRecorder = {
         recordingOptions.Channels,
         recordingOptions.AudioQuality,
         recordingOptions.AudioEncoding,
-        recordingOptions.MeteringEnabled
+        recordingOptions.MeteringEnabled,
+        recordingOptions.MeasurementMode
       );
     } else {
       return AudioRecorderManager.prepareRecordingAtPath(path, recordingOptions);

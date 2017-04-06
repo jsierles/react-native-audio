@@ -31,6 +31,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   NSNumber *_audioSampleRate;
   AVAudioSession *_recordSession;
   BOOL _meteringEnabled;
+  BOOL _measurementMode;
 }
 
 @synthesize bridge = _bridge;
@@ -88,7 +89,7 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode)
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
@@ -160,10 +161,21 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
     _meteringEnabled = meteringEnabled;
   }
 
+  // Measurement mode to disable mic auto gain and high pass filters
+  if (measurementMode != NO) {
+    _measurementMode = measurementMode;
+  }
+
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
-  [_recordSession setCategory:AVAudioSessionCategoryMultiRoute error:nil];
+
+  if (_measurementMode) {
+      [_recordSession setCategory:AVAudioSessionCategoryRecord error:nil];
+      [_recordSession setMode:AVAudioSessionModeMeasurement error:nil];
+  }else{
+      [_recordSession setCategory:AVAudioSessionCategoryMultiRoute error:nil];
+  }
 
   _audioRecorder = [[AVAudioRecorder alloc]
                 initWithURL:_audioFileURL
