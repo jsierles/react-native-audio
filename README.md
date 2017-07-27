@@ -30,7 +30,7 @@ On *Android* you need to add a permission to `AndroidManifest.xml`:
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-### Manual Installation on Android
+#### Manual Installation on Android
 
 This is not necessary if you have used `react-native link`
 
