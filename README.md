@@ -30,6 +30,42 @@ On *Android* you need to add a permission to `AndroidManifest.xml`:
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
+### Manual Installation on Android
+
+This is not necessary if you have used `react-native link`
+
+Edit `android/settings.gradle` to declare the project directory:
+```
+include ':react-native-audio'
+project(':react-native-audio').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio/android')
+```
+
+Edit `android/app/build.gradle` to declare the project dependency:
+```
+dependencies {
+  ...
+  compile project(':react-native-audio')
+}
+```
+
+Edit `android/app/src/main/java/.../MainApplication.java` to register the native module:
+
+```java
+...
+import com.rnim.rn.audio.ReactNativeAudioPackage; // <-- New
+...
+
+public class MainApplication extends Application implements ReactApplication {
+  ...
+  @Override
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+        new MainReactPackage(),
+        new ReactNativeAudioPackage() // <-- New
+    );
+  }
+```
+
 ### Running the Sample App
 
 In the `AudioExample` directory:
