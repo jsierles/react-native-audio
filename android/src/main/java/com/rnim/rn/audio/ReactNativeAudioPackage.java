@@ -25,14 +25,7 @@ public class ReactNativeAudioPackage implements ReactPackage {
         return modules;
     }
 
-    /**
-     * @return list of JS modules to register with the newly created catalyst instance.
-     * <p/>
-     * IMPORTANT: Note that only modules that needs to be accessible from the native code should be
-     * listed here. Also listing a native module here doesn't imply that the JS implementation of it
-     * will be automatically included in the JS bundle.
-     */
-    @Override
+    // Deprecated in RN 0.47
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }
