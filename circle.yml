@@ -1,0 +1,27 @@
+machine:
+  pre:
+    - mkdir ~/.yarn-cache
+
+  node:
+    version: 8.1.2
+
+  environment:
+    YARN_VERSION: 0.27.5
+    PATH: "${PATH}:${HOME}/.yarn/bin:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+dependencies:
+  # pre:
+  #   - echo y | android update sdk --no-ui --all --filter "tools"
+  #   - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.1"
+  #   - echo y | android update sdk --no-ui --all --filter "build-tools-23.0.1"
+
+  cache_directories:
+    - ~/.yarn-cache
+    - ~/.yarn
+
+  override:
+    - yarn install
+
+test:
+  override:
+    - yarn run test
