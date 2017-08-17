@@ -174,8 +174,8 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _audioRecorder.delegate = self;
 
   if (error) {
-      NSLog(@"Error Initialising AVAudioRecorder", @"Error Initialising AVAudioRecorder");
-      reject(@"Error Initialising AVAudioRecorder", @"Error Initialising AVAudioRecorder", @"Error Initialising AVAudioRecorder");
+      // NSLog(@"Error Initialising AVAudioRecorder", @"Error Initialising AVAudioRecorder");
+      resolve(NULL);
       // TODO: dispatch error over the bridge
     } else {
       [_audioRecorder prepareToRecord];
@@ -191,7 +191,7 @@ RCT_EXPORT_METHOD(startRecording:(RCTPromiseResolveBlock)resolve reject:(__unuse
     [_audioRecorder record];
     resolve([_audioFileURL path]);
   } else {
-    reject(@"INVALID_STATE", @"Please call stopRecording before starting recording", @"Please call stopRecording before starting recording");
+    resolve(NULL);
   }
 }
 
@@ -224,7 +224,7 @@ RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve rejec
       resolve(@("granted"));
       break;
     default:
-      reject(RCTErrorUnspecified, nil, RCTErrorWithMessage(@("Error checking device authorization status.")));
+      // reject(RCTErrorUnspecified, nil, RCTErrorWithMessage(@("Error checking device authorization status.")));
       break;
   }
 }
