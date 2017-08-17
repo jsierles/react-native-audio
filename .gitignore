@@ -34,3 +34,4 @@ android/gradle/
 android/gradlew
 android/gradlew.bat
 .idea
+AudioExample/react-native-audio/
