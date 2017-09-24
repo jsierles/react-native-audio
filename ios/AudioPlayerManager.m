@@ -119,6 +119,8 @@ RCT_EXPORT_METHOD(playWithUrl:(NSURL *) url options:(NSDictionary *)options)
   NSData* data = [NSData dataWithContentsOfURL: url];
   NSString *sessionCategory = [RCTConvert NSString:options[@"sessionCategory"]];
   [self setSessionCategory:sessionCategory];
+  NSString *output = [RCTConvert NSString:options[@"output"]];
+  [self setAudioOutput:output];
   NSNumber *numberOfLoops = [RCTConvert NSNumber:options[@"numberOfLoops"]];
   
   _audioPlayer = [[AVAudioPlayer alloc] initWithData:data  error:&error];
