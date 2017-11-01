@@ -249,13 +249,13 @@ RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve rejec
 RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-        if(granted) {
-            resolve(@YES);
-        } else {
-            resolve(@NO);
-        }
-    }];
+  [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    if(granted) {
+      resolve(@YES);
+    } else {
+      resolve(@NO);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(getAvailableInputs:(RCTPromiseResolveBlock)resolve
