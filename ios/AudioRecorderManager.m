@@ -89,7 +89,7 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode preferredInput:(NSString *)preferredInput)
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
@@ -170,6 +170,15 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
 
   _recordSession = [AVAudioSession sharedInstance];
 
+    
+  if (preferredInput) {
+    for (AVAudioSessionPortDescription *desc in [_recordSession availableInputs]) {
+      if ([preferredInput isEqualToString:desc.UID]) {
+        [_recordSession setPreferredInput:desc error:nil];
+      }
+    }
+  }
+
   if (_measurementMode) {
       [_recordSession setCategory:AVAudioSessionCategoryRecord error:nil];
       [_recordSession setMode:AVAudioSessionModeMeasurement error:nil];
@@ -247,6 +256,29 @@ RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
       resolve(@NO);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(getAvailableInputs:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+    NSDictionary *const AudioRecorderPortTypes = [[NSDictionary alloc] initWithObjectsAndKeys:@"builtInMic",AVAudioSessionPortBuiltInMic,@"bluetoothHFP",AVAudioSessionPortBluetoothHFP,@"bluetoothA2DP",AVAudioSessionPortBluetoothA2DP,@"bluetoothLE",AVAudioSessionPortBluetoothLE,@"lineIn",AVAudioSessionPortLineIn,@"airPlay",AVAudioSessionPortAirPlay,@"carAudio",AVAudioSessionPortCarAudio,@"USBAudio",AVAudioSessionPortUSBAudio,@"headsetMic",AVAudioSessionPortHeadsetMic,@"builtInReceiver",AVAudioSessionPortBuiltInReceiver, nil];
+    
+    // Enable bluetooth
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryRecord withOptions:kAudioSessionProperty_OverrideCategoryEnableBluetoothInput error:nil];
+    
+    NSArray<AVAudioSessionPortDescription *> *availableInputs = [[AVAudioSession sharedInstance] availableInputs];
+    
+    NSMutableArray *result = [NSMutableArray array];
+    
+    for (AVAudioSessionPortDescription *desc in availableInputs) {
+        [result addObject:@{
+            @"id": desc.UID,
+            @"type": AudioRecorderPortTypes[desc.portType],
+            @"name": desc.portName
+        }];
+    }
+
+    resolve(result);
 }
 
 - (NSString *)getPathForDirectory:(int)directory
