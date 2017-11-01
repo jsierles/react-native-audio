@@ -39,7 +39,8 @@ var AudioRecorder = {
       OutputFormat: 'mpeg_4',
       MeteringEnabled: false,
       MeasurementMode: false,
-      AudioEncodingBitRate: 32000
+      AudioEncodingBitRate: 32000,
+      preferredInput: null
     };
 
     var recordingOptions = {...defaultOptions, ...options};
@@ -52,7 +53,8 @@ var AudioRecorder = {
         recordingOptions.AudioQuality,
         recordingOptions.AudioEncoding,
         recordingOptions.MeteringEnabled,
-        recordingOptions.MeasurementMode
+        recordingOptions.MeasurementMode,
+        recordingOptions.preferredInput
       );
     } else {
       return AudioRecorderManager.prepareRecordingAtPath(path, recordingOptions);
@@ -66,6 +68,9 @@ var AudioRecorder = {
   },
   stopRecording: function() {
     return AudioRecorderManager.stopRecording();
+  },
+  getAvailableInputs: function() {
+    return AudioRecorderManager.getAvailableInputs();
   },
   checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
   requestAuthorization: AudioRecorderManager.requestAuthorization,
