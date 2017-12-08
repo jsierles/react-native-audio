@@ -211,6 +211,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       @Override
       public void run() {
         WritableMap body = Arguments.createMap();
+        double ratio = (double) recorder.getMaxAmplitude();
+                double volume = 0;
+                if (ratio > 1)
+                    volume = 20 * Math.log10(ratio);
+        body.putDouble("currentVolume", volume);
         body.putInt("currentTime", recorderSecondsElapsed);
         sendEvent("recordingProgress", body);
         recorderSecondsElapsed++;
