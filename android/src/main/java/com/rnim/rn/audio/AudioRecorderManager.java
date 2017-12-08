@@ -215,7 +215,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
                 double volume = 0;
                 if (ratio > 1)
                     volume = 20 * Math.log10(ratio);
-        body.putDouble("currentVolume", volume);
+        body.putDouble("currentVolume", (int)volume);
         body.putInt("currentTime", recorderSecondsElapsed);
         sendEvent("recordingProgress", body);
         recorderSecondsElapsed++;
