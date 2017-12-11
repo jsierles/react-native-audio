@@ -11,7 +11,8 @@
     "README.md",
     "LICENSE",
     "index.js",
-    "android/*"
+    "android/*",
+    "RNAudio.podspec"
   ],
   "keywords": [
     "react-native",
