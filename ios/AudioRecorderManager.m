@@ -51,7 +51,7 @@ RCT_EXPORT_MODULE();
       [body setObject:[NSNumber numberWithFloat:_currentTime] forKey:@"currentTime"];
       if (_meteringEnabled) {
           [_audioRecorder updateMeters];
-          float _currentVolume = [_audioRecorder averagePowerForChannel: 0];
+          float _currentMetering = [_audioRecorder averagePowerForChannel: 0];
           _currentMetering = _currentMetering + 160  - 50;
           int volume = 0;
           if (_currentMetering < 0.f) {
