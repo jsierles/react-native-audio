@@ -18,6 +18,7 @@ class AudioExample extends Component {
     state = {
       currentTime: 0.0,
       recording: false,
+      paused: false,
       stoppedRecording: false,
       finished: false,
       audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
@@ -89,16 +90,15 @@ class AudioExample extends Component {
         console.warn('Can\'t pause, not recording!');
         return;
       }
-
-      this.setState({stoppedRecording: true, recording: false});
-
+    
       try {
         const filePath = await AudioRecorder.pauseRecording();
+        this.setState({paused: !this.state.paused});
 
         // Pause is currently equivalent to stop on Android.
-        if (Platform.OS === 'android') {
-          this._finishRecording(true, filePath);
-        }
+        // if (Platform.OS === 'android') {
+        //   this._finishRecording(true, filePath);
+        // }
       } catch (error) {
         console.error(error);
       }
