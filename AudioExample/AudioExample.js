@@ -85,6 +85,18 @@ class AudioExample extends Component {
       );
     }
 
+    _renderPauseButton(onPress, active) {
+      var style = (active) ? styles.activeButtonText : styles.buttonText;
+      var title = this.state.paused ? "RESUME" : "PAUSE";
+      return (
+        <TouchableHighlight style={styles.button} onPress={onPress}>
+          <Text style={style}>
+            {title}
+          </Text>
+        </TouchableHighlight>
+      );
+    }
+
     async _pause() {
       if (!this.state.recording) {
         console.warn('Can\'t pause, not recording!');
@@ -94,11 +106,6 @@ class AudioExample extends Component {
       try {
         const filePath = await AudioRecorder.pauseRecording();
         this.setState({paused: !this.state.paused});
-
-        // Pause is currently equivalent to stop on Android.
-        // if (Platform.OS === 'android') {
-        //   this._finishRecording(true, filePath);
-        // }
       } catch (error) {
         console.error(error);
       }
@@ -110,7 +117,7 @@ class AudioExample extends Component {
         return;
       }
 
-      this.setState({stoppedRecording: true, recording: false});
+      this.setState({stoppedRecording: true, recording: false, paused: false});
 
       try {
         const filePath = await AudioRecorder.stopRecording();
@@ -165,7 +172,7 @@ class AudioExample extends Component {
         this.prepareRecordingPath(this.state.audioPath);
       }
 
-      this.setState({recording: true});
+      this.setState({recording: true, paused: false});
 
       try {
         const filePath = await AudioRecorder.startRecording();
@@ -187,7 +194,8 @@ class AudioExample extends Component {
             {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
             {this._renderButton("PLAY", () => {this._play()} )}
             {this._renderButton("STOP", () => {this._stop()} )}
-            {this._renderButton("PAUSE", () => {this._pause()} )}
+            {/* {this._renderButton("PAUSE", () => {this._pause()} )} */}
+            {this._renderPauseButton(() => {this._pause()})}
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>
