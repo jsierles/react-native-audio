@@ -210,12 +210,22 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        WritableMap body = Arguments.createMap();
-        body.putInt("currentTime", recorderSecondsElapsed);
-        sendEvent("recordingProgress", body);
-        recorderSecondsElapsed++;
+        AudioRecorderManager.this.getReactApplicationContext().runOnNativeModulesQueueThread(new Runnable() {
+          @Override
+          public void run() {
+            recorderSecondsElapsed++;
+            WritableMap body = Arguments.createMap();
+            body.putInt("currentTime", recorderSecondsElapsed/4);
+            int maxAmplitude = 0;
+            if (recorder != null) {
+              maxAmplitude = recorder.getMaxAmplitude();
+            }
+            body.putInt("currentMetering", maxAmplitude);
+            sendEvent("recordingProgress", body);
+          }
+        });
       }
-    }, 0, 1000);
+    }, 0, 250);
   }
 
   private void stopTimer(){
