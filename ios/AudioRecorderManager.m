@@ -52,7 +52,20 @@ RCT_EXPORT_MODULE();
       if (_meteringEnabled) {
           [_audioRecorder updateMeters];
           float _currentMetering = [_audioRecorder averagePowerForChannel: 0];
-          [body setObject:[NSNumber numberWithFloat:_currentMetering] forKey:@"currentMetering"];
+          _currentMetering = _currentMetering + 160  - 50;
+          int volume = 0;
+          if (_currentMetering < 0.f) {
+              volume = 0;
+          } else if (_currentMetering < 40.f) {
+              volume = (int)(_currentMetering * 0.875);
+          } else if (_currentMetering < 100.f) {
+              volume = (int)(_currentMetering - 15);
+          } else if (_currentMetering < 110.f) {
+              volume = (int)(_currentMetering * 2.5 - 165);
+          } else {
+              volume = 110;
+          }
+          [body setObject:[NSNumber numberWithFloat:volume] forKey:@"currentVolume"];
       }
 
       [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:body];
