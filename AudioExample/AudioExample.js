@@ -102,10 +102,24 @@ class AudioExample extends Component {
         console.warn('Can\'t pause, not recording!');
         return;
       }
-    
+
       try {
         const filePath = await AudioRecorder.pauseRecording();
-        this.setState({paused: !this.state.paused});
+        this.setState({paused: true});
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async _resume() {
+      if (!this.state.paused) {
+        console.warn('Can\'t resume, not paused!');
+        return;
+      }
+
+      try {
+        await AudioRecorder.startRecording();
+        this.setState({paused: false});
       } catch (error) {
         console.error(error);
       }
@@ -195,7 +209,7 @@ class AudioExample extends Component {
             {this._renderButton("PLAY", () => {this._play()} )}
             {this._renderButton("STOP", () => {this._stop()} )}
             {/* {this._renderButton("PAUSE", () => {this._pause()} )} */}
-            {this._renderPauseButton(() => {this._pause()})}
+            {this._renderPauseButton(() => {this.state.paused ? this._resume() : this._pause()})}
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>
