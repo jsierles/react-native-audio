@@ -20,6 +20,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.media.MediaRecorder;
 import android.media.AudioManager;
@@ -29,6 +30,11 @@ import android.util.Log;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.IllegalAccessException;
+import java.lang.NoSuchMethodException;
 
 class AudioRecorderManager extends ReactContextBaseJavaModule {
 
@@ -46,13 +52,15 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private MediaRecorder recorder;
   private String currentOutputFile;
   private boolean isRecording = false;
+  private boolean isPaused = false;
   private Timer timer;
-  private int recorderSecondsElapsed;
+  private StopWatch stopWatch;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
+    stopWatch = new StopWatch();
   }
 
   @Override
@@ -166,7 +174,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       return;
     }
     recorder.start();
+
+    stopWatch.reset();
+    stopWatch.start();
     isRecording = true;
+    isPaused = false;
     startTimer();
     promise.resolve(currentOutputFile);
   }
@@ -180,10 +192,12 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
     stopTimer();
     isRecording = false;
+    isPaused = false;
 
     try {
       recorder.stop();
       recorder.release();
+      stopWatch.stop();
     }
     catch (final RuntimeException e) {
       // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
@@ -198,35 +212,70 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     sendEvent("recordingFinished", null);
   }
 
+  private void togglePause(Promise promise) {
+    if (!isRecording){
+      logAndRejectPromise(promise, "INVALID_STATE", "Please call startRecording before pausing recording");
+      return;
+    }
+
+    try {
+      if (!isPaused) {
+        Method pauseMethod = MediaRecorder.class.getMethod("pause");
+        pauseMethod.invoke(recorder);
+        stopWatch.stop();
+      } else {
+        Method resumeMethod = MediaRecorder.class.getMethod("resume");
+        resumeMethod.invoke(recorder);
+        stopWatch.start();
+      }
+
+      isPaused = !isPaused;
+      promise.resolve(currentOutputFile);
+    }
+    catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+      e.printStackTrace();
+      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+      return;
+    }
+    catch (final RuntimeException e) {
+      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
+      return;
+    }
+  }
+
   @ReactMethod
-  public void pauseRecording(Promise promise){
-    // Added this function to have the same api for android and iOS, stops recording now
-    stopRecording(promise);
+  public void togglePauseRecording(Promise promise){
+    if (isRecording) {
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+        togglePause(promise);
+      } else {
+        stopRecording(promise);
+      }      
+    }
   }
 
   private void startTimer(){
-    stopTimer();
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        WritableMap body = Arguments.createMap();
-        body.putInt("currentTime", recorderSecondsElapsed);
-        sendEvent("recordingProgress", body);
-        recorderSecondsElapsed++;
+        if (!isPaused) {
+          WritableMap body = Arguments.createMap();
+          body.putDouble("currentTime", stopWatch.getTimeSeconds());
+          sendEvent("recordingProgress", body);
+        }
       }
     }, 0, 1000);
   }
 
   private void stopTimer(){
-    recorderSecondsElapsed = 0;
     if (timer != null) {
       timer.cancel();
       timer.purge();
       timer = null;
     }
   }
-  
+
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -237,5 +286,4 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     Log.e(TAG, errorMessage);
     promise.reject(errorCode, errorMessage);
   }
-
 }

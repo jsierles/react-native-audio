@@ -39,7 +39,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
 RCT_EXPORT_MODULE();
 
 - (void)sendProgressUpdate {
-  if (_audioRecorder && _audioRecorder.recording) {
+  if (_audioRecorder && _audioRecorder.isRecording) {
     _currentTime = _audioRecorder.currentTime;
   } else {
     return;
@@ -67,7 +67,7 @@ RCT_EXPORT_MODULE();
 
 - (void)startProgressTimer {
   _progressUpdateInterval = 250;
-  _prevProgressUpdateTime = nil;
+  //_prevProgressUpdateTime = nil;
 
   [self stopProgressTimer];
 
@@ -195,12 +195,9 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
 
 RCT_EXPORT_METHOD(startRecording)
 {
-  if (!_audioRecorder.recording) {
-    [self startProgressTimer];
-    [_recordSession setActive:YES error:nil];
-    [_audioRecorder record];
-
-  }
+  [self startProgressTimer];
+  [_recordSession setActive:YES error:nil];
+  [_audioRecorder record];
 }
 
 RCT_EXPORT_METHOD(stopRecording)
@@ -212,7 +209,7 @@ RCT_EXPORT_METHOD(stopRecording)
 
 RCT_EXPORT_METHOD(pauseRecording)
 {
-  if (_audioRecorder.recording) {
+  if (_audioRecorder.isRecording) {
     [self stopProgressTimer];
     [_audioRecorder pause];
   }
