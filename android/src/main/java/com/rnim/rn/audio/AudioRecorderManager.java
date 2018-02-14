@@ -174,7 +174,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       return;
     }
     recorder.start();
-    
+
     stopWatch.reset();
     stopWatch.start();
     isRecording = true;
@@ -212,7 +212,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     sendEvent("recordingFinished", null);
   }
 
-  private void togglePause(Promise promise) {      
+  private void togglePause(Promise promise) {
     if (!isRecording){
       logAndRejectPromise(promise, "INVALID_STATE", "Please call startRecording before pausing recording");
       return;
@@ -244,11 +244,13 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void pauseRecording(Promise promise){
-    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-      togglePause(promise);
-    } else {
-      stopRecording(promise);
+  public void togglePauseRecording(Promise promise){
+    if (isRecording) {
+      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+        togglePause(promise);
+      } else {
+        stopRecording(promise);
+      }      
     }
   }
 
@@ -273,7 +275,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       timer = null;
     }
   }
-  
+
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
