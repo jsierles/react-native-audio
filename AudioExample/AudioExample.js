@@ -118,7 +118,7 @@ class AudioExample extends Component {
       }
 
       try {
-        await AudioRecorder.startRecording();
+        await AudioRecorder.resumeRecording();
         this.setState({paused: false});
       } catch (error) {
         console.error(error);
