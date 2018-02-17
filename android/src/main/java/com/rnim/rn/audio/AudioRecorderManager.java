@@ -55,12 +55,26 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private boolean isPaused = false;
   private Timer timer;
   private StopWatch stopWatch;
+  
+  private boolean isPauseResumeCapable = false;
+  private Method pauseMethod = null;
+  private Method resumeMethod = null;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
     stopWatch = new StopWatch();
+    
+    isPauseResumeCapable = Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
+    if (isPauseResumeCapable) {
+      try {
+        pauseMethod = MediaRecorder.class.getMethod("pause");
+        resumeMethod = MediaRecorder.class.getMethod("resume");
+      } catch (NoSuchMethodException e) {
+        Log.d("ERROR", "Failed to get a reference to pause and/or resume method");
+      }
+    }
   }
 
   @Override
@@ -212,46 +226,48 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     sendEvent("recordingFinished", null);
   }
 
-  private void togglePause(Promise promise) {
-    if (!isRecording){
-      logAndRejectPromise(promise, "INVALID_STATE", "Please call startRecording before pausing recording");
-      return;
-    }
-
-    try {
-      if (!isPaused) {
-        Method pauseMethod = MediaRecorder.class.getMethod("pause");
-        pauseMethod.invoke(recorder);
-        stopWatch.stop();
-      } else {
-        Method resumeMethod = MediaRecorder.class.getMethod("resume");
-        resumeMethod.invoke(recorder);
-        stopWatch.start();
-      }
-
-      isPaused = !isPaused;
-      promise.resolve(currentOutputFile);
-    }
-    catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-      e.printStackTrace();
+  @ReactMethod
+  public void pauseRecording(Promise promise) {
+    if (!isPauseResumeCapable || pauseMethod==null) {
       logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
       return;
     }
-    catch (final RuntimeException e) {
-      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
-      return;
+
+    if (!isPaused) {
+      try {
+        pauseMethod.invoke(recorder);
+        stopWatch.stop();
+      } catch (InvocationTargetException | RuntimeException | IllegalAccessException e) {
+        e.printStackTrace();
+        logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+        return;
+      }
     }
+
+    isPaused = true;
+    promise.resolve(null);
   }
 
   @ReactMethod
-  public void togglePauseRecording(Promise promise){
-    if (isRecording) {
-      if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-        togglePause(promise);
-      } else {
-        stopRecording(promise);
-      }      
+  public void resumeRecording(Promise promise) {
+    if (!isPauseResumeCapable || resumeMethod == null) {
+      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+      return;
     }
+
+    if (isPaused) {
+      try {
+        resumeMethod.invoke(recorder);
+        stopWatch.start();
+      } catch (InvocationTargetException | RuntimeException | IllegalAccessException e) {
+        e.printStackTrace();
+        logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+        return;
+      }
+    }
+    
+    isPaused = false;
+    promise.resolve(null);
   }
 
   private void startTimer(){

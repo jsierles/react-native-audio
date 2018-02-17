@@ -64,6 +64,9 @@ var AudioRecorder = {
   pauseRecording: function() {
     return AudioRecorderManager.pauseRecording();
   },
+  resumeRecording: function() {
+    return AudioRecorderManager.resumeRecording();
+  },
   stopRecording: function() {
     return AudioRecorderManager.stopRecording();
   },
