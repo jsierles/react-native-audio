@@ -6,6 +6,8 @@ For React Native >= 0.47.2, use v3.4.0 and up.
 For React Native >= 0.40, use v3.1.0 up til 3.2.2.
 For React Native <= 0.39, use v3.0.0 or lower.
 
+v4.0 introduced a breaking change to the API to introduce distinct pause and resume methods.
+
 v3.x removed playback support in favor of using more mature libraries like [react-native-sound](https://github.com/zmxv/react-native-sound). If you need to play
 from the network, please submit a PR to that project or try `react-native-video`.
 
