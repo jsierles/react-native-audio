@@ -210,8 +210,14 @@ RCT_EXPORT_METHOD(stopRecording)
 RCT_EXPORT_METHOD(pauseRecording)
 {
   if (_audioRecorder.isRecording) {
-    [self stopProgressTimer];
     [_audioRecorder pause];
+  }
+}
+
+RCT_EXPORT_METHOD(resumeRecording)
+{
+  if (!_audioRecorder.isRecording) {
+    [_audioRecorder record];
   }
 }
 
