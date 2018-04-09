@@ -111,6 +111,9 @@ Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 The `MeteringEnabled` boolean to enable audio metering.
 
+The `IncludeBase64` boolean to include the recording `base64` encoded on the `AudioRecorder.onFinished` event object. Please use it with care, since its usage can result in huge memory usage. Furthermore you could sacrifice performance, because a huge base64 encoded string has to be transferred over the bridge.
+If you want to upload the audio, it might be best to do it on the native thread.
+
 #### Android-only fields
 
 AudioEncodingBitRate: int
