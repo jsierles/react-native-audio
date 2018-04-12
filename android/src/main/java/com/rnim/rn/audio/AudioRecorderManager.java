@@ -20,6 +20,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.media.MediaRecorder;
 import android.media.AudioManager;
@@ -29,6 +30,11 @@ import android.util.Log;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.IllegalAccessException;
+import java.lang.NoSuchMethodException;
 
 class AudioRecorderManager extends ReactContextBaseJavaModule {
 
@@ -46,14 +52,30 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private MediaRecorder recorder;
   private String currentOutputFile;
   private boolean isRecording = false;
+  private boolean isPaused = false;
   private boolean meteringEnabled = false;
   private Timer timer;
-  private int recorderSecondsElapsed;
+  private StopWatch stopWatch;
+  
+  private boolean isPauseResumeCapable = false;
+  private Method pauseMethod = null;
+  private Method resumeMethod = null;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
+    stopWatch = new StopWatch();
+    
+    isPauseResumeCapable = Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
+    if (isPauseResumeCapable) {
+      try {
+        pauseMethod = MediaRecorder.class.getMethod("pause");
+        resumeMethod = MediaRecorder.class.getMethod("resume");
+      } catch (NoSuchMethodException e) {
+        Log.d("ERROR", "Failed to get a reference to pause and/or resume method");
+      }
+    }
   }
 
   @Override
@@ -168,7 +190,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       return;
     }
     recorder.start();
+
+    stopWatch.reset();
+    stopWatch.start();
     isRecording = true;
+    isPaused = false;
     startTimer();
     promise.resolve(currentOutputFile);
   }
@@ -182,10 +208,12 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
     stopTimer();
     isRecording = false;
+    isPaused = false;
 
     try {
       recorder.stop();
       recorder.release();
+      stopWatch.stop();
     }
     catch (final RuntimeException e) {
       // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
@@ -201,43 +229,80 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void pauseRecording(Promise promise){
-    // Added this function to have the same api for android and iOS, stops recording now
-    stopRecording(promise);
+  public void pauseRecording(Promise promise) {
+    if (!isPauseResumeCapable || pauseMethod==null) {
+      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+      return;
+    }
+
+    if (!isPaused) {
+      try {
+        pauseMethod.invoke(recorder);
+        stopWatch.stop();
+      } catch (InvocationTargetException | RuntimeException | IllegalAccessException e) {
+        e.printStackTrace();
+        logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+        return;
+      }
+    }
+
+    isPaused = true;
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void resumeRecording(Promise promise) {
+    if (!isPauseResumeCapable || resumeMethod == null) {
+      logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+      return;
+    }
+
+    if (isPaused) {
+      try {
+        resumeMethod.invoke(recorder);
+        stopWatch.start();
+      } catch (InvocationTargetException | RuntimeException | IllegalAccessException e) {
+        e.printStackTrace();
+        logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
+        return;
+      }
+    }
+    
+    isPaused = false;
+    promise.resolve(null);
   }
 
   private void startTimer(){
-    stopTimer();
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
       public void run() {
-        WritableMap body = Arguments.createMap();
-        body.putInt("currentTime", recorderSecondsElapsed);
-        if(meteringEnabled){
-            int amplitude = recorder.getMaxAmplitude();
-                if (amplitude == 0) {
-                    body.putInt("currentMetering", -160);//The first call - absolutely silence  
-                } else {
-                    //db = 20 * log10(peaks/ 32767); where 32767 - max value of amplitude in Android, peaks - current value
-                    body.putInt("currentMetering", (int) (20 * Math.log(((double) amplitude) / 32767d)));
-                }
+        if (!isPaused) {
+          WritableMap body = Arguments.createMap();
+          body.putDouble("currentTime", stopWatch.getTimeSeconds());
+          if(meteringEnabled){
+              int amplitude = recorder.getMaxAmplitude();
+                  if (amplitude == 0) {
+                      body.putDouble("currentMetering", -160);//The first call - absolutely silence
+                  } else {
+                      //db = 20 * log10(peaks/ 32767); where 32767 - max value of amplitude in Android, peaks - current value
+                      body.putDouble("currentMetering", (double) (20 * Math.log(((double) amplitude) / 32767d)));
+                  }
+          }
+          sendEvent("recordingProgress", body);
         }
-        sendEvent("recordingProgress", body);
-        recorderSecondsElapsed++;
       }
     }, 0, 1000);
   }
 
   private void stopTimer(){
-    recorderSecondsElapsed = 0;
     if (timer != null) {
       timer.cancel();
       timer.purge();
       timer = null;
     }
   }
-  
+
   private void sendEvent(String eventName, Object params) {
     getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -248,5 +313,4 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     Log.e(TAG, errorMessage);
     promise.reject(errorCode, errorMessage);
   }
-
 }

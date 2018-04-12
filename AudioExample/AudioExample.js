@@ -18,6 +18,7 @@ class AudioExample extends Component {
     state = {
       currentTime: 0.0,
       recording: false,
+      paused: false,
       stoppedRecording: false,
       finished: false,
       audioPath: AudioUtils.DocumentDirectoryPath + '/test.aac',
@@ -84,21 +85,41 @@ class AudioExample extends Component {
       );
     }
 
+    _renderPauseButton(onPress, active) {
+      var style = (active) ? styles.activeButtonText : styles.buttonText;
+      var title = this.state.paused ? "RESUME" : "PAUSE";
+      return (
+        <TouchableHighlight style={styles.button} onPress={onPress}>
+          <Text style={style}>
+            {title}
+          </Text>
+        </TouchableHighlight>
+      );
+    }
+
     async _pause() {
       if (!this.state.recording) {
         console.warn('Can\'t pause, not recording!');
         return;
       }
 
-      this.setState({stoppedRecording: true, recording: false});
-
       try {
         const filePath = await AudioRecorder.pauseRecording();
+        this.setState({paused: true});
+      } catch (error) {
+        console.error(error);
+      }
+    }
 
-        // Pause is currently equivalent to stop on Android.
-        if (Platform.OS === 'android') {
-          this._finishRecording(true, filePath);
-        }
+    async _resume() {
+      if (!this.state.paused) {
+        console.warn('Can\'t resume, not paused!');
+        return;
+      }
+
+      try {
+        await AudioRecorder.resumeRecording();
+        this.setState({paused: false});
       } catch (error) {
         console.error(error);
       }
@@ -110,7 +131,7 @@ class AudioExample extends Component {
         return;
       }
 
-      this.setState({stoppedRecording: true, recording: false});
+      this.setState({stoppedRecording: true, recording: false, paused: false});
 
       try {
         const filePath = await AudioRecorder.stopRecording();
@@ -165,7 +186,7 @@ class AudioExample extends Component {
         this.prepareRecordingPath(this.state.audioPath);
       }
 
-      this.setState({recording: true});
+      this.setState({recording: true, paused: false});
 
       try {
         const filePath = await AudioRecorder.startRecording();
@@ -187,7 +208,8 @@ class AudioExample extends Component {
             {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
             {this._renderButton("PLAY", () => {this._play()} )}
             {this._renderButton("STOP", () => {this._stop()} )}
-            {this._renderButton("PAUSE", () => {this._pause()} )}
+            {/* {this._renderButton("PAUSE", () => {this._pause()} )} */}
+            {this._renderPauseButton(() => {this.state.paused ? this._resume() : this._pause()})}
             <Text style={styles.progressText}>{this.state.currentTime}s</Text>
           </View>
         </View>
