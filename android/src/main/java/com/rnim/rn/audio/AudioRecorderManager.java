@@ -283,10 +283,10 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
           if(meteringEnabled){
               int amplitude = recorder.getMaxAmplitude();
                   if (amplitude == 0) {
-                      body.putDouble("currentMetering", -160);//The first call - absolutely silence
+                      body.putInt("currentMetering", -160);//The first call - absolutely silence
                   } else {
                       //db = 20 * log10(peaks/ 32767); where 32767 - max value of amplitude in Android, peaks - current value
-                      body.putDouble("currentMetering", (double) (20 * Math.log(((double) amplitude) / 32767d)));
+                      body.putInt("currentMetering", (int) (20 * Math.log(((double) amplitude) / 32767d)));
                   }
           }
           sendEvent("recordingProgress", body);
