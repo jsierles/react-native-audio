@@ -95,6 +95,8 @@ AudioRecorder.prepareRecordingAtPath(audioPath, {
 });
 ```
 
+`AudioQuality` supported on iOS: `Low`, `Medium`, and 'High` that relate to `AVAudioQualityLow`, `AVAudioQualityMedium`, and `AVAudioQualityHigh` respectively.
+
 #### Cross-platform options
 
 ```
