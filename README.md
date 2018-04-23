@@ -109,7 +109,11 @@ Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 #### iOS-only fields
 
-The `MeteringEnabled` boolean to enable audio metering.
+Use `MeteringEnabled` boolean to enable audio metering.
+
+Use the `IncludeBase64` boolean to include the `base64` encoded recording on the `AudioRecorder.onFinished` event object. Please use it with care: passing large amounts of data over the bridge, from native to Javascript, can use lots of memory and cause slow performance.
+
+If you want to upload the audio, it might be best to do it on the native thread with a package like [React Native Fetch Blob](https://github.com/joltup/react-native-fetch-blob).
 
 #### Android-only fields
 

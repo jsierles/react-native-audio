@@ -32,6 +32,7 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   AVAudioSession *_recordSession;
   BOOL _meteringEnabled;
   BOOL _measurementMode;
+  BOOL _includeBase64;
 }
 
 @synthesize bridge = _bridge;
@@ -76,7 +77,15 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
+  NString *base64 = nil;
+  if (_includeBase64) {
+    NSData *data = [NSData dataWithContentsOfFile:_audioFileURL];
+    base64 = [data base64EncodedStringWithOptions:0];
+  }
+
   [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
+      @"base64":base64,
+      @"duration":@(_currentTime),
       @"status": flag ? @"OK" : @"ERROR",
       @"audioFileURL": [_audioFileURL absoluteString]
     }];
@@ -89,7 +98,7 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode)
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode includeBase64:(BOOL)includeBase64)
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
@@ -102,6 +111,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _audioChannels = [NSNumber numberWithInt:2];
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
   _meteringEnabled = NO;
+  _includeBase64 = NO;
 
   // Set audio quality from options
   if (quality != nil) {
@@ -164,6 +174,10 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   // Measurement mode to disable mic auto gain and high pass filters
   if (measurementMode != NO) {
     _measurementMode = measurementMode;
+  }
+
+  if (includeBase64) {
+    _includeBase64 = includeBase64;
   }
 
   NSError *error = nil;
