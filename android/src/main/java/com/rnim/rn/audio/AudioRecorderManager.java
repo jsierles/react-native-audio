@@ -223,7 +223,12 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     }
 
     promise.resolve(currentOutputFile);
-    sendEvent("recordingFinished", null);
+
+    WritableMap result = Arguments.createMap();
+    result.putString("status", "OK");
+    result.putString("audioFileURL", "file://" + currentOutputFile);
+
+    sendEvent("recordingFinished", result);
   }
 
   @ReactMethod
