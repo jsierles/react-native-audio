@@ -77,7 +77,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
-  NString *base64 = nil;
+  NSString *base64 = nil;
   if (_includeBase64) {
     NSData *data = [NSData dataWithContentsOfFile:_audioFileURL];
     base64 = [data base64EncodedStringWithOptions:0];
