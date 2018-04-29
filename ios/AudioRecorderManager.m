@@ -54,8 +54,10 @@ RCT_EXPORT_MODULE();
           [_audioRecorder updateMeters];
           float _currentMetering = [_audioRecorder averagePowerForChannel: 0];
           [body setObject:[NSNumber numberWithFloat:_currentMetering] forKey:@"currentMetering"];
+   
+          float _currentPeakMetering = [_audioRecorder peakPowerForChannel:0];
+          [body setObject:[NSNumber numberWithFloat:_currentPeakMetering] forKey:@"currentPeakMetering"];
       }
-
       [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventProgress body:body];
 
     _prevProgressUpdateTime = [NSDate date];
