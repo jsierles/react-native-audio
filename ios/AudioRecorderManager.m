@@ -66,11 +66,11 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)startProgressTimer {
-  _progressUpdateInterval = 250;
-  //_prevProgressUpdateTime = nil;
-
   [self stopProgressTimer];
 
+  if (!_progressUpdateInterval) {
+    _progressUpdateInterval = 250;
+  }
   _progressUpdateTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(sendProgressUpdate)];
   [_progressUpdateTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
 }
@@ -87,6 +87,11 @@ RCT_EXPORT_MODULE();
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
   NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
   return basePath;
+}
+
+RCT_EXPORT_METHOD(setProgressInterval:(nonnull NSNumber *) progressInterval)
+{
+  _progressUpdateInterval = [progressInterval intValue];
 }
 
 RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode)

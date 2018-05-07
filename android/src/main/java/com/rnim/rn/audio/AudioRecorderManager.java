@@ -51,6 +51,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private Context context;
   private MediaRecorder recorder;
   private String currentOutputFile;
+  private int progressInterval = 1000;
   private boolean isRecording = false;
   private boolean isPaused = false;
   private boolean meteringEnabled = false;
@@ -102,6 +103,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
             Manifest.permission.RECORD_AUDIO);
     boolean permissionGranted = permissionCheck == PackageManager.PERMISSION_GRANTED;
     promise.resolve(permissionGranted);
+  }
+
+  @ReactMethod
+  public void setProgressInterval(int progressInterval) {
+    this.progressInterval = progressInterval;
   }
 
   @ReactMethod
@@ -292,7 +298,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
           sendEvent("recordingProgress", body);
         }
       }
-    }, 0, 1000);
+    }, 0, this.progressInterval);
   }
 
   private void stopTimer(){
