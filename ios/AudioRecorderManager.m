@@ -84,12 +84,15 @@ RCT_EXPORT_MODULE();
     NSData *data = [NSData dataWithContentsOfFile:_audioFileURL];
     base64 = [data base64EncodedStringWithOptions:0];
   }
-
+    uint64_t audioFileSize = 0;
+    audioFileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[_audioFileURL path] error:nil] fileSize];
+  
   [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventFinished body:@{
       @"base64":base64,
       @"duration":@(_currentTime),
       @"status": flag ? @"OK" : @"ERROR",
-      @"audioFileURL": [_audioFileURL absoluteString]
+      @"audioFileURL": [_audioFileURL absoluteString],
+      @"audioFileSize": @(audioFileSize)
     }];
 }
 
