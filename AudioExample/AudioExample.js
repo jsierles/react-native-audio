@@ -50,7 +50,7 @@ class AudioExample extends Component {
         AudioRecorder.onFinished = (data) => {
           // Android callback comes in the form of a promise instead.
           if (Platform.OS === 'ios') {
-            this._finishRecording(data.status === "OK", data.audioFileURL);
+            this._finishRecording(data.status === "OK", data.audioFileURL, data.audioFileSize);
           }
         };
       });
@@ -195,9 +195,9 @@ class AudioExample extends Component {
       }
     }
 
-    _finishRecording(didSucceed, filePath) {
+    _finishRecording(didSucceed, filePath, fileSize) {
       this.setState({ finished: didSucceed });
-      console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
+      console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath} and size of ${fileSize || 0} bytes`);
     }
 
     render() {
