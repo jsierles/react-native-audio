@@ -187,6 +187,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
       return;
     }
+    //micphone is busying
+    if (!validateMicAvailability()){
+      logAndRejectPromise(promise, "INVALID_STATE", "micphone is busying, please try again later");
+      return;
+    }
     recorder.start();
 
     stopWatch.reset();
@@ -306,5 +311,30 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private void logAndRejectPromise(Promise promise, String errorCode, String errorMessage) {
     Log.e(TAG, errorMessage);
     promise.reject(errorCode, errorMessage);
+  }
+  
+  private boolean validateMicAvailability(){
+      Boolean available = true;
+      AudioRecord recorder =
+              new AudioRecord(MediaRecorder.AudioSource.MIC, 44100,
+                      AudioFormat.CHANNEL_IN_MONO,
+                      AudioFormat.ENCODING_DEFAULT, 44100);
+      try{
+          if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED ){
+              available = false;
+
+          }
+
+          recorder.startRecording();
+          if(recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING){
+              recorder.stop();
+              available = false;
+          }
+      } finally{
+          recorder.release();
+          recorder = null;
+      }
+
+      return available;
   }
 }
