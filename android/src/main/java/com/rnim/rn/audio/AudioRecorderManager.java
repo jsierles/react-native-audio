@@ -20,6 +20,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.pm.PackageManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.os.Build;
 import android.os.Environment;
 import android.media.MediaRecorder;
