@@ -73,7 +73,21 @@ var AudioRecorder = {
     return AudioRecorderManager.stopRecording();
   },
   checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
-  requestAuthorization: AudioRecorderManager.requestAuthorization,
+  requestAuthorization: () => {
+    if (Platform.OS === 'ios')
+      return AudioRecorderManager.requestAuthorization();
+    else
+      return new Promise((resolve, reject) => {
+        PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        ).then(result => {
+          if (result == PermissionsAndroid.RESULTS.GRANTED)
+            resolve(true);
+          else
+            resolve(false)
+        })
+      });
+  },
   removeListeners: function() {
     if (this.progressSubscription) this.progressSubscription.remove();
     if (this.finishedSubscription) this.finishedSubscription.remove();
