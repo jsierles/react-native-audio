@@ -81,7 +81,7 @@ var AudioRecorder = {
         PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
         ).then(result => {
-          if (result == PermissionsAndroid.RESULTS.GRANTED)
+          if (result == PermissionsAndroid.RESULTS.GRANTED || result == true)
             resolve(true);
           else
             resolve(false)
