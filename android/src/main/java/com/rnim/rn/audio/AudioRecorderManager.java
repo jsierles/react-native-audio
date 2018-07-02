@@ -55,7 +55,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private boolean isPaused = false;
   private Timer timer;
   private StopWatch stopWatch;
-  
+
   private boolean isPauseResumeCapable = false;
   private Method pauseMethod = null;
   private Method resumeMethod = null;
@@ -65,7 +65,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     super(reactContext);
     this.context = reactContext;
     stopWatch = new StopWatch();
-    
+
     isPauseResumeCapable = Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
     if (isPauseResumeCapable) {
       try {
@@ -187,14 +187,18 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
       return;
     }
-    recorder.start();
+    try {
+      recorder.start();
 
-    stopWatch.reset();
-    stopWatch.start();
-    isRecording = true;
-    isPaused = false;
-    startTimer();
-    promise.resolve(currentOutputFile);
+      stopWatch.reset();
+      stopWatch.start();
+      isRecording = true;
+      isPaused = false;
+      startTimer();
+      promise.resolve(currentOutputFile);
+    } catch(Exception e) {
+      logAndRejectPromise(promise, "INVALID_STATE", "There was an error using your microphone");
+    }
   }
 
   @ReactMethod
@@ -270,7 +274,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
         return;
       }
     }
-    
+
     isPaused = false;
     promise.resolve(null);
   }
