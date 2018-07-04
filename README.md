@@ -120,7 +120,9 @@ If you want to upload the audio, it might be best to do it on the native thread 
 #### Android-only fields
 
 AudioEncodingBitRate: int
+
 OutputFormat: string, `mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm`
+
 NoiseFilter: boolean, `true` to remove background noise, `false` to keep voice as it is
 
 See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more details. For playing audio check out [React Native Sound](https://github.com/zmxv/react-native-sound)
