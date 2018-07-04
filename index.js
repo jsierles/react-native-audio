@@ -40,7 +40,8 @@ var AudioRecorder = {
       MeteringEnabled: false,
       MeasurementMode: false,
       AudioEncodingBitRate: 32000,
-      IncludeBase64: false
+      IncludeBase64: false,
+      NoiseFilter: false
     };
 
     var recordingOptions = {...defaultOptions, ...options};
