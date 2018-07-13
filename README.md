@@ -111,7 +111,20 @@ Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 #### iOS-only fields
 
-Use `MeteringEnabled` boolean to enable audio metering.
+Use `MeteringEnabled` boolean to enable audio metering. The following values are available on the recording progress object. 
+
+| Name | Related AVAudioRecorder parameter | Description |
+|------|-----------------------------------|-------------|
+|currentMetering| averagePowerForChannel | The current average power, in decibels, for the sound being recorded. A return value of 0 dB indicates full scale, or maximum power; a return value of -160 dB indicates minimum power (that is, near silence). If the signal provided to the audio recorder exceeds ±full scale, then the return value may exceed 0 (that is, it may enter the positive range).|
+|currentPeakMetering | peakPowerForChannel | The current peak power, in decibels, for the sound being recorded. A return value of 0 dB indicates full scale, or maximum power; a return value of -160 dB indicates minimum power (that is, near silence). If the signal provided to the audio recorder exceeds ±full scale, then the return value may exceed 0 (that is, it may enter the positive range).|
+
+For example: 
+
+```js
+AudioRecorder.onProgress = (data) => {
+    console.log(data.currentMetering, data.currentPeakMetering)
+};
+```
 
 Use the `IncludeBase64` boolean to include the `base64` encoded recording on the `AudioRecorder.onFinished` event object. Please use it with care: passing large amounts of data over the bridge, from native to Javascript, can use lots of memory and cause slow performance.
 
