@@ -94,6 +94,17 @@ RCT_EXPORT_MODULE();
       @"audioFileURL": [_audioFileURL absoluteString],
       @"audioFileSize": @(audioFileSize)
     }];
+    
+    // This will resume the music/audio file that was playing before the recording started
+    // Without this piece of code, the music/audio will just be stopped
+    NSError *error;
+    [[AVAudioSession sharedInstance] setActive:NO
+                                   withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation
+                                         error:&error];
+    if (error) {
+        // TODO: dispatch error over the bridge
+        NSLog(@"error: %@", [error localizedDescription]);
+    }
 }
 
 - (NSString *) applicationDocumentsDirectory
