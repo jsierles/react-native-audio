@@ -111,15 +111,14 @@ Encodings supported on Android: `aac, aac_eld, amr_nb, amr_wb, he_aac, vorbis`
 
 #### iOS-only fields
 
-Use `MeteringEnabled` boolean to enable audio metering.
-After enable `MeteringEnabled` following values available on progress of recording. 
+Use `MeteringEnabled` boolean to enable audio metering. The following values are available on the recording progress object. 
 
 | Name | Related AVAudioRecorder parameter | Description |
 |------|-----------------------------------|-------------|
 |currentMetering| averagePowerForChannel | The current average power, in decibels, for the sound being recorded. A return value of 0 dB indicates full scale, or maximum power; a return value of -160 dB indicates minimum power (that is, near silence). If the signal provided to the audio recorder exceeds ±full scale, then the return value may exceed 0 (that is, it may enter the positive range).|
 |currentPeakMetering | peakPowerForChannel | The current peak power, in decibels, for the sound being recorded. A return value of 0 dB indicates full scale, or maximum power; a return value of -160 dB indicates minimum power (that is, near silence). If the signal provided to the audio recorder exceeds ±full scale, then the return value may exceed 0 (that is, it may enter the positive range).|
 
-To get metering values: 
+For example: 
 
 ```js
 AudioRecorder.onProgress = (data) => {
