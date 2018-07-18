@@ -20,6 +20,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.content.pm.PackageManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.os.Build;
 import android.os.Environment;
 import android.media.MediaRecorder;
@@ -27,6 +29,7 @@ import android.media.AudioManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.FileInputStream;
@@ -55,7 +58,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private boolean isPaused = false;
   private Timer timer;
   private StopWatch stopWatch;
-  
+
   private boolean isPauseResumeCapable = false;
   private Method pauseMethod = null;
   private Method resumeMethod = null;
@@ -65,7 +68,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     super(reactContext);
     this.context = reactContext;
     stopWatch = new StopWatch();
-    
+
     isPauseResumeCapable = Build.VERSION.SDK_INT > Build.VERSION_CODES.M;
     if (isPauseResumeCapable) {
       try {
@@ -105,7 +108,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void prepareRecordingAtPath(String recordingPath, ReadableMap recordingSettings, Promise promise) {
-    if (isRecording){
+    if (isRecording) {
       logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
     }
 
@@ -120,9 +123,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.setAudioChannels(recordingSettings.getInt("Channels"));
       recorder.setAudioEncodingBitRate(recordingSettings.getInt("AudioEncodingBitRate"));
       recorder.setOutputFile(recordingPath);
-    }
-    catch(final Exception e) {
-      logAndRejectPromise(promise, "COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
+    } catch (final Exception e) {
+      logAndRejectPromise(promise, "COULDNT_CONFIGURE_MEDIA_RECORDER", "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file " + e.getMessage());
       return;
     }
 
@@ -131,29 +133,29 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.prepare();
       promise.resolve(currentOutputFile);
     } catch (final Exception e) {
-      logAndRejectPromise(promise, "COULDNT_PREPARE_RECORDING_AT_PATH "+recordingPath, e.getMessage());
+      logAndRejectPromise(promise, "COULDNT_PREPARE_RECORDING_AT_PATH " + recordingPath, e.getMessage());
     }
 
   }
 
   private int getAudioEncoderFromString(String audioEncoder) {
-   switch (audioEncoder) {
-     case "aac":
-       return MediaRecorder.AudioEncoder.AAC;
-     case "aac_eld":
-       return MediaRecorder.AudioEncoder.AAC_ELD;
-     case "amr_nb":
-       return MediaRecorder.AudioEncoder.AMR_NB;
-     case "amr_wb":
-       return MediaRecorder.AudioEncoder.AMR_WB;
-     case "he_aac":
-       return MediaRecorder.AudioEncoder.HE_AAC;
-     case "vorbis":
-      return MediaRecorder.AudioEncoder.VORBIS;
-     default:
-       Log.d("INVALID_AUDIO_ENCODER", "USING MediaRecorder.AudioEncoder.DEFAULT instead of "+audioEncoder+": "+MediaRecorder.AudioEncoder.DEFAULT);
-       return MediaRecorder.AudioEncoder.DEFAULT;
-   }
+    switch (audioEncoder) {
+      case "aac":
+        return MediaRecorder.AudioEncoder.AAC;
+      case "aac_eld":
+        return MediaRecorder.AudioEncoder.AAC_ELD;
+      case "amr_nb":
+        return MediaRecorder.AudioEncoder.AMR_NB;
+      case "amr_wb":
+        return MediaRecorder.AudioEncoder.AMR_WB;
+      case "he_aac":
+        return MediaRecorder.AudioEncoder.HE_AAC;
+      case "vorbis":
+        return MediaRecorder.AudioEncoder.VORBIS;
+      default:
+        Log.d("INVALID_AUDIO_ENCODER", "USING MediaRecorder.AudioEncoder.DEFAULT instead of " + audioEncoder + ": " + MediaRecorder.AudioEncoder.DEFAULT);
+        return MediaRecorder.AudioEncoder.DEFAULT;
+    }
   }
 
   private int getOutputFormatFromString(String outputFormat) {
@@ -171,20 +173,25 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       case "webm":
         return MediaRecorder.OutputFormat.WEBM;
       default:
-        Log.d("INVALID_OUPUT_FORMAT", "USING MediaRecorder.OutputFormat.DEFAULT : "+MediaRecorder.OutputFormat.DEFAULT);
+        Log.d("INVALID_OUPUT_FORMAT", "USING MediaRecorder.OutputFormat.DEFAULT : " + MediaRecorder.OutputFormat.DEFAULT);
         return MediaRecorder.OutputFormat.DEFAULT;
 
     }
   }
 
   @ReactMethod
-  public void startRecording(Promise promise){
-    if (recorder == null){
+  public void startRecording(Promise promise) {
+    if (recorder == null) {
       logAndRejectPromise(promise, "RECORDING_NOT_PREPARED", "Please call prepareRecordingAtPath before starting recording");
       return;
     }
-    if (isRecording){
+    if (isRecording) {
       logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
+      return;
+    }
+    //micPhone is busying or noAuthority
+    if (!validateMicAvailability()) {
+      logAndRejectPromise(promise, "INVALID_STATE", "micPhone is busying or noAuthority, please try again later");
       return;
     }
     recorder.start();
@@ -198,8 +205,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void stopRecording(Promise promise){
-    if (!isRecording){
+  public void stopRecording(Promise promise) {
+    if (!isRecording) {
       logAndRejectPromise(promise, "INVALID_STATE", "Please call startRecording before stopping recording");
       return;
     }
@@ -212,13 +219,11 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.stop();
       recorder.release();
       stopWatch.stop();
-    }
-    catch (final RuntimeException e) {
+    } catch (final RuntimeException e) {
       // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
       logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
       return;
-    }
-    finally {
+    } finally {
       recorder = null;
     }
 
@@ -233,7 +238,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void pauseRecording(Promise promise) {
-    if (!isPauseResumeCapable || pauseMethod==null) {
+    if (!isPauseResumeCapable || pauseMethod == null) {
       logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "Method not available on this version of Android.");
       return;
     }
@@ -270,12 +275,12 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
         return;
       }
     }
-    
+
     isPaused = false;
     promise.resolve(null);
   }
 
-  private void startTimer(){
+  private void startTimer() {
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {
       @Override
@@ -289,7 +294,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     }, 0, 1000);
   }
 
-  private void stopTimer(){
+  private void stopTimer() {
     if (timer != null) {
       timer.cancel();
       timer.purge();
@@ -306,5 +311,32 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private void logAndRejectPromise(Promise promise, String errorCode, String errorMessage) {
     Log.e(TAG, errorMessage);
     promise.reject(errorCode, errorMessage);
+  }
+
+  private boolean validateMicAvailability() {
+    Boolean available = true;
+    AudioRecord recorder =
+            new AudioRecord(MediaRecorder.AudioSource.MIC, 44100,
+                    AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_DEFAULT, 44100);
+    try {
+      if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_STOPPED) {
+        available = false;
+
+      }
+
+      recorder.startRecording();
+      if (recorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+        recorder.stop();
+        available = false;
+      }
+    } catch (RuntimeException e) {
+      available = false;
+    } finally {
+      recorder.release();
+      recorder = null;
+    }
+
+    return available;
   }
 }
