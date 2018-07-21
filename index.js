@@ -41,7 +41,7 @@ var AudioRecorder = {
       MeasurementMode: false,
       AudioEncodingBitRate: 32000,
       IncludeBase64: false,
-      NoiseFilter: false
+      AudioSource: 0
     };
 
     var recordingOptions = {...defaultOptions, ...options};
@@ -82,6 +82,7 @@ var AudioRecorder = {
 };
 
 let AudioUtils = {};
+let AudioSource = {};
 
 if (Platform.OS === 'ios') {
   AudioUtils = {
@@ -89,6 +90,9 @@ if (Platform.OS === 'ios') {
     CachesDirectoryPath: AudioRecorderManager.NSCachesDirectoryPath,
     DocumentDirectoryPath: AudioRecorderManager.NSDocumentDirectoryPath,
     LibraryDirectoryPath: AudioRecorderManager.NSLibraryDirectoryPath,
+  };
+  AudioSource = {
+
   };
 } else if (Platform.OS === 'android') {
   AudioUtils = {
@@ -100,6 +104,18 @@ if (Platform.OS === 'ios') {
     MusicDirectoryPath: AudioRecorderManager.MusicDirectoryPath,
     DownloadsDirectoryPath: AudioRecorderManager.DownloadsDirectoryPath
   };
+  AudioSource = {
+    DEFAULT: 0,
+    MIC: 1,
+    VOICE_UPLINK: 2,
+    VOICE_DOWNLINK: 3,
+    VOICE_CALL: 4,
+    CAMCORDER: 5,
+    VOICE_RECOGNITION: 6,
+    VOICE_COMMUNICATION: 7,
+    REMOTE_SUBMIX: 8, // added in API 19
+    UNPROCESSED: 9, // added in API 24
+  };
 }
 
-module.exports = {AudioRecorder, AudioUtils};
+module.exports = {AudioRecorder, AudioUtils, AudioSource};
