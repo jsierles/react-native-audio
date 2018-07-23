@@ -12,8 +12,11 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -26,6 +29,7 @@ import android.media.MediaRecorder;
 import android.media.AudioManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
@@ -53,6 +57,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private String currentOutputFile;
   private boolean isRecording = false;
   private boolean isPaused = false;
+  private boolean includeBase64 = false;
   private Timer timer;
   private StopWatch stopWatch;
   
@@ -120,6 +125,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.setAudioChannels(recordingSettings.getInt("Channels"));
       recorder.setAudioEncodingBitRate(recordingSettings.getInt("AudioEncodingBitRate"));
       recorder.setOutputFile(recordingPath);
+      includeBase64 = recordingSettings.getBoolean("IncludeBase64");
     }
     catch(final Exception e) {
       logAndRejectPromise(promise, "COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
@@ -227,6 +233,29 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     WritableMap result = Arguments.createMap();
     result.putString("status", "OK");
     result.putString("audioFileURL", "file://" + currentOutputFile);
+
+    String base64 = "";
+    if (includeBase64) {
+      try {
+        InputStream inputStream = new FileInputStream(currentOutputFile);
+        byte[] bytes;
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+          while ((bytesRead = inputStream.read(buffer)) != -1) {
+            output.write(buffer, 0, bytesRead);
+          }
+        } catch (IOException e) {
+          Log.e(TAG, "FAILED TO PARSE FILE");
+        }
+        bytes = output.toByteArray();
+        base64 = Base64.encodeToString(bytes, Base64.DEFAULT);
+      } catch(FileNotFoundException e) {
+        Log.e(TAG, "FAILED TO FIND FILE");
+      }
+    }
+    result.putString("base64", base64);
 
     sendEvent("recordingFinished", result);
   }
