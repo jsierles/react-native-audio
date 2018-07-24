@@ -33,9 +33,11 @@ On *Android* you need to add a permission to `AndroidManifest.xml`:
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
-#### Manual Installation on Android
+#### Manual Installation
 
 This is not necessary if you have used `react-native link`
+
+##### on Android
 
 Edit `android/settings.gradle` to declare the project directory:
 ```
@@ -68,6 +70,13 @@ public class MainApplication extends Application implements ReactApplication {
     );
   }
 ```
+
+#### on iOS
+
+Drag `node_modules/react-native-audio/ios/RNAudio.xcoderproj` to your project's Libraries on Xcode.
+
+Add `libRNAudio.a` to Link Binary With Libraries from Xcode - Build Phases.
+
 
 ### Running the Sample App
 
