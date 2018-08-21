@@ -36,10 +36,10 @@ class AudioExample extends Component {
     }
 
     componentDidMount() {
-      this._checkPermission().then((hasPermission) => {
-        this.setState({ hasPermission });
+      AudioRecorder.requestAuthorization().then((isAuthorised) => {
+        this.setState({ hasPermission: isAuthorised });
 
-        if (!hasPermission) return;
+        if (!isAuthorised) return;
 
         this.prepareRecordingPath(this.state.audioPath);
 
@@ -50,27 +50,10 @@ class AudioExample extends Component {
         AudioRecorder.onFinished = (data) => {
           // Android callback comes in the form of a promise instead.
           if (Platform.OS === 'ios') {
-            this._finishRecording(data.status === "OK", data.audioFileURL);
+            this._finishRecording(data.status === "OK", data.audioFileURL, data.audioFileSize);
           }
         };
       });
-    }
-
-    _checkPermission() {
-      if (Platform.OS !== 'android') {
-        return Promise.resolve(true);
-      }
-
-      const rationale = {
-        'title': 'Microphone Permission',
-        'message': 'AudioExample needs access to your microphone so you can record audio.'
-      };
-
-      return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, rationale)
-        .then((result) => {
-          console.log('Permission result:', result);
-          return (result === true || result === PermissionsAndroid.RESULTS.GRANTED);
-        });
     }
 
     _renderButton(title, onPress, active) {
@@ -195,9 +178,9 @@ class AudioExample extends Component {
       }
     }
 
-    _finishRecording(didSucceed, filePath) {
+    _finishRecording(didSucceed, filePath, fileSize) {
       this.setState({ finished: didSucceed });
-      console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath}`);
+      console.log(`Finished recording of duration ${this.state.currentTime} seconds at path: ${filePath} and size of ${fileSize || 0} bytes`);
     }
 
     render() {
