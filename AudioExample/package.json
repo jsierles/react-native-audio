@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "react": "16.2.0",
-    "react-native": "0.53.0",
+    "react-native": "0.56.0",
     "react-native-audio": "file:./..",
     "react-native-sound": "^0.8.3"
   }
