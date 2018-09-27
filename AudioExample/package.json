@@ -6,9 +6,13 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
-    "react": "16.2.0",
-    "react-native": "0.56.0",
-    "react-native-audio": "file:./..",
+    "@babel/runtime": "^7.0.0",
+    "react": "16.5.0",
+    "react-native": "0.57.1",
+    "react-native-audio": "../",
     "react-native-sound": "^0.8.3"
+  },
+  "devDependencies": {
+    "metro-react-native-babel-preset": "0.46.0"
   }
 }
