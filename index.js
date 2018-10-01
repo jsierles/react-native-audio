@@ -6,6 +6,7 @@ import ReactNative, {
   NativeModules,
   NativeAppEventEmitter,
   DeviceEventEmitter,
+  PermissionsAndroid,
   Platform
 } from "react-native";
 
