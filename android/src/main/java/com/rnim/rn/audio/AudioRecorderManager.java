@@ -113,7 +113,10 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
     if (isRecording){
       logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
     }
-
+    File destFile = new File(recordingPath);
+    if (destFile.getParentFile() != null) {
+      destFile.getParentFile().mkdirs();
+    }
     recorder = new MediaRecorder();
     try {
       recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -124,7 +127,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.setAudioSamplingRate(recordingSettings.getInt("SampleRate"));
       recorder.setAudioChannels(recordingSettings.getInt("Channels"));
       recorder.setAudioEncodingBitRate(recordingSettings.getInt("AudioEncodingBitRate"));
-      recorder.setOutputFile(recordingPath);
+      recorder.setOutputFile(destFile.getPath());
       includeBase64 = recordingSettings.getBoolean("IncludeBase64");
     }
     catch(final Exception e) {
