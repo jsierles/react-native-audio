@@ -91,9 +91,6 @@ if (Platform.OS === 'ios') {
     DocumentDirectoryPath: AudioRecorderManager.NSDocumentDirectoryPath,
     LibraryDirectoryPath: AudioRecorderManager.NSLibraryDirectoryPath,
   };
-  AudioSource = {
-
-  };
 } else if (Platform.OS === 'android') {
   AudioUtils = {
     MainBundlePath: AudioRecorderManager.MainBundlePath,
