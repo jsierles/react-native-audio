@@ -242,6 +242,13 @@ RCT_EXPORT_METHOD(startRecording)
   [_audioRecorder record];
 }
 
+RCT_EXPORT_METHOD(startRecordForDuration: (NSTimeInterval)time)
+{
+    [self startProgressTimer];
+    [_recordSession setActive:YES error:nil];
+    [_audioRecorder recordForDuration: time];
+}
+
 RCT_EXPORT_METHOD(stopRecording)
 {
   [_audioRecorder stop];
