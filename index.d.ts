@@ -1,8 +1,14 @@
+export type AudioEncodingAndroidType = 'aac_eld' | 'amr_nb' | 'amr_wb' | 'he_aac' | 'vorbis';
+
+export type AudioEncodingIOSType = 'lpcm' | 'ima4' | 'MAC3' | 'MAC6' | 'ulaw' | 'alaw' | 'mp1' | 'mp2' | 'alac' | 'amr';
+
+export type AudioEncodingType = 'aac' | AudioEncodingAndroidType | AudioEncodingAndroidType;
+
 export interface IRecordingOptions {
   SampleRate?: number;
   Channels?: number;
   AudioQuality?: 'Low' | 'Medium' | 'High';
-  AudioEncoding?: 'lpcm' | 'ima4' | 'aac' | 'MAC3' | 'MAC6' | 'ulaw' | 'alaw' | 'mp1' | 'mp2' | 'alac' | 'amr' | 'aac' | 'aac_eld' | 'amr_nb' | 'amr_wb' | 'he_aac' | 'vorbis';
+  AudioEncoding?: AudioEncodingType;
   OutputFormat?: string;
   MeteringEnabled?: boolean;
   MeasurementMode?: boolean;
