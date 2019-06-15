@@ -135,10 +135,7 @@ RCT_EXPORT_MODULE();
 
         if (_resumeOnInterruptionEnd) {
           [self pauseRecording];
-        } else {
-          // stop recording
-          // this makes possible to prepare and start recording a new session after interruption ends
-
+        } else { // stop recording
           _audioRecorder.delegate = nil; // so that audioRecorderDidFinishRecording may not get called on stopRecording
           [self stopRecording];
           NSError *error;
@@ -179,7 +176,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
   _meteringEnabled = NO;
   _includeBase64 = NO;
-  _resumeOnInterruptionEnd = NO;
+  _resumeOnInterruptionEnd = YES;
 
   // Set audio quality from options
   if (quality != nil) {
@@ -253,7 +250,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
     _includeBase64 = includeBase64;
   }
 
-  if (resumeOnInterruptionEnd != NO) {
+  if (resumeOnInterruptionEnd != nil && resumeOnInterruptionEnd != YES) {
     _resumeOnInterruptionEnd = resumeOnInterruptionEnd;
   }
 
