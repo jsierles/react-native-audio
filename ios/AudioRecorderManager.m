@@ -15,6 +15,8 @@
 
 NSString *const AudioRecorderEventProgress = @"recordingProgress";
 NSString *const AudioRecorderEventFinished = @"recordingFinished";
+NSString *const AudioRecorderEventInterruptionBegin = @"recordingInterruptionBegin";
+NSString *const AudioRecorderEventInterruptionEnd = @"recordingInterruptionEnd";
 
 @implementation AudioRecorderManager {
 
@@ -33,15 +35,12 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
   BOOL _meteringEnabled;
   BOOL _measurementMode;
   BOOL _includeBase64;
+  BOOL _resumeOnInterruptionEnd;
 }
 
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE();
-
-+ (BOOL)requiresMainQueueSetup {
-  return YES;
-}
 
 - (void)sendProgressUpdate {
   if (_audioRecorder && _audioRecorder.isRecording) {
@@ -125,24 +124,54 @@ RCT_EXPORT_MODULE();
   return basePath;
 }
 
-RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode includeBase64:(BOOL)includeBase64)
+-(void)audioSessionInterruptionNotification:(NSNotification*)notification {
+
+  // Check the type of notification
+  if ([notification.name isEqualToString:AVAudioSessionInterruptionNotification]) {
+      // Check to see if it was a begin interruption
+      if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
+        // dispatch event over the bridge
+        [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventInterruptionBegin body:@{}];
+
+        if (_resumeOnInterruptionEnd) {
+          [self pauseRecording];
+        } else {
+          // stop recording
+          // this makes possible to prepare and start recording a new session after interruption ends
+
+          _audioRecorder.delegate = nil; // so that audioRecorderDidFinishRecording may not get called on stopRecording
+          [self stopRecording];
+          NSError *error;
+
+          // inactivate session
+          [_recordSession setActive:NO error:&error];
+          
+          if (error) {
+              NSLog(@"%@", error);
+          }
+        }
+
+      } else if([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeEnded]]){
+        // dispatch event over the bridge
+        [self.bridge.eventDispatcher sendAppEventWithName:AudioRecorderEventInterruptionEnd body:@{}];
+
+        if (_resumeOnInterruptionEnd) {
+          [self resumeRecording];
+        }
+      }
+  }
+}
+
+RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)sampleRate channels:(nonnull NSNumber *)channels quality:(NSString *)quality encoding:(NSString *)encoding meteringEnabled:(BOOL)meteringEnabled measurementMode:(BOOL)measurementMode includeBase64:(BOOL)includeBase64 resumeOnInterruptionEnd:(BOOL)resumeOnInterruptionEnd)
 {
+  // Allow to execute actions when the app is not in foreground
+  [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
-    
-  NSString *filePathAndDirectory = [path stringByDeletingLastPathComponent];
-  NSError *error=nil;
-  //create parent dirs if necessary
-  if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
-                                 withIntermediateDirectories:YES
-                                                  attributes:nil
-                                                       error:&error])
-  {
-    NSLog(@"Create directory error: %@", error);
-  }
-    
+
   _audioFileURL = [NSURL fileURLWithPath:path];
-  
+
   // Default options
   _audioQuality = [NSNumber numberWithInt:AVAudioQualityHigh];
   _audioEncoding = [NSNumber numberWithInt:kAudioFormatAppleIMA4];
@@ -150,6 +179,7 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   _audioSampleRate = [NSNumber numberWithFloat:44100.0];
   _meteringEnabled = NO;
   _includeBase64 = NO;
+  _resumeOnInterruptionEnd = NO;
 
   // Set audio quality from options
   if (quality != nil) {
@@ -223,8 +253,17 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
     _includeBase64 = includeBase64;
   }
 
+  if (resumeOnInterruptionEnd != NO) {
+    _resumeOnInterruptionEnd = resumeOnInterruptionEnd;
+  }
+
+  NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                         selector:@selector(audioSessionInterruptionNotification:)
+                                             name:AVAudioSessionInterruptionNotification
+                                           object:_recordSession];
 
   if (_measurementMode) {
       [_recordSession setCategory:AVAudioSessionCategoryRecord error:nil];
@@ -244,8 +283,8 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   if (error) {
       NSLog(@"error: %@", [error localizedDescription]);
       // TODO: dispatch error over the bridge
-    } else {
-      [_audioRecorder prepareToRecord];
+  } else {
+      BOOL prepared = [_audioRecorder prepareToRecord];
   }
 }
 
