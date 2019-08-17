@@ -39,6 +39,10 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
 
 RCT_EXPORT_MODULE();
 
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
 - (void)sendProgressUpdate {
   if (_audioRecorder && _audioRecorder.isRecording) {
     _currentTime = _audioRecorder.currentTime;
@@ -129,9 +133,20 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
 {
   _prevProgressUpdateTime = nil;
   [self stopProgressTimer];
-
+    
+  NSString *filePathAndDirectory = [path stringByDeletingLastPathComponent];
+  NSError *error=nil;
+  //create parent dirs if necessary
+  if (![[NSFileManager defaultManager] createDirectoryAtPath:filePathAndDirectory
+                                 withIntermediateDirectories:YES
+                                                  attributes:nil
+                                                       error:&error])
+  {
+    NSLog(@"Create directory error: %@", error);
+  }
+    
   _audioFileURL = [NSURL fileURLWithPath:path];
-
+  
   // Default options
   _audioQuality = [NSNumber numberWithInt:AVAudioQualityHigh];
   _audioEncoding = [NSNumber numberWithInt:kAudioFormatAppleIMA4];
@@ -212,7 +227,6 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
     _includeBase64 = includeBase64;
   }
 
-  NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
 
