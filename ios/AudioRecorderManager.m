@@ -2,8 +2,8 @@
 //  AudioRecorderManager.m
 //  AudioRecorderManager
 //
-//  Created by Joshua Sierles on 15/04/15.
-//  Copyright (c) 2015 Joshua Sierles. All rights reserved.
+//  Derived from Joshua Sierles on 15/04/15.
+//  Refactored/Restructured by Matt Way (for Notiv) on 5/9/19.
 //
 
 #import "AudioRecorderManager.h"
@@ -13,14 +13,19 @@
 #import <React/RCTEventDispatcher.h>
 #import <AVFoundation/AVFoundation.h>
 
+NSString *const EVENT_RECORDING_PROGRESS = @"recordingProgress";
+NSString *const EVENT_RECORDING_FINISHED = @"recordingFinished";
+NSString *const EVENT_INTERRUPTION_BEGAN = @"recordingInterruptionBegan";
+NSString *const EVENT_INTERRUPTION_ENDED = @"recordingInterruptionEnded";
+
 @implementation AudioRecorderManager {
 
   AVAudioSession *recordSession;
   AVAudioRecorder *audioRecorder;
 
-  BOOL hasProgressListener;
+  BOOL hasListeners;
   BOOL meteringEnabled;
-  BOOL shouldResume;
+  BOOL resumeOnInterrupt;
 
   NSURL *audioFileURL;
   NSTimer *progressTimer;
@@ -32,33 +37,55 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
-- (void)progressTick {
-  if (!hasProgressListener) {
+-(void)startObserving {
+  hasListeners = YES;
+}
+
+-(void)stopObserving {
+  hasListeners = NO;
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+  return @[
+    EVENT_RECORDING_PROGRESS,
+    EVENT_RECORDING_FINISHED,
+    EVENT_INTERRUPTION_BEGAN,
+    EVENT_INTERRUPTION_ENDED
+  ];
+}
+
+- (void)progressTick:(NSTimer *)timer {
+  if (!hasListeners) {
     return;
   }
 
   NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
-  [body setValue:audioRecorder.currentTime forKey:@"currentTime"]
+  [body setValue:[NSNumber numberWithDouble:audioRecorder.currentTime] forKey:@"currentTime"];
 
   if(audioRecorder.meteringEnabled){
     [audioRecorder updateMeters];
-    [body setValue:[_audioRecorder averagePowerForChannel: 0] forKey:@"currentMetering"]
-    [body setValue:[_audioRecorder peakPowerForChannel: 0] forKey:@"currentPeakMetering"]
+    float currentMetering = [audioRecorder averagePowerForChannel: 0];
+    [body setValue:[NSNumber numberWithFloat:currentMetering] forKey:@"currentMetering"];
+    float currentPeakMetering = [audioRecorder peakPowerForChannel: 0];
+    [body setValue:[NSNumber numberWithFloat:currentPeakMetering] forKey:@"currentPeakMetering"];
   }
 
-  [self sendEventWithName:@"recordingProgress" body];
+  [self sendEventWithName:EVENT_RECORDING_PROGRESS body:body];
+}
+
+- (void)triggerFinishEvent:(BOOL)status {
+  uint64_t audioFileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[audioFileURL path] error:nil] fileSize];
+  
+  [self sendEventWithName:EVENT_RECORDING_FINISHED body:@{
+    @"duration":@(audioRecorder.currentTime),
+    @"status": status ? @"OK" : @"ERROR",
+    @"audioFileURL": [audioFileURL absoluteString],
+    @"audioFileSize": @(audioFileSize)
+  }];
 }
 
 - (void)audioRecorderDidFinishRecording:(AVAudioRecorder *)recorder successfully:(BOOL)flag {
-  
-  uint64_t audioFileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[_audioFileURL path] error:nil] fileSize];
-  
-  [self sendEventWithName:@"recordingFinished" body:@{
-    @"duration":@(_audioRecorder.currentTime),
-    @"status": flag ? @"OK" : @"ERROR",
-    @"audioFileURL": [_audioFileURL absoluteString],
-    @"audioFileSize": @(audioFileSize)
-  }];
+  [self triggerFinishEvent:flag];
     
   // resume any other audio services that might be waiting for priority
   NSError *error;
@@ -79,26 +106,30 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)audioSessionInterruptionNotification:(NSNotification*)notification {
-  if(notification.userInfo[AVAudioSessionInterruptionTypeKey] == AVAudioSessionInterruptionTypeBegan){
-    [self sendEventWithName:@"recordingInterruptionBegan" body:@{}]
-    if(shouldResume){
-      [self pauseRecording]
+  if(!hasListeners){
+    return;
+  }
+
+  if ([[notification.userInfo valueForKey:AVAudioSessionInterruptionTypeKey] isEqualToNumber:[NSNumber numberWithInt:AVAudioSessionInterruptionTypeBegan]]) {
+    [self sendEventWithName:EVENT_INTERRUPTION_BEGAN body:@{}];
+    if(resumeOnInterrupt){
+      [self pauseRecording];
     }else{
-      [self stopRecording]
+      [self stopRecording];
     }
   }else{
-    [self sendEventWithName:@"recordingInterruptionEnded" body:@{}]
-    if(shouldResume){
-      [self resumeRecording]
+    [self sendEventWithName:EVENT_INTERRUPTION_ENDED body:@{}];
+    if(resumeOnInterrupt){
+      [self resumeRecording];
     }
   }
 }
 
 RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path 
-                  sampleRate:(float)sampleRate 
+                  sampleRate:(nonnull NSNumber *)sampleRate 
                   channels:(nonnull NSNumber *)channels 
-                  quality:(NSNumber *)quality 
-                  encoding:(NSNumber *)encoding 
+                  quality:(nonnull NSNumber *)quality 
+                  encoding:(nonnull NSNumber *)encoding 
                   meteringEnabled:(BOOL)meteringEnabled 
                   shouldResume:(BOOL)shouldResume)
 {
@@ -119,7 +150,33 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path
   resumeOnInterrupt = shouldResume;
   
   recordSession = [AVAudioSession sharedInstance];
-  [recordSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(audioSessionInterruptionNotification:)
+                                        name:AVAudioSessionInterruptionNotification
+                                        object:recordSession];
+  [recordSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:nil];
+
+  // TODO: Expose a more sophisticated interface to js for providing device preference
+  // Right now this takes a preference order
+  NSDictionary *audioTypes = @{ 
+    AVAudioSessionPortBluetoothHFP: @6,     
+    AVAudioSessionPortCarAudio: @5,
+    AVAudioSessionPortHeadsetMic: @4,
+    AVAudioSessionPortUSBAudio: @3,
+    AVAudioSessionPortLineIn: @2,
+    AVAudioSessionPortBuiltInMic : @1
+  };
+  AVAudioSessionPortDescription *preferredPort = Nil;
+  for (AVAudioSessionPortDescription *desc in recordSession.availableInputs) {
+    if(preferredPort == Nil || [audioTypes[desc.portType] intValue] > [audioTypes[preferredPort.portType] intValue]){
+      preferredPort = desc;
+    }
+  }
+  if(preferredPort != Nil){
+    [recordSession setPreferredInput:preferredPort error:nil];
+  }else{
+    NSLog(@"No input port is available");
+  }
 
   audioRecorder = [[AVAudioRecorder alloc]
                     initWithURL:audioFileURL
@@ -143,29 +200,37 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path
 }
 
 - (void)startProgressTimer {
-  progressTimer = [NSTimer scheduledTimerWithTimeInterval:0.25F 
+  progressTimer = [NSTimer timerWithTimeInterval:0.5F 
                            target:self 
-                           selector:@selector(progressTick) 
+                           selector:@selector(progressTick:) 
                            userInfo:nil 
                            repeats:YES];
+  // react-native timers need to be added specifically to main thread
+  [[NSRunLoop mainRunLoop] addTimer:progressTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)stopProgressTimer {
-  [progressTimer invalidate]
+  [progressTimer invalidate];
 }
 
 RCT_EXPORT_METHOD(startRecording)
 {
-  [self startProgressTimer]
+  [self startProgressTimer];
   [recordSession setActive:YES error:nil];
   [audioRecorder record];
 }
 
 RCT_EXPORT_METHOD(stopRecording)
 {
-  [audioRecorder stop];
+  // this checks for failure cases in which the audio was
+  // stopped for some reason, but js expects a finished event to trigger
+  if(audioRecorder.isRecording){
+    [audioRecorder stop];
+  }else{
+    [self triggerFinishEvent:NO];
+  }  
   [recordSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-  [self stopProgressTimer]
+  [self stopProgressTimer];
 }
 
 RCT_EXPORT_METHOD(pauseRecording)
@@ -173,15 +238,15 @@ RCT_EXPORT_METHOD(pauseRecording)
   if (audioRecorder.isRecording) {
     [audioRecorder pause];
   }
-  [self stopProgressTimer]
+  [self stopProgressTimer];
 }
 
 RCT_EXPORT_METHOD(resumeRecording)
 {
-  if (!_audioRecorder.isRecording) {
-    [_audioRecorder record];
+  if (!audioRecorder.isRecording) {
+    [audioRecorder record];
   }
-  [self startProgressTimer]
+  [self startProgressTimer];
 }
 
 RCT_EXPORT_METHOD(checkAuthorizationStatus:(RCTPromiseResolveBlock)resolve reject:(__unused RCTPromiseRejectBlock)reject)
@@ -236,24 +301,24 @@ RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
     @"NSDocumentDirectoryPath": [self getPathForDirectory:NSDocumentDirectory],
     @"NSLibraryDirectoryPath": [self getPathForDirectory:NSLibraryDirectory],
     @"iOSAudioQuality": @{
-      @"Low": AVAudioQualityLow,
-      @"Medium": AVAudioQualityMedium,
-      @"High": AVAudioQualityHigh
+      @"Low": @(AVAudioQualityLow),
+      @"Medium": @(AVAudioQualityMedium),
+      @"High": @(AVAudioQualityHigh)
     },
     @"iOSAudioEncoding": @{
-      @"lpcm": kAudioFormatLinearPCM,
-      @"ima4": kAudioFormatAppleIMA4,
-      @"aac": kAudioFormatMPEG4AAC,
-      @"MAC3": kAudioFormatMACE3,
-      @"MAC6": kAudioFormatMACE6,
-      @"ulaw": kAudioFormatULaw,
-      @"alaw": kAudioFormatALaw,
-      @"mp1": kAudioFormatMPEGLayer1,
-      @"mp2": kAudioFormatMPEGLayer2,
-      @"alac": kAudioFormatAppleLossless,
-      @"amr": kAudioFormatAMR,
-      @"flac": kAudioFormatFLAC,
-      @"opus": kAudioFormatOpus
+      @"lpcm": @(kAudioFormatLinearPCM),
+      @"ima4": @(kAudioFormatAppleIMA4),
+      @"aac": @(kAudioFormatMPEG4AAC),
+      @"MAC3": @(kAudioFormatMACE3),
+      @"MAC6": @(kAudioFormatMACE6),
+      @"ulaw": @(kAudioFormatULaw),
+      @"alaw": @(kAudioFormatALaw),
+      @"mp1": @(kAudioFormatMPEGLayer1),
+      @"mp2": @(kAudioFormatMPEGLayer2),
+      @"alac": @(kAudioFormatAppleLossless),
+      @"amr": @(kAudioFormatAMR),
+      @"flac": @(kAudioFormatFLAC),
+      @"opus": @(kAudioFormatOpus)
     }
   };
 }

@@ -7,9 +7,10 @@
 //
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 #import <React/RCTLog.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface AudioRecorderManager : NSObject <RCTBridgeModule, AVAudioRecorderDelegate>
+@interface AudioRecorderManager : RCTEventEmitter <RCTBridgeModule, AVAudioRecorderDelegate>
 
 @end

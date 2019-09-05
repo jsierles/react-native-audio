@@ -4,18 +4,22 @@ import React from "react";
 
 import ReactNative, {
   NativeModules,
+  NativeEventEmitter,
   NativeAppEventEmitter,
   DeviceEventEmitter,
   PermissionsAndroid,
   Platform
 } from "react-native";
 
-var AudioRecorderManager = NativeModules.AudioRecorderManager;
+const AudioRecorderManager = NativeModules.AudioRecorderManager;
+const AudioRecorderManagerEmitter = new NativeEventEmitter(
+  AudioRecorderManager
+);
 
 var AudioRecorder = {
   prepareRecordingAtPath: function(path, options) {
     if (this.progressSubscription) this.progressSubscription.remove();
-    this.progressSubscription = NativeAppEventEmitter.addListener(
+    this.progressSubscription = AudioRecorderManagerEmitter.addListener(
       "recordingProgress",
       data => {
         if (this.onProgress) {
@@ -25,7 +29,7 @@ var AudioRecorder = {
     );
 
     if (this.finishedSubscription) this.finishedSubscription.remove();
-    this.finishedSubscription = NativeAppEventEmitter.addListener(
+    this.finishedSubscription = AudioRecorderManagerEmitter.addListener(
       "recordingFinished",
       data => {
         if (this.onFinished) {
@@ -58,7 +62,6 @@ var AudioRecorder = {
         AudioRecorderManager.iOSAudioQuality[recordingOptions.AudioQuality],
         AudioRecorderManager.iOSAudioEncoding[recordingOptions.AudioEncoding],
         recordingOptions.MeteringEnabled,
-        recordingOptions.MeasurementMode,
         recordingOptions.ShouldResume
       );
     } else {
