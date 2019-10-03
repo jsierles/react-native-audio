@@ -25,6 +25,8 @@ class AudioExample extends Component {
       hasPermission: undefined,
     };
 
+    promiseIOSFinishRecording = null
+
     prepareRecordingPath(audioPath){
       AudioRecorder.prepareRecordingAtPath(audioPath, {
         SampleRate: 22050,
@@ -47,12 +49,15 @@ class AudioExample extends Component {
           this.setState({currentTime: Math.floor(data.currentTime)});
         };
 
-        AudioRecorder.onFinished = (data) => {
-          // Android callback comes in the form of a promise instead.
-          if (Platform.OS === 'ios') {
-            this._finishRecording(data.status === "OK", data.audioFileURL, data.audioFileSize);
-          }
-        };
+        this.promiseIOSFinishRecording = new Promise((resolve,reject)=>{
+          AudioRecorder.onFinished = resolve;
+        });
+//         AudioRecorder.onFinished = (data) => {
+//           // Android callback comes in the form of a promise instead.
+//           if (Platform.OS === 'ios') {
+//             this._finishRecording(data.status === "OK", data.audioFileURL, data.audioFileSize);
+//           }
+//         };
       });
     }
 
@@ -117,10 +122,14 @@ class AudioExample extends Component {
       this.setState({stoppedRecording: true, recording: false, paused: false});
 
       try {
-        const filePath = await AudioRecorder.stopRecording();
-
+        
+         //use Promise method to get both Android and IOS record data
         if (Platform.OS === 'android') {
+          const filePath = await AudioRecorder.stopRecording();
           this._finishRecording(true, filePath);
+        }else{
+          const iosData = await this.promiseIOSFinishRecording; 
+          this._finishRecording(iosData.status === "OK", iosData.audioFileURL);          
         }
         return filePath;
       } catch (error) {
@@ -135,23 +144,40 @@ class AudioExample extends Component {
 
       // These timeouts are a hacky workaround for some issues with react-native-sound.
       // See https://github.com/zmxv/react-native-sound/issues/89.
-      setTimeout(() => {
-        var sound = new Sound(this.state.audioPath, '', (error) => {
-          if (error) {
-            console.log('failed to load the sound', error);
-          }
-        });
+//       setTimeout(() => {
+//         var sound = new Sound(this.state.audioPath, '', (error) => {
+//           if (error) {
+//             console.log('failed to load the sound', error);
+//           }
+//         });
 
-        setTimeout(() => {
-          sound.play((success) => {
-            if (success) {
-              console.log('successfully finished playing');
-            } else {
-              console.log('playback failed due to audio decoding errors');
-            }
-          });
-        }, 100);
-      }, 100);
+//         setTimeout(() => {
+//           sound.play((success) => {
+//             if (success) {
+//               console.log('successfully finished playing');
+//             } else {
+//               console.log('playback failed due to audio decoding errors');
+//             }
+//           });
+//         }, 100);
+//       }, 100);
+      
+      //use Promise method to get both 
+      var sound = null;
+      const error = await new Promise(function (resolve, reject) {
+        sound = new Sound(audiopath,  '', resolve);
+      });
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      }
+      sound.play((success) => {
+        if (success) {
+          console.log('successfully finished playing');
+        } else {
+          console.log('playback failed due to audio decoding errors');
+        }
+      });
     }
 
     async _record() {
