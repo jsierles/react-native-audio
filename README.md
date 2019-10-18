@@ -1,4 +1,9 @@
+
 Record audio in iOS or Android React Native apps.
+
+## MAINTENANCE STATUS
+
+This project is no longer actively maintained by me, the original author. I will not be answering issues or merging any more PRs. If someone is interested in taking over the library permanently, let me know!
 
 ## BREAKING CHANGES
 
