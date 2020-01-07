@@ -1,6 +1,6 @@
 {
   "name": "react-native-audio",
-  "version": "4.2.2",
+  "version": "4.3.1",
   "description": "React Native extension for recording audio",
   "main": "index.js",
   "author": "Joshua Sierles <joshua@diluvia.net> (https://github.com/jsierles)",
