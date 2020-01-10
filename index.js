@@ -74,6 +74,11 @@ var AudioRecorder = {
   stopRecording: function() {
     return AudioRecorderManager.stopRecording();
   },
+  getCurrentTime: function() {
+    if (Platform.OS === 'ios') {
+      return AudioRecorderManager.getCurrentTime();
+    }
+  },
   checkAuthorizationStatus: AudioRecorderManager.checkAuthorizationStatus,
   requestAuthorization: () => {
     if (Platform.OS === 'ios')

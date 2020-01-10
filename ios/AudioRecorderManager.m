@@ -308,6 +308,17 @@ RCT_EXPORT_METHOD(requestAuthorization:(RCTPromiseResolveBlock)resolve
   }];
 }
 
+RCT_EXPORT_METHOD(getCurrentTime:(RCTPromiseResolveBlock)resolve
+                  rejecter:(__unused RCTPromiseRejectBlock)reject)
+{
+    if (_audioRecorder && _audioRecorder.isRecording) {
+        resolve(@(_audioRecorder.currentTime));
+    } else {
+        resolve(@"NO");
+    }
+}
+
+
 - (NSString *)getPathForDirectory:(int)directory
 {
   NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
