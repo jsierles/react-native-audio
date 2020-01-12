@@ -112,6 +112,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   public void prepareRecordingAtPath(String recordingPath, ReadableMap recordingSettings, Promise promise) {
     if (isRecording){
       logAndRejectPromise(promise, "INVALID_STATE", "Please call stopRecording before starting recording");
+      return;
     }
     File destFile = new File(recordingPath);
     if (destFile.getParentFile() != null) {
@@ -223,6 +224,9 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       stopWatch.stop();
     }
     catch (final RuntimeException e) {
+      try {
+        recorder.release();
+      } catch (final Exception e2) { }
       // https://developer.android.com/reference/android/media/MediaRecorder.html#stop()
       logAndRejectPromise(promise, "RUNTIME_EXCEPTION", "No valid audio data received. You may be using a device that can't record audio.");
       return;
