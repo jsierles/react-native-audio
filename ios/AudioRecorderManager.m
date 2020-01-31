@@ -12,6 +12,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTEventDispatcher.h>
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 NSString *const AudioRecorderEventProgress = @"recordingProgress";
 NSString *const AudioRecorderEventFinished = @"recordingFinished";
@@ -39,6 +40,25 @@ NSString *const AudioRecorderEventFinished = @"recordingFinished";
 
 RCT_EXPORT_MODULE();
 
+- (instancetype)init
+  {
+    self = [super init];
+    if (self) {
+      [self registerForNotifications];
+    }
+    return self;
+  }
+  
+- (void)registerForNotifications {
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive) name: UIApplicationWillResignActiveNotification object: nil];
+}
+  
+- (void)applicationWillResignActive {
+  if (_audioRecorder && !_audioRecorder.isRecording) {
+    [_recordSession setActive:NO error: nil];
+  }
+}
+  
 + (BOOL)requiresMainQueueSetup {
   return YES;
 }
