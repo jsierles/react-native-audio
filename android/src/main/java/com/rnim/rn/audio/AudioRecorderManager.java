@@ -323,12 +323,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
           double dB = -160;
           double maxAudioSize = 32767;
           if (maxAmplitude > 0){
-            // dB = dB + (160*(maxAmplitude/maxAudioSize));
             dB = 20 * Math.log10(maxAmplitude / maxAudioSize);
           }
-          // if (dB < -160){
-          //   dB = -160;
-          // }
 
           body.putInt("currentMetering", (int) dB);
           sendEvent("recordingProgress", body);
