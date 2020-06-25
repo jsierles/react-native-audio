@@ -21,8 +21,8 @@ from the network, please submit a PR to that project or try `react-native-video`
 Install the npm package and link it to your project:
 
 ```
-npm install react-native-audio --save
-react-native link react-native-audio
+npm install https://github.com/shivam4ukhandelwal/react-native-audio.git
+
 ```
 
 On *iOS* you need to add a usage description to `Info.plist`:
@@ -37,6 +37,12 @@ On *Android* you need to add a permission to `AndroidManifest.xml`:
 ```
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
+### No Linking required react-native > 0.60.
+
+
+### Auto Linking
+react-native link react-native-audio
+
 
 ### Manual Installation
 
