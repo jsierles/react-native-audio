@@ -27,7 +27,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.media.MediaRecorder;
 import android.media.AudioManager;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.util.Log;
@@ -64,6 +65,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private boolean isPauseResumeCapable = false;
   private Method pauseMethod = null;
   private Method resumeMethod = null;
+  private int progressUpdateInterval = 1000;
 
 
   public AudioRecorderManager(ReactApplicationContext reactContext) {
@@ -129,6 +131,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
       recorder.setAudioEncodingBitRate(recordingSettings.getInt("AudioEncodingBitRate"));
       recorder.setOutputFile(destFile.getPath());
       includeBase64 = recordingSettings.getBoolean("IncludeBase64");
+      setProgressUpdateInterval(recordingSettings.getInt("ProgressUpdateInterval"));
+
     }
     catch(final Exception e) {
       logAndRejectPromise(promise, "COULDNT_CONFIGURE_MEDIA_RECORDER" , "Make sure you've added RECORD_AUDIO permission to your AndroidManifest.xml file "+e.getMessage());
@@ -315,10 +319,17 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
         if (!isPaused) {
           WritableMap body = Arguments.createMap();
           body.putDouble("currentTime", stopWatch.getTimeSeconds());
+          int amplitude = recorder.getMaxAmplitude();
+          if (amplitude == 0) {
+            body.putInt("currentMetering", -160);
+          } else {
+            body.putInt("currentMetering", (int) (20 * Math.log(((double) amplitude) / 32767d)));
+          }
+          
           sendEvent("recordingProgress", body);
         }
       }
-    }, 0, 1000);
+    }, 0, progressUpdateInterval);
   }
 
   private void stopTimer(){
@@ -338,5 +349,12 @@ class AudioRecorderManager extends ReactContextBaseJavaModule {
   private void logAndRejectPromise(Promise promise, String errorCode, String errorMessage) {
     Log.e(TAG, errorMessage);
     promise.reject(errorCode, errorMessage);
+  }
+  private void setProgressUpdateInterval(int progressUpdateInterval) {
+    if(progressUpdateInterval < 100) {
+      this.progressUpdateInterval = 100;
+    } else {
+      this.progressUpdateInterval = progressUpdateInterval;
+    }
   }
 }
