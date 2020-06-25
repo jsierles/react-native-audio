@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:jsierles/react-native-audio.git"
+    "url": "git@github.com:shivam4ukhandelwal/react-native-audio.git"
   },
   "nativePackage": true
 }
